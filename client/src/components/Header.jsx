@@ -20,6 +20,7 @@ const Container = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
+    z-index: 10;
 `
 const Top = styled.div`
 
@@ -29,6 +30,8 @@ const Logo = styled.h1`
     font-size: 58px;
     font-weight: 400;
     letter-spacing: 8px;
+    color: white;
+    text-shadow: 10px 2px 5px rgba(233,228,228,0.48);
 `
 const Bottom = styled.div`
     width: 100%;
@@ -116,7 +119,9 @@ const Header = () => {
     return (
         <Container>
             <Top>
-                <Logo> man shop</Logo>
+                <Link to="/">
+                    <Logo> man shop</Logo>
+                </Link>
             </Top>
             <Bottom>
                 <Navigation>
