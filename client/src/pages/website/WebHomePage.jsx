@@ -64,7 +64,20 @@ const WebHomePage = () => {
                     </ServiceDetail>
                 </ServiceItem>
             </ServiceContainer>
+<<<<<<< HEAD
 
+=======
+            abcxyz
+            123456
+<<<<<<< HEAD
+            0123456789
+=======
+<<<<<<< HEAD
+=======
+            0123456789
+>>>>>>> client
+>>>>>>> 24fc8b4830ee2681595b2a96d17b144ab24b6a96
+>>>>>>> client
         </Helmet>
     )
 }
