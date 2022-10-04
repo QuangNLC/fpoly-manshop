@@ -1,19 +1,19 @@
-import React from 'react'
-import Helmet from '../../components/Helmet'
-import { sliderData } from '../../assets/data/data'
-import Slider from '../../components/Slider'
-import styled from 'styled-components'
-import CurrencyExchangeTwoToneIcon from '@mui/icons-material/CurrencyExchangeTwoTone';
-import FeedbackOutlinedIcon from '@mui/icons-material/FeedbackOutlined';
-import DiamondOutlinedIcon from '@mui/icons-material/DiamondOutlined';
-import PaymentsOutlinedIcon from '@mui/icons-material/PaymentsOutlined';
+import React from "react";
+import Helmet from "../../components/Helmet";
+import { sliderData } from "../../assets/data/data";
+import Slider from "../../components/Slider";
+import styled from "styled-components";
+import CurrencyExchangeTwoToneIcon from "@mui/icons-material/CurrencyExchangeTwoTone";
+import FeedbackOutlinedIcon from "@mui/icons-material/FeedbackOutlined";
+import DiamondOutlinedIcon from "@mui/icons-material/DiamondOutlined";
+import PaymentsOutlinedIcon from "@mui/icons-material/PaymentsOutlined";
 
 const ServiceContainer = styled.div`
-    width: 100%;
-    margin-top: 30px;
-    display: flex;
-    justify-content: space-between;
-`
+  width: 100%;
+  margin-top: 30px;
+  display: flex;
+  justify-content: space-between;
+`;
 const ServiceItem = styled.div`
     width: 250px;
     padding 10px;
@@ -23,63 +23,55 @@ const ServiceItem = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-`
+`;
 const ServiceIcon = styled.div`
-    color: red;
-    margin: 10px 0;
-`
+  color: red;
+  margin: 10px 0;
+`;
 const ServiceDetail = styled.div`
-    font-size: 16px;
-    color: #666;
-    text-align: justify;
-`
+  font-size: 16px;
+  color: #666;
+  text-align: justify;
+`;
 
 const WebHomePage = () => {
-    return (
-        <Helmet title={"Trang Chủ"}>
-            <Slider items={sliderData} />
-            <ServiceContainer>
-                <ServiceItem>
-                    <ServiceIcon> <CurrencyExchangeTwoToneIcon style={{fontSize: "50px"}}/></ServiceIcon>
-                    <ServiceDetail>
-                        Đổi trả trong 15 ngày đầu nếu có lỗi từ phía nhà sản xuất.
-                    </ServiceDetail>
-                </ServiceItem>
-                <ServiceItem>
-                    <ServiceIcon> <FeedbackOutlinedIcon style={{fontSize: "50px"}}/></ServiceIcon>
-                    <ServiceDetail>
-                        Feeback để nhận nhiều phần quà hấp dẫn.
-                    </ServiceDetail>
-                </ServiceItem>
-                <ServiceItem>
-                    <ServiceIcon> <DiamondOutlinedIcon style={{fontSize: "50px"}}/></ServiceIcon>
-                    <ServiceDetail>
-                        Đăng ký hội viên để nhận nhiều ưu đãi.
-                    </ServiceDetail>
-                </ServiceItem>
-                <ServiceItem>
-                    <ServiceIcon> <PaymentsOutlinedIcon style={{fontSize: "50px"}}/></ServiceIcon>
-                    <ServiceDetail>
-                        Hỗ trợ thanh toán nhiều hình thức.
-                    </ServiceDetail>
-                </ServiceItem>
-            </ServiceContainer>
-<<<<<<< HEAD
+  return (
+    <Helmet title={"Trang Chủ"}>
+      <Slider items={sliderData} />
+      <ServiceContainer>
+        <ServiceItem>
+          <ServiceIcon>
+            {" "}
+            <CurrencyExchangeTwoToneIcon style={{ fontSize: "50px" }} />
+          </ServiceIcon>
+          <ServiceDetail>
+            Đổi trả trong 15 ngày đầu nếu có lỗi từ phía nhà sản xuất.
+          </ServiceDetail>
+        </ServiceItem>
+        <ServiceItem>
+          <ServiceIcon>
+            {" "}
+            <FeedbackOutlinedIcon style={{ fontSize: "50px" }} />
+          </ServiceIcon>
+          <ServiceDetail>Feeback để nhận nhiều phần quà hấp dẫn.</ServiceDetail>
+        </ServiceItem>
+        <ServiceItem>
+          <ServiceIcon>
+            {" "}
+            <DiamondOutlinedIcon style={{ fontSize: "50px" }} />
+          </ServiceIcon>
+          <ServiceDetail>Đăng ký hội viên để nhận nhiều ưu đãi.</ServiceDetail>
+        </ServiceItem>
+        <ServiceItem>
+          <ServiceIcon>
+            {" "}
+            <PaymentsOutlinedIcon style={{ fontSize: "50px" }} />
+          </ServiceIcon>
+          <ServiceDetail>Hỗ trợ thanh toán nhiều hình thức.</ServiceDetail>
+        </ServiceItem>
+      </ServiceContainer>
+    </Helmet>
+  );
+};
 
-=======
-            abcxyz
-            123456
-<<<<<<< HEAD
-            0123456789
-=======
-<<<<<<< HEAD
-=======
-            0123456789
->>>>>>> client
->>>>>>> 24fc8b4830ee2681595b2a96d17b144ab24b6a96
->>>>>>> client
-        </Helmet>
-    )
-}
-
-export default WebHomePage
+export default WebHomePage;
