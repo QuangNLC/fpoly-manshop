@@ -19,7 +19,6 @@ public class ProductSize {
     @JsonIgnore
     @ManyToOne @JoinColumn(name="ProductId")
     private Product product;
-    @JsonIgnore
     @ManyToOne @JoinColumn(name="SizeId")
     private Sizes size;
 

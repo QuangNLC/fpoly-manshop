@@ -34,7 +34,6 @@ public class Product {
     private String cover;
 
 
-    @JsonIgnore
     @ManyToOne @JoinColumn(name="category")
     private Categorys category;
 

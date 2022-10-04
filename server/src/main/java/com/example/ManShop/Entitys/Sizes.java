@@ -1,5 +1,6 @@
 package com.example.ManShop.Entitys;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,7 @@ public class Sizes {
     private int id;
     @Column(name = "title")
     private String title;
+    @JsonIgnore
     @OneToMany(mappedBy = "size")
     private List<ProductSize> productSize;
 

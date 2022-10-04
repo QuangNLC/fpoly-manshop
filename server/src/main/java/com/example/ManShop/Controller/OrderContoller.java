@@ -28,6 +28,9 @@ public class OrderContoller {
 
 
     @GetMapping("/all")
-    public ResponseEntity
+    public ResponseEntity<?> getall(){
+        return null;
+    }
+
 
 }
