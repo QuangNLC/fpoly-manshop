@@ -39,13 +39,15 @@ public class Product {
 
     @OneToMany(mappedBy = "product")
     private List<ProductSize> productsizes;
+    @JsonIgnore
     @OneToMany(mappedBy = "product")
     private List<PromotionProduct> promotions;
+    @JsonIgnore
     @OneToMany(mappedBy = "product")
     private List<CartItem> cartItems;
     @OneToMany(mappedBy = "product")
     private List<Images> images;
-
+   @JsonIgnore
     @OneToMany(mappedBy = "product")
     private List<OrderDetail> orderDetail;
 

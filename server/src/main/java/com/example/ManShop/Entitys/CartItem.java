@@ -1,5 +1,6 @@
 package com.example.ManShop.Entitys;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,8 +22,10 @@ public class CartItem {
 
     @Column(name = "quantity")
     private Double  quantity;
+    @JsonIgnore
     @ManyToOne @JoinColumn(name = "username")
     private Users  users;
+    @JsonIgnore
     @ManyToOne @JoinColumn(name = "customer")
     private Customers customers;
 }

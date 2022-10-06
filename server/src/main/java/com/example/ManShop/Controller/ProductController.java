@@ -63,7 +63,7 @@ public class ProductController {
     @GetMapping("/{page}/{limit}")
     public ResponseEntity<?> GetByPage(@PathVariable("page") Integer page,@PathVariable("limit")Integer limit){
         Pageable setpage;
-        int ix= page--;
+        int ix= page-1;
         log.info("gọi vào hàm phân trang với số (page)= "+ix +" số phần tử (limit)= "+limit);
         System.out.println(ix);
         if(page >0 ){
@@ -76,11 +76,10 @@ public class ProductController {
 
     @GetMapping("/category/{page}/{limit}")
     public ResponseEntity<?> getbyCategory(@RequestParam Integer categoryid,@PathVariable("page") Integer page,@PathVariable("limit")Integer limit){
-        System.out.println("goi vao ham tim kiem theo category");
-        System.out.println(categoryid);
         Pageable setpage;
-        if(page >0 ){
-            setpage = PageRequest.of(page, limit);
+        int ix = page -1;
+        if(ix >0 ){
+            setpage = PageRequest.of(ix, limit);
         }else{
             setpage = PageRequest.of(0, limit);
         }
@@ -91,8 +90,8 @@ public class ProductController {
     public Product createProduct(@RequestBody Product product) {
         log.info("tạo sản phẩm");
         Categorys category = categoryJPA.findById(product.getCategory().getId()).get();
-//        List<Images> listimages = imagesJPA.findAllById(product.getImages());
-//        System.out.println(listimages);
+       List<Images> listimages = imagesJPA.findAllById(product.getImages());
+       System.out.println(listimages);
         //List<ProductSize> Listsize = productsizeJPA.findAllById(product.getProductsizes());
         //product.setImages(listimages);
         product.setCategory(category);

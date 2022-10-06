@@ -32,16 +32,16 @@ public class Users {
 
     @OneToMany(mappedBy = "users")
     private List<Role> roles;
-
+    @JsonIgnore
     @OneToMany(mappedBy = "users")
     private List<CartItem> cartItems;
-
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<Customers> customers;
-
+ @JsonIgnore
     @OneToMany(mappedBy = "users")
     private List<Orders> orders;
-
+    @JsonIgnore
      @OneToMany(mappedBy = "users")
     private List<Promotions> promotions;
 }
