@@ -17,17 +17,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/order")
 public class OrderContoller {
 
-    @Autowired
-    UserJPA userJPA;
-    @Autowired
-    CustomerJPA customerJPA;
-    @Autowired
-    OrderDetailJPA orderDetailJPA;
-    @Autowired
-    OrderJPA orderJPA;
+//    @Autowired
+//    UserJPA userJPA;
+//    @Autowired
+//    CustomerJPA customerJPA;
+//    @Autowired
+//    OrderDetailJPA orderDetailJPA;
+//    @Autowired
+//    OrderJPA orderJPA;
 
 
-    @GetMapping("/all")
-    public ResponseEntity
+//    @GetMapping("/all")
+//    public ResponseEntity
 
 }
