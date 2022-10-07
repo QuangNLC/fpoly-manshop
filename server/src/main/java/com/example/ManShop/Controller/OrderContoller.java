@@ -22,7 +22,6 @@ import java.util.List;
 @CrossOrigin("*")
 @RequestMapping("/api/order")
 public class OrderContoller {
-<<<<<<< HEAD
 
 //    @Autowired
 //    UserJPA userJPA;
@@ -32,7 +31,6 @@ public class OrderContoller {
 //    OrderDetailJPA orderDetailJPA;
 //    @Autowired
 //    OrderJPA orderJPA;
-=======
     private final Logger log = LoggerFactory.getLogger(OrderContoller.class);
     final
     UserJPA userJPA;
@@ -42,7 +40,6 @@ public class OrderContoller {
     OrderDetailJPA orderDetailJPA;
     final
     OrderJPA orderJPA;
->>>>>>> 59f1d885e5b8656b016cf5f13d2e4770eeb8a7b6
 
     public OrderContoller(UserJPA userJPA, CustomerJPA customerJPA, OrderDetailJPA orderDetailJPA, OrderJPA orderJPA) {
         this.userJPA = userJPA;
@@ -52,10 +49,8 @@ public class OrderContoller {
     }
 
 
-<<<<<<< HEAD
 //    @GetMapping("/all")
 //    public ResponseEntity
-=======
     @GetMapping("/all")
     public ResponseEntity<?> getall(){
         log.info("gọi vào hàm tìm kiếm tất cả các order");
@@ -141,6 +136,5 @@ public class OrderContoller {
         }
         return ResponseEntity.ok(orderJPA.findByUsers_Username(setpage,username));
     }
->>>>>>> 59f1d885e5b8656b016cf5f13d2e4770eeb8a7b6
 
 }
