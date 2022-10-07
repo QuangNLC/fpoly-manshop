@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -34,19 +34,20 @@ public class Product {
     private String cover;
 
 
-    @JsonIgnore
     @ManyToOne @JoinColumn(name="category")
     private Categorys category;
 
     @OneToMany(mappedBy = "product")
     private List<ProductSize> productsizes;
+    @JsonIgnore
     @OneToMany(mappedBy = "product")
     private List<PromotionProduct> promotions;
+    @JsonIgnore
     @OneToMany(mappedBy = "product")
     private List<CartItem> cartItems;
     @OneToMany(mappedBy = "product")
     private List<Images> images;
-
+   @JsonIgnore
     @OneToMany(mappedBy = "product")
     private List<OrderDetail> orderDetail;
 

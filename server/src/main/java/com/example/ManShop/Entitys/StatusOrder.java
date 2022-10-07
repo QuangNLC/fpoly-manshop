@@ -1,10 +1,12 @@
 package com.example.ManShop.Entitys;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Data
@@ -17,6 +19,7 @@ public class StatusOrder {
     private int id;
     @Column(name = "title")
     private String title;
-    @ManyToOne @JoinColumn(name ="orders")
-    private Orders orders;
+    @JsonIgnore
+    @OneToMany(mappedBy ="statusOrders")
+    private List<Orders> orders;
 }

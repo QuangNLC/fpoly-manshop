@@ -16,10 +16,11 @@ public class ProductSize {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @Column(name = "quantity")
+    private int quantity;
     @JsonIgnore
     @ManyToOne @JoinColumn(name="ProductId")
     private Product product;
-    @JsonIgnore
     @ManyToOne @JoinColumn(name="SizeId")
     private Sizes size;
 

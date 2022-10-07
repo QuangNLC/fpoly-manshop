@@ -25,7 +25,7 @@ public class Orders {
     @Column(name = "totalPrice")
     private double total_price;
     @Column(name = "orderdate")
-    private double order_date;
+    private Date order_date;
 
     @ManyToOne @JoinColumn(name = "customer")
     private Customers customers;
@@ -34,7 +34,8 @@ public class Orders {
     @OneToMany(mappedBy = "orders")
     private List<OrderDetail> orderDetail;
 
-    @OneToMany(mappedBy = "orders")
-    private List<StatusOrder> statusOrders;
+    @ManyToOne
+    @JoinColumn(name = "statusOrder")
+    private StatusOrder statusOrders;
 
 }

@@ -19,10 +19,11 @@ public class OrderDetail {
     private double total_price;
     @Column(name = "quantity")
     private int quantity;
-    @JsonIgnore
+    @Column(name = "size")
+    private String size;
     @ManyToOne @JoinColumn(name = "product")
     private Product product;
-
+    @JsonIgnore
     @ManyToOne @JoinColumn(name = "orders")
     private Orders orders;
 
