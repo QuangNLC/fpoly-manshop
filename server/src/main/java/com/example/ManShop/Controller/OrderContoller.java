@@ -91,7 +91,9 @@ public class OrderContoller {
         newOrder.setCustomers(customers);
     }if(check.equals("for-me")){
         newOrder.setCustomers(null);
-    }
+    }else {
+        return ResponseEntity.ok("not found");
+        }
         StatusOrder sttOrder = new StatusOrder();
         sttOrder.setId(1);
         newOrder.setStatusOrders(sttOrder);

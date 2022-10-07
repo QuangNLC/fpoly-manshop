@@ -1,5 +1,6 @@
 package com.example.ManShop.Controller;
 
+import com.example.ManShop.DTOS.productcreateDTO;
 import com.example.ManShop.Entitys.Categorys;
 import com.example.ManShop.Entitys.Images;
 import com.example.ManShop.Entitys.Product;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -87,17 +89,29 @@ public class ProductController {
 
     }
     @PostMapping("/create")
-    public Product createProduct(@RequestBody Product product) {
+    public ResponseEntity<?> createProduct(@RequestBody productcreateDTO product) {
         log.info("tạo sản phẩm");
         Categorys category = categoryJPA.findById(product.getCategory().getId()).get();
-       List<Images> listimages = imagesJPA.findAllById(product.getImages());
-       System.out.println(listimages);
-        //List<ProductSize> Listsize = productsizeJPA.findAllById(product.getProductsizes());
-        //product.setImages(listimages);
-        product.setCategory(category);
-       // product.setProductsizes(Listsize);
-        productJPA.save(product);
-        return(product);
+        Product newproduct = new Product();
+        newproduct.setCover(product.getCover());
+        newproduct.setCreate_date(new Date());
+        newproduct.setExport_price(product.getExport_price());
+        newproduct.setImport_price(product.getImport_price());
+        newproduct.setName(product.getName());
+        newproduct.setTitle(product.getTitle());
+        newproduct.setCategory(category);
+        Product returnproduct = productJPA.save(newproduct);
+        List<ProductSize> ProSizeList = product.getProductsizes();
+        ProSizeList.forEach( Size -> {
+            Size.setProduct(returnproduct);
+            productsizeJPA.save(Size);
+        });
+        List<Images> imagesList= product.getImages();
+        imagesList.forEach(images -> {
+            images.setProduct(returnproduct);
+            imagesJPA.save(images);
+        });
+        return ResponseEntity.ok("Tao thanh cong san pham (id)= "+returnproduct.getId());
     }
     @PutMapping("/update/{id}")
     public Product updateProduct(@PathVariable("id") Integer id, @RequestBody Product product) {
