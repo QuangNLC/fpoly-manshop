@@ -1,33 +1,38 @@
 import React from "react";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
-import { fontSize } from "@mui/system";
-import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
-import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
+import { Link, useLocation } from "react-router-dom";
 import ImageAvatar from "./ImageAvatar";
 import CartIcon from "./Products/CartIcon";
+import LocalMallOutlinedIcon from '@mui/icons-material/LocalMallOutlined';
+import { useSelector } from "react-redux";
+import Badge from '@mui/material/Badge';
 
 const Container = styled.div`
   position: fixed;
   top: 0;
   width: 100%;
   min-height: 80px;
-  max-height: 180px;
+  max-height: 80px;
   overflow: hidden;
-  background-color: #b2b2b2;
+  background-color: white;
   color: white;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
+  justify-content: space-between;
   z-index: 10;
+  box-shadow: 1px 3px 3px 1px rgba(0,0,0,0.35);
+  -webkit-box-shadow: 1px 3px 3px 1px rgba(0,0,0,0.35);
+  -moz-box-shadow: 1px 3px 3px 1px rgba(0,0,0,0.35);
 `;
-const Top = styled.div``;
+const Left = styled.div``;
 const Logo = styled.h1`
   text-transform: uppercase;
-  font-size: 40px;
-  letter-spacing: 8px;
-  color: white;
-  width: 100%;
+  font-size: 20px;
+  letter-spacing:4px;
+  color: bladck;
+  width: 120px;
+  text-align: center;
   text-shadow: 0 1px 0 hsl(174, 5%, 80%), 0 2px 0 hsl(174, 5%, 75%),
     0 3px 0 hsl(174, 5%, 70%), 0 4px 0 hsl(174, 5%, 66%),
     0 5px 0 hsl(174, 5%, 64%), 0 6px 0 hsl(174, 5%, 62%),
@@ -36,9 +41,8 @@ const Logo = styled.h1`
     0 3px 5px rgba(0, 0, 0, 0.2), 0 5px 10px rgba(0, 0, 0, 0.2),
     0 10px 10px rgba(0, 0, 0, 0.2), 0 20px 20px rgba(0, 0, 0, 0.3);
 `;
-const Bottom = styled.div`
+const Right = styled.div`
   width: 100%;
-  padding: 0px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -46,26 +50,24 @@ const Bottom = styled.div`
 const Navigation = styled.ul`
   flex: 1;
   display: flex;
+  justify-content: center;
 `;
 const NavItem = styled.li`
   padding: 5px 10px;
   font-size: 18px;
   font-weight: ${(props) => (props.active ? "600" : "400")};
-  background-color: ${(props) => (props.active ? "red" : "transparent")};
-  color: white;
+  color: ${(props) => (props.active ? "red" : "black")};
   border-radius: 5px;
   margin: 0px 5px;
   transition: all 0.25s ease-in;
   cursor: pointer;
-
   &:hover {
-    background-color: #333333;
+    color: red;
     font-weight: 600;
   }
 `;
 
 const BuyMenu = styled.div`
-  flex: 1;
   display: flex;
 `;
 
@@ -118,43 +120,39 @@ const Button = styled.div`
 
 const Header = () => {
   const isAuth = false;
+  const cartReducer = useSelector(state => state.cartReducer);
+  const location = useLocation();
 
   return (
     <Container>
-      <Top>
+      <Left>
         <Link to="/">
           <Logo> man shop</Logo>
         </Link>
-      </Top>
-      <Bottom>
+      </Left>
+      <Right>
         <Navigation>
           <Link to="/" className="">
-            <NavItem active={true}>Trang chủ</NavItem>
+            <NavItem active={location.pathname === "/"}>Trang chủ</NavItem>
           </Link>
           <Link to="/products" className="">
-            <NavItem>Sản phẩm</NavItem>
+            <NavItem active={location.pathname === "/products"}>Sản phẩm</NavItem>
           </Link>
           <Link to="/about-us" className="">
-            <NavItem>Giới thiệu</NavItem>
+            <NavItem active={location.pathname === "/about-us"}>Giới thiệu</NavItem>
           </Link>
           <Link to="/contact" className="">
-            <NavItem>Liên hệ</NavItem>
+            <NavItem active={location.pathname === "/contact"}>Liên hệ</NavItem>
           </Link>
         </Navigation>
         <BuyMenu>
-          <SearchContainer>
-            <Input placeholder="Tìm kiếm ..." />
-            <SearchOutlinedIcon
-              style={{
-                position: "absolute",
-                right: "10px",
-                color: "gray",
-                cursor: "pointer",
-              }}
-            />
-          </SearchContainer>
           <CartContainer>
-            <CartIcon />
+            {/* <CartIcon style={{ fontSize: "20px" }} /> */}
+            <Link to="/cart">
+              <Badge badgeContent={cartReducer.cart.length} color="primary">
+                <LocalMallOutlinedIcon color="action" />
+              </Badge>
+            </Link>
           </CartContainer>
           <AuthContainer>
             {isAuth ? (
@@ -173,7 +171,7 @@ const Header = () => {
             )}
           </AuthContainer>
         </BuyMenu>
-      </Bottom>
+      </Right>
     </Container>
   );
 };
