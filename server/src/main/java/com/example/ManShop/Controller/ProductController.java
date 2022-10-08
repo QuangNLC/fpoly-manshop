@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import com.example.ManShop.DTOS.PagePaginationResponeDTO;
 
 @RestController
 @CrossOrigin("*")
@@ -73,7 +75,13 @@ public class ProductController {
         }else{
             setpage = PageRequest.of(0, limit);
         }
-        return ResponseEntity.ok(productJPA.findAll(setpage).stream());
+        List<Product> resList = productJPA.findAll(setpage).stream().collect(Collectors.toList());
+        Integer totalItems = productJPA.findAll().stream().collect(Collectors.toList()).size()%limit == 0 ? productJPA.findAll().stream().collect(Collectors.toList()).size()/limit : productJPA.findAll().stream().collect(Collectors.toList()).size()/limit+1;
+        PagePaginationResponeDTO response = new PagePaginationResponeDTO(resList,limit,page,totalItems);
+
+//        return ResponseEntity.ok(productJPA.findAll(setpage).stream());
+        return ResponseEntity.ok(response);
+
     }
 
     @GetMapping("/category/{page}/{limit}")

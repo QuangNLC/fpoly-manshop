@@ -7,12 +7,13 @@ import Footer from '../components/Footer'
 
 const Container = styled.div`
     position: relative;
+    width: 100%;
+    overflow: hidden;
 `
 
 const Content = styled.div`
     min-height: 100vh;
-    margin-top: 180px;
-    padding:20px 50px;
+    margin-top: 80px;
     width: 100%;
 `
 

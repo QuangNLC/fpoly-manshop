@@ -10,7 +10,9 @@ import { Provider } from "react-redux";
 import rootReducer from "./redux/reducer/RootReducer";
 import { createStore } from "redux";
 import ProductDetail from "./components/Products/ProductDetail";
+import ProductDetailPage from "./pages/website/WebProductDetail";
 import Cart from "./components/Products/Cart";
+import Webcart from "./pages/website/Webcart";
 
 function App() {
   const store = createStore(rootReducer);
@@ -22,10 +24,12 @@ function App() {
           <Route path="/" element={<WebsiteLayout />}>
             <Route index element={<WebHomePage />} />
             <Route path="products" element={<WebProductList />} />
-            <Route path="cart" element={<Cart />} />
+            {/* <Route path="cart" element={<Cart />} /> */}
+            <Route path="cart" element={<Webcart />} />
             <Route path="about-us" element={<WebAboutUs />} />
             <Route path="contact" element={<WebContact />} />
             <Route path="productdetail" element={<ProductDetail />} />
+            <Route path="product/:id" element={<ProductDetailPage />} />
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Register />} />
             <Route path="*" element={<div>Trang khong ton tai</div>} />
