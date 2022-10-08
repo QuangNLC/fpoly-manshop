@@ -1,0 +1,66 @@
+export const data = [
+  {
+    maSP: 1,
+    title: "Áo thun nam đẹp thời trang",
+    desc: "Giới thiệu đến bạn chiếc áo đảm bảo sự thanh lịch mã vẫn đảm bảo được sự vừa vặn và thoải mái, Coolmate đã có những cải tiến để đem đến cho bạn chiếc áo tốt hơn đó chính là với chất liệu Cotton USA chất lượng cao. Đem đến cho bạn chiếc áo với phiên bản cải tiến hơn và trải nghiệm thực sự ổn so với những chiếc áo bạn đang mặc; và chắc chắn đây sẽ là chiếc áo đưa sự thoải mái lên hàng đầu.",
+    price: 5000,
+    image:
+      "https://image.voso.vn/users/vosoimage/images/b393673a6992e8d7b213135abcd235b7?t%5B0%5D=compress%3Alevel%3D100&accessToken=2d83bfae2c516017f2e69c03af62f67066fbdf8aedb1960b5d23807720ff0baa",
+    rating: 1,
+    size: ["S", "M", "L", "XL", "XXL"],
+    like: true,
+  },
+
+  {
+    maSP: 2,
+    title: "Áo thun nam đẹp thời trang",
+    desc: "Giới thiệu đến bạn chiếc áo đảm bảo sự thanh lịch mã vẫn đảm bảo được sự vừa vặn và thoải mái, Coolmate đã có những cải tiến để đem đến cho bạn chiếc áo tốt hơn đó chính là với chất liệu Cotton USA chất lượng cao. Đem đến cho bạn chiếc áo với phiên bản cải tiến hơn và trải nghiệm thực sự ổn so với những chiếc áo bạn đang mặc; và chắc chắn đây sẽ là chiếc áo đưa sự thoải mái lên hàng đầu.",
+    price: 5000,
+    image:
+      "https://salt.tikicdn.com/cache/w390/ts/product/7a/13/eb/f175c63359b1612d5954811c5bf95235.jpg",
+    rating: 4,
+    size: ["S", "M", "L", "XL", "XXL"],
+    like: false,
+  },
+  {
+    maSP: 3,
+    title: "Áo thun nam đẹp thời trang",
+    desc: "Giới thiệu đến bạn chiếc áo đảm bảo sự thanh lịch mã vẫn đảm bảo được sự vừa vặn và thoải mái, Coolmate đã có những cải tiến để đem đến cho bạn chiếc áo tốt hơn đó chính là với chất liệu Cotton USA chất lượng cao. Đem đến cho bạn chiếc áo với phiên bản cải tiến hơn và trải nghiệm thực sự ổn so với những chiếc áo bạn đang mặc; và chắc chắn đây sẽ là chiếc áo đưa sự thoải mái lên hàng đầu.",
+    price: 5000,
+    image:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTkb70ft5wxWec4qVcokWGCK-LO7bVbTaVF5g&usqp=CAU",
+    rating: 3,
+    size: ["S", "M", "L", "XL", "XXL"],
+    like: true,
+  },
+  {
+    maSP: 4,
+    title: "Áo thun nam đẹp thời trang",
+    desc: "Giới thiệu đến bạn chiếc áo đảm bảo sự thanh lịch mã vẫn đảm bảo được sự vừa vặn và thoải mái, Coolmate đã có những cải tiến để đem đến cho bạn chiếc áo tốt hơn đó chính là với chất liệu Cotton USA chất lượng cao. Đem đến cho bạn chiếc áo với phiên bản cải tiến hơn và trải nghiệm thực sự ổn so với những chiếc áo bạn đang mặc; và chắc chắn đây sẽ là chiếc áo đưa sự thoải mái lên hàng đầu.",
+    price: 5000,
+    image: "https://cf.shopee.vn/file/c76ab1719aa077096a4258d507cecbd2",
+    rating: 5,
+    size: ["S", "M", "L", "XL", "XXL"],
+    like: false,
+  },
+  {
+    maSP: 5,
+    title: "Áo thun nam đẹp thời trang",
+    desc: "Giới thiệu đến bạn chiếc áo đảm bảo sự thanh lịch mã vẫn đảm bảo được sự vừa vặn và thoải mái, Coolmate đã có những cải tiến để đem đến cho bạn chiếc áo tốt hơn đó chính là với chất liệu Cotton USA chất lượng cao. Đem đến cho bạn chiếc áo với phiên bản cải tiến hơn và trải nghiệm thực sự ổn so với những chiếc áo bạn đang mặc; và chắc chắn đây sẽ là chiếc áo đưa sự thoải mái lên hàng đầu.",
+    price: 5000,
+    image: "https://cf.shopee.vn/file/81483638a7b97a527318d640a4af4690",
+    rating: 4,
+    size: ["S", "M", "L", "XL", "XXL"],
+    like: true,
+  },
+  {
+    maSP: 6,
+    title: "Áo thun nam đẹp thời trang",
+    desc: "Giới thiệu đến bạn chiếc áo đảm bảo sự thanh lịch mã vẫn đảm bảo được sự vừa vặn và thoải mái, Coolmate đã có những cải tiến để đem đến cho bạn chiếc áo tốt hơn đó chính là với chất liệu Cotton USA chất lượng cao. Đem đến cho bạn chiếc áo với phiên bản cải tiến hơn và trải nghiệm thực sự ổn so với những chiếc áo bạn đang mặc; và chắc chắn đây sẽ là chiếc áo đưa sự thoải mái lên hàng đầu.",
+    price: 5000,
+    image: "https://cf.shopee.vn/file/6a5af06403fb163be62eaaa98d4e8afd",
+    rating: 2,
+    size: ["S", "M", "L", "XL", "XXL"],
+    like: false,
+  },
+];
