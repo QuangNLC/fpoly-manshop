@@ -75,23 +75,21 @@ public class OrderContoller {
     }
     @PostMapping("/checkout/{check}")
     public ResponseEntity<?> checkOUT(@RequestBody OrderRequestDTO orderRequest,@PathVariable("check") String check){
-
         log.info("Gọi vào quá trình CHECK OUT ");
         Orders newOrder = new Orders();
         Users user = new Users();
         user.setUsername(orderRequest.getUsers().getUsername());
-
-    if(check.equals("for-someone")){
+        if(check.equals("for-someone")){
         Customers customers  = new Customers();
         customers.setCustomerInfor(orderRequest.getCustomers().getCustomerInfor());
         customers.setAddress(orderRequest.getCustomers().getAddress());
         customers.setPhone(orderRequest.getCustomers().getPhone());
         customers.setUser(orderRequest.getUsers());
-         customerJPA.save(customers);
+        customerJPA.save(customers);
         newOrder.setCustomers(customers);
-    }if(check.equals("for-me")){
+        }if(check.equals("for-me")){
         newOrder.setCustomers(null);
-    }else {
+        }else {
         return ResponseEntity.ok("not found");
         }
         StatusOrder sttOrder = new StatusOrder();
