@@ -8,7 +8,7 @@ import ArrowRightTwoToneIcon from '@mui/icons-material/ArrowRightTwoTone';
 
 const Container = styled.div`
     width: 100%;
-    height: 75vh;
+    height: 85vh;
     display: flex;
     overflow: hidden;
 `
@@ -18,7 +18,7 @@ const Wrapper = styled.div`
     display: flex;
     flex-direction: row;
     transition: all 1s ease-in;
-    transform: translateX(calc(-${props => props.currIndex}*(100vw - 100px)));
+    transform: translateX(-${props => props.currIndex * 100}vw);
 `
 
 const ArrowLeft = styled.div`
@@ -66,7 +66,7 @@ const ArrowRight = styled.div`
 
 
 const Slide = styled.div`
-    width:calc(100vw - 100px);
+    width:100vw;
     height: 75vh;
     position: relative;
     position: relative;

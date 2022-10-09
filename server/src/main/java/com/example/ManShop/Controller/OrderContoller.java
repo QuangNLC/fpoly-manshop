@@ -22,6 +22,15 @@ import java.util.List;
 @CrossOrigin("*")
 @RequestMapping("/api/order")
 public class OrderContoller {
+
+//    @Autowired
+//    UserJPA userJPA;
+//    @Autowired
+//    CustomerJPA customerJPA;
+//    @Autowired
+//    OrderDetailJPA orderDetailJPA;
+//    @Autowired
+//    OrderJPA orderJPA;
     private final Logger log = LoggerFactory.getLogger(OrderContoller.class);
     final
     UserJPA userJPA;
@@ -40,6 +49,8 @@ public class OrderContoller {
     }
 
 
+//    @GetMapping("/all")
+//    public ResponseEntity
     @GetMapping("/all")
     public ResponseEntity<?> getall(){
         log.info("gọi vào hàm tìm kiếm tất cả các order");

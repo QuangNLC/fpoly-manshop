@@ -2,6 +2,11 @@ import sliderImg1 from '../imgs/slider-img-1.jpg'
 import sliderImg2 from '../imgs/slider-img-2.jpg'
 import sliderImg3 from '../imgs/slider-img-3.jpg'
 
+import prImg1 from '../imgs/product-img-1.jpg'
+import prImg2 from '../imgs/product-img-2.jpg'
+import prImg3 from '../imgs/product-img-3.jpg'
+import prImg4 from '../imgs/product-img-4.jpg'
+
 export const sliderData = [
     {
         id: 1,
@@ -25,3 +30,135 @@ export const sliderData = [
         desc: 'cá tính'
     }
 ]
+
+export const productData = [
+    {
+        id: 1,
+        img: prImg1,
+        name: "T-SHIRT WHITE",
+        import_price: 300000,
+        productsizes: [
+            {
+                "id": 1,
+                "quantity": 1,
+                "size": {
+                    "id": 4,
+                    "title": "XXL"
+                }
+            },
+            {
+                "id": 2,
+                "quantity": 2,
+                "size": {
+                    "id": 5,
+                    "title": "40"
+                }
+            },
+            {
+                "id": 3,
+                "quantity": 3,
+                "size": {
+                    "id": 6,
+                    "title": "41"
+                }
+            }
+        ]
+    },
+    {
+        id: 2,
+        img: prImg2,
+        name: "T-SHIRT WHITE",
+        import_price: 300000,
+        productsizes: [
+            {
+                "id": 1,
+                "quantity": 1,
+                "size": {
+                    "id": 4,
+                    "title": "XXL"
+                }
+            },
+            {
+                "id": 2,
+                "quantity": 2,
+                "size": {
+                    "id": 5,
+                    "title": "40"
+                }
+            },
+            {
+                "id": 3,
+                "quantity": 3,
+                "size": {
+                    "id": 6,
+                    "title": "41"
+                }
+            }
+        ]
+    },
+    {
+        id: 3,
+        img: prImg3,
+        name: "T-SHIRT WHITE",
+        import_price: 300000,
+        productsizes: [
+            {
+                "id": 1,
+                "quantity": 1,
+                "size": {
+                    "id": 4,
+                    "title": "XXL"
+                }
+            },
+            {
+                "id": 2,
+                "quantity": 2,
+                "size": {
+                    "id": 5,
+                    "title": "40"
+                }
+            },
+            {
+                "id": 3,
+                "quantity": 3,
+                "size": {
+                    "id": 6,
+                    "title": "41"
+                }
+            }
+        ]
+    },
+    {
+        id: 4,
+        img: prImg4,
+        name: "T-SHIRT WHITE",
+        import_price: 300000,
+        productsizes: [
+            {
+                "id": 1,
+                "quantity": 1,
+                "size": {
+                    "id": 4,
+                    "title": "XXL"
+                }
+            },
+            {
+                "id": 2,
+                "quantity": 2,
+                "size": {
+                    "id": 5,
+                    "title": "40"
+                }
+            },
+            {
+                "id": 3,
+                "quantity": 3,
+                "size": {
+                    "id": 6,
+                    "title": "41"
+                }
+            }
+        ]
+    }
+]
+
