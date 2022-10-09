@@ -151,14 +151,14 @@ const Register = () => {
                 </div>
                 <div className="checkbox-btn">
                   <label className="anim">
-                    <input type="checkbox" classname="checkbox" required />
+                    <input type="checkbox" className="checkbox" required />
                     <span>
                       {" "}
                       Tôi đồng ý với <b>điều khoản và điều kiện thành viên</b>
                     </span>
                   </label>
                   <label className="anim">
-                    <input type="checkbox" classname="checkbox" required />
+                    <input type="checkbox" className="checkbox" required />
                     <span>
                       Gửi email cho tôi ưu đãi và lời mời đặc biệt cho đợt giảm
                       giá và sự kiện

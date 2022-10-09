@@ -121,7 +121,7 @@ public class OrderContoller {
             detail.setOrders(orderForDetail);
             orderDetailJPA.save(detail);
         });
-        return ResponseEntity.ok().body("tao don hang thanh cong");
+        return ResponseEntity.ok().body("tao don hang thanh cong" + responseOrder.getId());
     }
 
     @GetMapping("/my-order/{username}/{page}/{limit}")

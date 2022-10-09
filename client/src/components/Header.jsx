@@ -149,9 +149,20 @@ const Header = () => {
           <CartContainer>
             {/* <CartIcon style={{ fontSize: "20px" }} /> */}
             <Link to="/cart">
-              <Badge badgeContent={cartReducer.cart.length} color="primary">
-                <LocalMallOutlinedIcon color="action" />
-              </Badge>
+              {
+                cartReducer.cart ? (
+                  <Badge badgeContent={cartReducer.cart.length} color="primary">
+                    <LocalMallOutlinedIcon color="action" />
+                  </Badge>
+                )
+                  :
+                  (
+                    <Badge badgeContent={0} color="primary">
+                      <LocalMallOutlinedIcon color="action" />
+                    </Badge>
+                  )
+              }
+
             </Link>
           </CartContainer>
           <AuthContainer>
@@ -172,7 +183,7 @@ const Header = () => {
           </AuthContainer>
         </BuyMenu>
       </Right>
-    </Container>
+    </Container >
   );
 };
 

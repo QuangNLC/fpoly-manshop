@@ -151,7 +151,7 @@ const Webcart = () => {
     const dispatch = useDispatch();
 
     const hanldleCheckout = () => {
-        if (cartReducer.cart.length > 0) {
+        if (cartReducer.cart && cartReducer.cart.length > 0) {
             let payload = {
                 "users": {
                     "username": "vanteo"
@@ -214,6 +214,12 @@ const Webcart = () => {
             }
             dispatch(action);
         }
+    }   
+    const handleClearCart = () => {
+        let action = {
+            type : "CLEAR_CART"
+        };
+        dispatch(action);
     }
 
 
@@ -225,9 +231,8 @@ const Webcart = () => {
                 <Wrapper>
                     <Title>Giỏ Hàng</Title>
                     <Top>
-                        <TopButton>Mua Sắm</TopButton>
+                        <TopButton onClick={() => {handleClearCart()}}>Xóa Giỏ Hàng</TopButton>
                         <TopTexts>
-                            <TopText>Số sản phẩm(2)</TopText>
                             <TopText>Danh sách yêu thích</TopText>
                         </TopTexts>
                         <TopButton type='filled'>Đặt Hàng Ngay</TopButton>
@@ -235,7 +240,7 @@ const Webcart = () => {
                     <Bottom>
                         <Info>
                             {
-                                cartReducer.cart.map((item, index) => {
+                                cartReducer.cart && cartReducer.cart.length > 0 &&  cartReducer.cart.map((item, index) => {
                                     return (
                                         <Product key={index}>
                                             <ProductDetail>
@@ -277,15 +282,15 @@ const Webcart = () => {
                             <SummaryTitle>Thông Tin Hóa Đơn</SummaryTitle>
                             <SummaryItem>
                                 <SummaryItemText>Tổng tiền</SummaryItemText>
-                                <SummaryItemPrice>{formatter.format(cartReducer.cart.reduce((total, item) => { return total + item.quantity * item.price }, 0))}</SummaryItemPrice>
+                                <SummaryItemPrice>{cartReducer.cart  && formatter.format(cartReducer.cart.reduce((total, item) => { return total + item.quantity * item.price }, 0))}</SummaryItemPrice>
                             </SummaryItem>
                             <SummaryItem>
                                 <SummaryItemText>VAT</SummaryItemText>
-                                <SummaryItemPrice>{formatter.format(cartReducer.cart.reduce((total, item) => { return total + item.quantity * item.price }, 0) * 0.1)}</SummaryItemPrice>
+                                <SummaryItemPrice>{cartReducer.cart  && formatter.format(cartReducer.cart.reduce((total, item) => { return total + item.quantity * item.price }, 0) * 0.1)}</SummaryItemPrice>
                             </SummaryItem>
                             <SummaryItem type="total">
                                 <SummaryItemText>Thanh toán</SummaryItemText>
-                                <SummaryItemPrice>{formatter.format(cartReducer.cart.reduce((total, item) => { return total + item.quantity * item.price }, 0) * 1.1)}</SummaryItemPrice>
+                                <SummaryItemPrice>{cartReducer.cart  && formatter.format(cartReducer.cart.reduce((total, item) => { return total + item.quantity * item.price }, 0) * 1.1)}</SummaryItemPrice>
                             </SummaryItem>
                             <Button onClick={hanldleCheckout}>Đặt Hàng Ngay</Button>
                         </Summary>

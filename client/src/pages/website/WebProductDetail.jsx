@@ -16,6 +16,7 @@ const Wrapper = styled.div`
 `
 const ImageContainer = styled.div`
     flex: 1;
+    width : 50%;
 `
 const Image = styled.img`
     width: 100%;
@@ -102,6 +103,26 @@ const Button = styled.button`
         background-color: #f8f4f4;
     }
 `
+const ShowedImage = styled.div``
+
+const PreviewImageList = styled.div`
+    width: 100%;
+`
+const ImageList = styled.ul`
+    width: 100%;
+    display: flex;
+    overflow-x: scroll;
+`
+const ImageListItem = styled.li`
+    width: 120px;
+    height: 180px;
+    margin: 0px 10px;
+`
+const ImageListDetail = styled.img`
+    width: 100%;
+    height: 100%;
+    object-fit:cover;    
+`
 
 const ProductDetail = () => {
     const { id } = useParams();
@@ -109,15 +130,16 @@ const ProductDetail = () => {
     const [product, setProduct] = useState(null);
     const [selectedSize, setSelectedSize] = useState(null);
     const [selectedQuantity, setSelectedQuantity] = useState(1);
+
     const dispatch = useDispatch();
 
     const handleAddToCart = (product) => {
         const action = {
             type: "ADD_TO_CART",
-            payload:{
+            payload: {
                 size: selectedSize,
                 quantity: selectedQuantity,
-                price : product.import_price,
+                price: product.import_price,
                 product: {
                     id: product.id,
                     name: product.name
@@ -131,7 +153,7 @@ const ProductDetail = () => {
         setSelectedSize(e.target.value)
     }
 
-    
+
 
     useEffect(() => {
         setIsLoading(true)
@@ -162,9 +184,26 @@ const ProductDetail = () => {
                             ) :
                             (
                                 <>
-                                <ImageContainer>
-                                    <Image src={product?.images[0]?.photo  || "https://i.ibb.co/S6qMxwr/jean.jpg"} />
-                                </ImageContainer>
+                                    <ImageContainer>
+                                        <ShowedImage>
+                                            <Image src={product?.images[0]?.photo || "https://i.ibb.co/S6qMxwr/jean.jpg"} />
+                                        </ShowedImage>
+                                        <PreviewImageList>
+                                            <ImageList>
+                                                {
+                                                    product.images && product.images.map((item, index) => {
+                                                        return (
+                                                            <ImageListItem key={index}>
+                                                                <ImageListDetail src={item.photo || "https://i.ibb.co/S6qMxwr/jean.jpg"} />
+                                                            </ImageListItem>
+                                                        )
+                                                    })
+                                                }
+
+                                            </ImageList>
+                                        </PreviewImageList>
+                                    </ImageContainer>
+
                                     <InfoContainer>
                                         <Title>{product?.name}</Title>
                                         <Rating>
@@ -175,7 +214,7 @@ const ProductDetail = () => {
                                         <FilterContainer>
                                             <Filter>
                                                 <FilterTitle>Size</FilterTitle>
-                                                <FilterSize  onChange={hanleChangeSize}>
+                                                <FilterSize onChange={hanleChangeSize}>
                                                     {
                                                         product?.productsizes.map(item => (
                                                             <React.Fragment key={item.id}>
@@ -188,11 +227,11 @@ const ProductDetail = () => {
                                         </FilterContainer>
                                         <AddContainer>
                                             <AmountContainer>
-                                                <Remove onClick={() => {setSelectedQuantity(selectedQuantity > 0 ? selectedQuantity - 1 : 0)}}/>
+                                                <Remove onClick={() => { setSelectedQuantity(selectedQuantity > 0 ? selectedQuantity - 1 : 0) }} />
                                                 <Amount>{selectedQuantity}</Amount>
-                                                <Add onClick={() => {setSelectedQuantity(selectedQuantity + 1)}}/>
+                                                <Add onClick={() => { setSelectedQuantity(selectedQuantity + 1) }} />
                                             </AmountContainer>
-                                            <Button onClick={() => {handleAddToCart(product)}}>ADD TO CART</Button>
+                                            <Button onClick={() => { handleAddToCart(product) }}>ADD TO CART</Button>
                                         </AddContainer>
                                     </InfoContainer></>
                             )
