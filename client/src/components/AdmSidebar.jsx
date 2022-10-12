@@ -84,8 +84,8 @@ const AdmSidebar = () => {
                 <Menu>
                     <Title>Quicl Mune</Title>
                     <List>
-                        <Link to="/admin/userlist" style={{ textDecoration: "none", color: "unset" }}>
-                            <Item active={location.pathname === "/admin/userlist"}>
+                        <Link to="/admin/user-list" style={{ textDecoration: "none", color: "unset" }}>
+                            <Item active={location.pathname === "/admin/user-list"}>
                                 <PermIdentityIcon style={{ fontSize: "20px" }} />
                                 <ItemText>
                                     Users

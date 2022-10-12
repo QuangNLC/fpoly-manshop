@@ -15,6 +15,9 @@ import Cart from "./components/Products/Cart";
 import Webcart from "./pages/website/Webcart";
 import AdminLayout from "./layout/AdminLayout";
 import AdmDashboard from "./pages/admin/AdmDashboard";
+import AdmUserList from "./pages/admin/AdmUserList";
+import AdmNewUser from "./pages/admin/AdmNewUser";
+import AdmUserDetail from "./pages/admin/AdmUserDetail";
 
 function App() {
   const store = createStore(rootReducer);
@@ -38,6 +41,9 @@ function App() {
           </Route>
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdmDashboard />} />
+            <Route path="user-list" element={<AdmUserList />} />
+            <Route path="new-user" element={<AdmNewUser />} />
+            <Route path="user/:userId" element={<AdmUserDetail />} />
             <Route path="*" element={<div>Trang khong ton tai</div>} />
           </Route>
         </Routes>
