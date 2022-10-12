@@ -100,8 +100,6 @@ public class OrderContoller {
         newOrder.setCustomers(customers);
         }if(check.equals("for-me")){
         newOrder.setCustomers(null);
-        }else {
-        return ResponseEntity.ok("not found");
         }
         StatusOrder sttOrder = new StatusOrder();
         sttOrder.setId(1);
@@ -119,7 +117,7 @@ public class OrderContoller {
             detail.setOrders(orderForDetail);
             orderDetailJPA.save(detail);
         });
-        return ResponseEntity.ok().body("tao don hang thanh cong");
+        return ResponseEntity.ok().body("tao don hang thanh cong voi (id)= " +responseOrder.getId());
     }
 
     @GetMapping("/my-order/{username}/{page}/{limit}")

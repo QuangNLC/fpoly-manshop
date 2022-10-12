@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 public interface UserJPA extends JpaRepository<Users,String> {
     Page<Users> findAll(Pageable pageable);
+    Boolean existsByEmail(String email);
 }
 //@EnableJpaRepositories
 //public interface UserJPA extends JpaRepository<Users,String> {

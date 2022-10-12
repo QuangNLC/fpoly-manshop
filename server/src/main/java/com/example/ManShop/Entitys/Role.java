@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -18,7 +19,7 @@ public class Role {
     @Column(name = "rolename")
     private String rolename;
     @JsonIgnore
-    @ManyToOne @JoinColumn(name ="username" )
-    private Users users;
+    @OneToMany(mappedBy = "roles")
+    private List<Users> users;
 
 }

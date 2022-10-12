@@ -29,9 +29,12 @@ public class Users {
     @Column(name = "verificode", length = 64)
     @JsonIgnore
     private String verificode;
-
-    @OneToMany(mappedBy = "users")
-    private List<Role> roles;
+    @Column(name = "password")
+    @JsonIgnore
+    private String password;
+    @ManyToOne
+    @JoinColumn(name = "role")
+    private Role roles;
     @JsonIgnore
     @OneToMany(mappedBy = "users")
     private List<CartItem> cartItems;
