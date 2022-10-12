@@ -162,3 +162,56 @@ export const productData = [
     }
 ]
 
+
+export const userStatsData = [
+
+    {
+      name: 'January',
+      activeUser: 2400,
+    },
+    {
+      name: 'Februay',
+      activeUser: 1398,
+    },
+    {
+      name: 'March',
+      activeUser: 2800,
+    },
+    {
+      name: 'April',
+      activeUser: 3908,
+    },
+    {
+      name: 'May',
+      activeUser: 4800,
+    },
+    {
+      name: 'June',
+      activeUser: 3800,
+    },
+    {
+      name: 'July',
+      activeUser: 4300,
+    },
+    {
+      name: 'August',
+      activeUser: 5208,
+    },
+    {
+      name: 'September',
+      activeUser: 5337,
+    },
+    {
+      name: 'October',
+      activeUser: 5340,
+    },
+    {
+      name: 'November',
+      activeUser: 5559,
+    },
+    {
+      name: 'December',
+      activeUser: 6110,
+    }
+  ];
+

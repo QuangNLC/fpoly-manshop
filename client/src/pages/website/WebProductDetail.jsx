@@ -142,7 +142,8 @@ const ProductDetail = () => {
                 price: product.import_price,
                 product: {
                     id: product.id,
-                    name: product.name
+                    name: product.name,
+                    img: product.images[0] && product.images[0].photo
                 }
             }
         }

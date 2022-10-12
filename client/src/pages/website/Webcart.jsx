@@ -222,6 +222,7 @@ const Webcart = () => {
         dispatch(action);
     }
 
+    console.log(cartReducer.cart)
 
     return (
         <Helmet

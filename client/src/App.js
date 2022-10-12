@@ -13,6 +13,8 @@ import ProductDetail from "./components/Products/ProductDetail";
 import ProductDetailPage from "./pages/website/WebProductDetail";
 import Cart from "./components/Products/Cart";
 import Webcart from "./pages/website/Webcart";
+import AdminLayout from "./layout/AdminLayout";
+import AdmDashboard from "./pages/admin/AdmDashboard";
 
 function App() {
   const store = createStore(rootReducer);
@@ -32,6 +34,10 @@ function App() {
             <Route path="product/:id" element={<ProductDetailPage />} />
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Register />} />
+            <Route path="*" element={<div>Trang khong ton tai</div>} />
+          </Route>
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdmDashboard />} />
             <Route path="*" element={<div>Trang khong ton tai</div>} />
           </Route>
         </Routes>
