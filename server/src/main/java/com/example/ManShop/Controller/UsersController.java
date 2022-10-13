@@ -10,10 +10,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.websocket.server.PathParam;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/users")
+@CrossOrigin("*")
+@RequestMapping("/api/users")
 public class UsersController {
 
     private final Logger log = LoggerFactory.getLogger(ProductController.class);
@@ -27,8 +29,8 @@ public class UsersController {
         return ResponseEntity.ok(userJPA.findAll());
     }
 
-    @GetMapping("/{username}")
-    public ResponseEntity<?> getUserById(@PathVariable("username") String username) {
+    @GetMapping()
+    public ResponseEntity<?> getUserById(@PathParam("username") String username) {
         if(!userJPA.existsById(username)) {
             log.error("không thấy tài khoản" + username);
             return ResponseEntity.notFound().build();
@@ -63,5 +65,22 @@ public class UsersController {
         userJPA.save(users);
         log.info("cập nhật tài khoản thành công " +username);
         return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping()
+    public ResponseEntity<Void> delete(@PathParam("username") String username){
+        Optional<Users> usersOptional = userJPA.findById(username);
+        if (usersOptional.isEmpty()) {
+            log.error("không thấy tài khoản" + username);
+            return ResponseEntity.notFound().build();
+        }
+        try{
+            userJPA.deleteById(username);
+            log.info("xoa' tài khoản thành công ");
+            return ResponseEntity.ok().build();
+        }catch(Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+
     }
 }

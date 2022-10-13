@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import PermIdentityOutlinedIcon from '@mui/icons-material/PermIdentityOutlined';
 import CalendarTodayOutlinedIcon from '@mui/icons-material/CalendarTodayOutlined';
@@ -6,7 +6,9 @@ import PhoneAndroidOutlinedIcon from '@mui/icons-material/PhoneAndroidOutlined';
 import LocationSearchingOutlinedIcon from '@mui/icons-material/LocationSearchingOutlined';
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 import PublishIcon from '@mui/icons-material/Publish';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
+import usersAPI from '../../api/usersAPI';
+import defaultAvt from '../../assets/imgs/default-avt.jpg';
 
 const Container = styled.div`
     width: 100%;
@@ -145,12 +147,30 @@ const UpdateButton = styled.button`
 `
 
 const AdmUserDetail = () => {
+    const { username } = useParams();
+    const [isLoading, setIsLoading] = useState(true)
+    const [user, setUser] = useState(null)
+
+
+    useEffect(() => {
+        console.log(username);
+        usersAPI.getUser(username)
+            .then(res => {
+                console.log(res);
+                setUser(res);
+                setIsLoading(false)
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    }, [username])
+
     return (
         <Container>
             <UserTitleContainer>
                 <UserTitle>Edit User</UserTitle>
                 <UserTitleButtonContainer>
-                    <Link to="/admin/user-list" style={{marginRight: "20px"}}>
+                    <Link to="/admin/user-list" style={{ marginRight: "20px" }}>
                         <UserTitleButton>List User</UserTitleButton>
                     </Link>
                     <Link to="/admin/new-user">
@@ -158,76 +178,90 @@ const AdmUserDetail = () => {
                     </Link>
                 </UserTitleButtonContainer>
             </UserTitleContainer>
-            <UserContainer>
-                <UserShow>
-                    <UserShowTop>
-                        <UserShowTopImg src="https://images.pexels.com/photos/1152994/pexels-photo-1152994.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500" alt="" />
-                        <UserShowTopTitle>
-                            <UserShowTopUsername>Anna Becker</UserShowTopUsername>
-                            <UserShowTopUserTitle>Software Engineer</UserShowTopUserTitle>
-                        </UserShowTopTitle>
-                    </UserShowTop>
-                    <UserShowBottom>
-                        <UserShowTitle>Account Details</UserShowTitle>
-                        <UserShowInfo>
-                            <UserShowInfoIcon><PermIdentityOutlinedIcon /></UserShowInfoIcon>
-                            <UserShowInfoTitle>annabeck99</UserShowInfoTitle>
-                        </UserShowInfo>
-                        <UserShowInfo>
-                            <UserShowInfoIcon><CalendarTodayOutlinedIcon /></UserShowInfoIcon>
-                            <UserShowInfoTitle>10.12.1999</UserShowInfoTitle>
-                        </UserShowInfo>
-                        <UserShowTitle>Contact Details</UserShowTitle>
-                        <UserShowInfo>
-                            <UserShowInfoIcon><PhoneAndroidOutlinedIcon /></UserShowInfoIcon>
-                            <UserShowInfoTitle>+1 123 345 67</UserShowInfoTitle>
-                        </UserShowInfo>
-                        <UserShowInfo>
-                            <UserShowInfoIcon><EmailOutlinedIcon /></UserShowInfoIcon>
-                            <UserShowInfoTitle>annabeck99@gmail.com</UserShowInfoTitle>
-                        </UserShowInfo>
-                        <UserShowInfo>
-                            <UserShowInfoIcon><LocationSearchingOutlinedIcon /></UserShowInfoIcon>
-                            <UserShowInfoTitle>New York | USA</UserShowInfoTitle>
-                        </UserShowInfo>
-                    </UserShowBottom>
-                </UserShow>
-                <UserUpdate>
-                    <UserUpdateTitle>Edit</UserUpdateTitle>
-                    <UserUpdateForm>
-                        <UserUpdateLeft>
-                            <UserUpdateItem>
-                                <ItemLabel>Username</ItemLabel>
-                                <ItemInput placeholder='annabeck99' type="text" />
-                            </UserUpdateItem>
-                            <UserUpdateItem>
-                                <ItemLabel>Full Name</ItemLabel>
-                                <ItemInput placeholder='Anna Becker' type="text" />
-                            </UserUpdateItem>
-                            <UserUpdateItem>
-                                <ItemLabel>Email</ItemLabel>
-                                <ItemInput placeholder='annabeck99@gmail.com' type="text" />
-                            </UserUpdateItem>
-                            <UserUpdateItem>
-                                <ItemLabel>Phone</ItemLabel>
-                                <ItemInput placeholder='+1 123 345 67' type="text" />
-                            </UserUpdateItem>
-                            <UserUpdateItem>
-                                <ItemLabel>Adress</ItemLabel>
-                                <ItemInput placeholder='New York | USA' type="text" />
-                            </UserUpdateItem>
-                        </UserUpdateLeft>
-                        <UserUpdateRight>
-                            <UserUpdateUpload>
-                                <UserUpdateUploadImg src={"https://images.pexels.com/photos/1152994/pexels-photo-1152994.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"} alt="" />
-                                <UserUpdateUploadLabel htmlFor='file'><PublishIcon style={{ cursor: "pointer" }} /></UserUpdateUploadLabel>
-                                <UserUpdateUploadInput type={"file"} id="file" />
-                            </UserUpdateUpload>
-                            <UpdateButton>Update</UpdateButton>
-                        </UserUpdateRight>
-                    </UserUpdateForm>
-                </UserUpdate>
-            </UserContainer>
+            {
+                isLoading ?
+                    (
+                        <>
+                            Loading...
+                        </>
+                    )
+                    :
+                    (
+                        <>
+                            {user &&
+                                <UserContainer>
+                                    <UserShow>
+                                        <UserShowTop>
+                                            <UserShowTopImg src={user.photoImg || defaultAvt} alt="" />
+                                            <UserShowTopTitle>
+                                                <UserShowTopUsername>{user.fullname}</UserShowTopUsername>
+                                            </UserShowTopTitle>
+                                        </UserShowTop>
+                                        <UserShowBottom>
+                                            <UserShowTitle>Account Details</UserShowTitle>
+                                            <UserShowInfo>
+                                                <UserShowInfoIcon><PermIdentityOutlinedIcon /></UserShowInfoIcon>
+                                                <UserShowInfoTitle>{user.username}</UserShowInfoTitle>
+                                            </UserShowInfo>
+                                            <UserShowInfo>
+                                                <UserShowInfoIcon><CalendarTodayOutlinedIcon /></UserShowInfoIcon>
+                                                <UserShowInfoTitle>10.12.1999</UserShowInfoTitle>
+                                            </UserShowInfo>
+                                            <UserShowTitle>Contact Details</UserShowTitle>
+                                            <UserShowInfo>
+                                                <UserShowInfoIcon><PhoneAndroidOutlinedIcon /></UserShowInfoIcon>
+                                                <UserShowInfoTitle>{user.phone}</UserShowInfoTitle>
+                                            </UserShowInfo>
+                                            <UserShowInfo>
+                                                <UserShowInfoIcon><EmailOutlinedIcon /></UserShowInfoIcon>
+                                                <UserShowInfoTitle>{user.email}</UserShowInfoTitle>
+                                            </UserShowInfo>
+                                            <UserShowInfo>
+                                                <UserShowInfoIcon><LocationSearchingOutlinedIcon /></UserShowInfoIcon>
+                                                <UserShowInfoTitle>New York | USA</UserShowInfoTitle>
+                                            </UserShowInfo>
+                                        </UserShowBottom>
+                                    </UserShow>
+                                    <UserUpdate>
+                                        <UserUpdateTitle>Edit</UserUpdateTitle>
+                                        <UserUpdateForm>
+                                            <UserUpdateLeft>
+                                                <UserUpdateItem>
+                                                    <ItemLabel>Username</ItemLabel>
+                                                    <ItemInput placeholder='annabeck99' type="text" disabled/>
+                                                </UserUpdateItem>
+                                                <UserUpdateItem>
+                                                    <ItemLabel>Full Name</ItemLabel>
+                                                    <ItemInput placeholder={user.fullname} type="text" />
+                                                </UserUpdateItem>
+                                                <UserUpdateItem>
+                                                    <ItemLabel>Email</ItemLabel>
+                                                    <ItemInput placeholder={user.email} type="email" />
+                                                </UserUpdateItem>
+                                                <UserUpdateItem>
+                                                    <ItemLabel>Phone</ItemLabel>
+                                                    <ItemInput placeholder={user.phone} type="text" />
+                                                </UserUpdateItem>
+                                                <UserUpdateItem>
+                                                    <ItemLabel>Adress</ItemLabel>
+                                                    <ItemInput placeholder='New York | USA' type="text" />
+                                                </UserUpdateItem>
+                                            </UserUpdateLeft>
+                                            <UserUpdateRight>
+                                                <UserUpdateUpload>
+                                                    <UserUpdateUploadImg src={user.photoImg || defaultAvt} alt="" />
+                                                    <UserUpdateUploadLabel htmlFor='file'><PublishIcon style={{ cursor: "pointer" }} /></UserUpdateUploadLabel>
+                                                    <UserUpdateUploadInput type={"file"} id="file" />
+                                                </UserUpdateUpload>
+                                                <UpdateButton>Update</UpdateButton>
+                                            </UserUpdateRight>
+                                        </UserUpdateForm>
+                                    </UserUpdate>
+                                </UserContainer>
+                            }
+                        </>
+                    )
+            }
         </Container>
     )
 }

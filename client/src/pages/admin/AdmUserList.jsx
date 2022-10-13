@@ -1,9 +1,13 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { userRows } from '../../assets/data/data';
 import { DataGrid } from '@mui/x-data-grid';
 import { Link } from 'react-router-dom';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import usersAPI from '../../api/usersAPI';
+import defaultAvt from '../../assets/imgs/default-avt.jpg';
+import DialogHOC from '../../hoc/DialogHOC';
+
 
 const Container = styled.div`
     width: 100%;
@@ -88,37 +92,85 @@ const DeleteButton = styled.button`
     }
 `
 
-const columns = [
-    { field: 'id', headerName: 'ID', width: 70 },
-    {
-        field: 'username', headerName: 'Username', width: 200,
-        renderCell: (params) => (
-            <UserContainer>
-                <UserImg src={params.row.avatar} alt="" />
-                {params.row.username}
-            </UserContainer>
-        )
-    },
-    { field: 'email', headerName: 'Email', width: 200 },
-    { field: 'status', headerName: 'Status', width: 120, },
-    { field: 'transaction', headerName: 'Transaction Volumne', width: 160 },
-    {
-        field: 'action', header: "Action", width: 250,
-        renderCell: (params) => (
-            <ActionContainer>
-                <Link to={"/admin/user/" + params.row.id}>
-                    <EditButton>Edit</EditButton>
-                </Link>
-                <DeleteButton>
-                    <DeleteOutlineOutlinedIcon style={{ fontSize: "20px" }} />
-                </DeleteButton>
-            </ActionContainer>
-        )
-    }
-];
+
+
 
 
 const AdmUserList = () => {
+    const [isLoading, setIsLoading] = useState(true);
+    const [data, setData] = useState([]);
+    const [isModal, setIsModal] = useState(false);
+
+    const findIndexInArrByUsername = (arr, username) => {
+        let result = -1;
+
+        arr.forEach((item, index) => {
+            if (item.username === username) {
+                result = index;
+            };
+        });
+
+        return result;
+    }
+
+    const columns = [
+        {
+            field: 'username', headerName: 'Username', width: 200,
+            renderCell: (params) => (
+                <UserContainer>
+                    <UserImg src={params.row.photoImg ? params.row.avatar : defaultAvt} alt="" />
+                    {params.row.username}
+                </UserContainer>
+            )
+        },
+        { field: 'email', headerName: 'Email', width: 200 },
+        { field: 'activated', headerName: 'Activated', width: 120, },
+        { field: 'phone', headerName: 'Phone', width: 120, },
+        {
+            field: 'action', headerName: "Action", width: 250,
+            renderCell: (params) => (
+                <ActionContainer>
+                    <Link to={"/admin/user/" + params.row.username}>
+                        <EditButton>Edit</EditButton>
+                    </Link>
+                    <DialogHOC title="Confirm Dialog" content="Do you want to delete this user?" onYes={() => { hadleDeleteUser(params.row.username) }}>
+                        <DeleteButton>
+                            <DeleteOutlineOutlinedIcon style={{ fontSize: "20px" }} />
+                        </DeleteButton>
+                    </DialogHOC>
+                </ActionContainer>
+            )
+        }
+    ];
+
+    const hadleDeleteUser = (username) => {
+        usersAPI.deleteUser(username)
+            .then(res => {
+                const index = findIndexInArrByUsername(data, username);
+                setData(data.filter((item, crrIndex) => {
+                    if(crrIndex !== index){
+                        return item;
+                    }
+                }));
+            })
+            .catch(err => console.log(err));
+    };
+
+    useEffect(() => {
+        usersAPI.getall()
+            .then((res) => {
+                setData(res.map((item, index) => (
+                    {
+                        ...item, id: item.username
+                    }
+                )));
+                setIsLoading(false);
+                console.log(res);
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    }, [])
     return (
         <Container>
             <Wrapper style={{ height: 400, width: '100%' }}>
@@ -128,13 +180,24 @@ const AdmUserList = () => {
                         <TitleButton>Create</TitleButton>
                     </Link>
                 </TitleContainer>
-                <DataGrid
-                    rows={userRows}
-                    columns={columns}
-                    pageSize={5}
-                    rowsPerPageOptions={[5]}
-                    checkboxSelection
-                />
+                {
+                    isLoading ?
+                        (
+                            <>
+                                Loading...
+                            </>
+                        )
+                        :
+                        <>
+
+                            <DataGrid
+                                rows={data}
+                                columns={columns}
+                                pageSize={5}
+                                rowsPerPageOptions={[5]}
+                            />
+                        </>
+                }
             </Wrapper>
         </Container>
     )

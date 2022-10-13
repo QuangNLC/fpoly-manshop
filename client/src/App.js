@@ -43,7 +43,7 @@ function App() {
             <Route index element={<AdmDashboard />} />
             <Route path="user-list" element={<AdmUserList />} />
             <Route path="new-user" element={<AdmNewUser />} />
-            <Route path="user/:userId" element={<AdmUserDetail />} />
+            <Route path="user/:username" element={<AdmUserDetail />} />
             <Route path="*" element={<div>Trang khong ton tai</div>} />
           </Route>
         </Routes>
