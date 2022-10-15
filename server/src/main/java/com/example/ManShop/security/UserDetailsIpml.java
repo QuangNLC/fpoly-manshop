@@ -1,6 +1,6 @@
 package com.example.ManShop.security;
 
-import com.example.ManShop.Entitys.Users;
+import com.example.ManShop.Entitys.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,26 +17,49 @@ public class UserDetailsIpml implements UserDetails {
 
     private String username;
     private String email;
+    private String fullname;
     private Collection<? extends GrantedAuthority> authorities;
     @JsonIgnore
     private  String password;
     private int phone;
     private boolean activated ;
+    private List<Orders>orders;
+    private List<Customers> customers;
+    private String photo;
+    private String verificode;
+    private List<CartItem> cartItems;
+    private List<Promotions> promotions;
 
-
-    public UserDetailsIpml(String username, String email, Collection<? extends GrantedAuthority> authorities, String password, int phone, boolean activated) {
-        this.username = username;
-        this.email = email;
-        this.authorities = authorities;
-        this.password = password;
-        this.phone = phone;
-        this.activated = activated;
-    }
+//    public UserDetailsIpml(String username, String email,String fullname ,Collection<? extends GrantedAuthority> authorities, String password, int phone, boolean activated) {
+//        this.username = username;
+//        this.email = email;
+//        this.authorities = authorities;
+//        this.password = password;
+//        this.phone = phone;
+//        this.activated = activated;
+//        this.fullname - fullname;
+//    }
+public UserDetailsIpml(String username, String email, String password,String fullname, int phone,
+                       Collection<? extends GrantedAuthority> authorities, List<Orders> orders, boolean activated,List<Customers> customers,String photo,String verificode,List<CartItem> cartItems,List<Promotions> promotions) {
+    this.fullname = fullname;
+    this.username = username;
+    this.email = email;
+    this.phone = phone;
+    this.password = password;
+    this.authorities = authorities;
+    this.orders = orders;
+    this.activated = activated;
+    this.customers = customers;
+    this.photo = photo;
+    this.verificode=verificode;
+    this.cartItems=cartItems;
+    this.promotions=promotions;
+}
 
     public static UserDetailsIpml build(Users user) {
         List<GrantedAuthority> authorities = new ArrayList<>();
             authorities.add(new SimpleGrantedAuthority(user.getRoles().getRolename()));
-        return new UserDetailsIpml(user.getUsername(),user.getEmail(),authorities, user.getPassword(), user.getPhone(), user.getActivated());
+        return new UserDetailsIpml(user.getUsername(),user.getEmail(), user.getPassword(),user.getFullname(), user.getPhone(),authorities,user.getOrders(),user.getActivated(),user.getCustomers(), user.getPhoto(), user.getVerificode(), user.getCartItems(),user.getPromotions());
     }
 
     @Override

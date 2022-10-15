@@ -57,9 +57,11 @@ public class AuthController {
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
         System.out.println("thoong tin :" +authentication + " jwt" +jwt);
-        return ResponseEntity.ok(new JwtRespone(jwt,
-                userDetails.getUsername(),
-                roles));
+//        return ResponseEntity.ok(new JwtRespone(jwt,
+//                userDetails.getUsername(), userDetails.getEmail(), userDetails.
+//                roles));
+        return  ResponseEntity.ok(new JwtRespone(jwt, userDetails.getUsername(),roles,userDetails.getEmail(), userDetails.getFullname(), userDetails.getOrders()
+                ,userDetails.getCustomers(),userDetails.getPhoto(), userDetails.getVerificode(), userDetails.getCartItems(),userDetails.getPromotions(), userDetails.getPhone()));
     //    return ResponseEntity.ok("login thanh cong (token)=: "+jwt);
     }
 
