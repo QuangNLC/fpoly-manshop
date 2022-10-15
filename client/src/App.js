@@ -23,6 +23,7 @@ import WebLogin from "./pages/website/WebLogin";
 
 import {data} from './data'
 import WebMyOrders from "./pages/website/WebMyOrders";
+import AdmOrderList from "./pages/admin/AdmOrderList";
 function App() {
   const store = createStore(rootReducer);
 
@@ -51,6 +52,7 @@ function App() {
             <Route index element={<AdmDashboard />} />
             <Route path="user-list" element={<AdmUserList />} />
             <Route path="new-user" element={<AdmNewUser />} />
+            <Route path="order-list" element={<AdmOrderList />} />
             <Route path="user/:username" element={<AdmUserDetail />} />
             <Route path="*" element={<div>Trang khong ton tai</div>} />
           </Route>

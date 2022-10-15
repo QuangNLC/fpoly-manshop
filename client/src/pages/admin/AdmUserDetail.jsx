@@ -286,8 +286,6 @@ const AdmUserDetail = () => {
                                                         type="text"
                                                         value={updateValue.fullname}
                                                         name="fullname"
-                                                        pattern={"^[A-Za-z0-9]{3,10}$"}
-                                                        required={true}
                                                         onChange={onChangeUpdateValue}
                                                     />
                                                     <ItemError>Fullname should be 3-100 characters and shounld't any special character!</ItemError>

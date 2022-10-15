@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import CartIcon from "./Products/CartIcon";
 import LocalMallOutlinedIcon from '@mui/icons-material/LocalMallOutlined';
 import { useDispatch, useSelector } from "react-redux";
@@ -132,6 +132,7 @@ const AvatarContainer = ({ auth }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const dispatch = useDispatch();
   const open = Boolean(anchorEl);
+  const navigate = useNavigate()
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -140,6 +141,7 @@ const AvatarContainer = ({ auth }) => {
   };
 
   const handleClickLogOut = () => {
+    navigate("/")
     dispatch(logOutAction())
   };
   

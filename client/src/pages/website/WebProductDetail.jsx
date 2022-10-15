@@ -7,7 +7,7 @@ import productAPI from '../../api/productsAPI'
 import Skeleton from '@mui/material/Skeleton';
 import Avatar from '@mui/material/Avatar';
 import { formatter } from '../../utils'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { addToCart } from '../../redux/actions/CartReducerAtion'
 
 const Container = styled.div``
@@ -151,20 +151,26 @@ const ProductDetail = () => {
     const [product, setProduct] = useState(null);
     const [selectedSizeIndex, setSelectedSizeIndex] = useState(0);
     const [selectedQuantity, setSelectedQuantity] = useState(1);
+    const isAuth = useSelector(state => state.auth.isAuth);
     const [previewImg, setPreviewImg] = useState(null)
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
     const handleAddToCart = (product) => {
-        const payload = {
-            size: product.productsizes[selectedSizeIndex],
-            quantity: selectedQuantity,
-            price: product.export_price,
-            product: {
-                ...product
+        if(isAuth){
+            const payload = {
+                size: product.productsizes[selectedSizeIndex],
+                quantity: selectedQuantity,
+                price: product.export_price,
+                product: {
+                    ...product
+                }
             }
+            dispatch(addToCart(payload))
+        }else{
+            navigate("/login")
         }
-        dispatch(addToCart(payload))
+        
     };
 
     const hanleChangeSize = (value) => {
@@ -275,7 +281,7 @@ const ProductDetail = () => {
                                         </AddContainer>
                                         <ButtonContainer>
                                             <Button onClick={() => { handleAddToCart(product) }}>Thêm Vào Giỏ Hàng</Button>
-                                            <Button onClick={() => { handleAddToCart(product); navigate("/cart") }}> Mua Ngay</Button>               
+                                            <Button onClick={() => { if(isAuth){handleAddToCart(product); navigate("/cart") }else{navigate('/login')}}}> Mua Ngay</Button>               
                                         </ButtonContainer>
                                     </InfoContainer></>
                             )

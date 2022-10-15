@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Helmet from '../../components/Helmet'
 import styled from 'styled-components'
 import { Add, OtherHouses, Remove } from '@mui/icons-material'
@@ -7,7 +7,7 @@ import { formatter } from '../../utils';
 import checkoutAPI from '../../api/checkoutAPI';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import DialogHOC from '../../hoc/DialogHOC';
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { clearCartAction } from '../../redux/actions/CartReducerAtion'
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
@@ -166,17 +166,26 @@ const Input = styled.input`
     border: none;
     border-bottom: 1px solid gray;
 `
+const AmountInput = styled.input`
+    width :30px;
+    height: 100%;
+    border:none;
+    outline: none;
+`
 
 const Webcart = () => {
     const [isModalInfo, setIsModalInfo] = useState(false);
     const cartReducer = useSelector(state => state.cartReducer);
-    const auth = useSelector(state => state.auth.auth)
+    const auth = useSelector(state => state.auth.auth);
+    const isAuth = useSelector(state => state.auth.isAuth);
     const [customerValue, setCustomerValue] = useState({
-        adress: auth.info ? auth.info.adress : "",
-        phone: auth.info ? auth.info.phone : ""
+        adress: auth ? auth.info.adress :"",
+        phone:auth ? auth.info.phone : "",
     });
 
+
     const dispatch = useDispatch();
+    const navigate = useNavigate()
 
     const hanldleCheckout = () => {
         if (cartReducer.cart && cartReducer.cart.length > 0) {
@@ -255,8 +264,33 @@ const Webcart = () => {
         setCustomerValue({
             ...customerValue,
             [e.target.name]: e.target.value
-        })
-    }
+        });
+    };
+
+    const onChangeQuantity = (e, item) => {
+        console.log(item)
+        if (e.target.value) {
+            if (e.target.value > 0) {
+                if (e.target.value > item.size.quantity) {
+                    handleClickUpdateCartItemQuantity(item, 30);
+                } else {
+                    handleClickUpdateCartItemQuantity(item, e.target.value);
+                }
+            }
+            else {
+                handleClickUpdateCartItemQuantity(item, 1);
+            };
+        };
+    };
+
+    useEffect(() => {
+        setCustomerValue(
+            {
+                adress: auth ? auth.info.adress : "",
+                phone: auth ? auth.info.phone : "",
+            }
+        )
+    }, [auth])
 
     return (
         <Helmet
@@ -281,9 +315,6 @@ const Webcart = () => {
                         <TopTexts>
                             <TopText>Danh sách yêu thích</TopText>
                         </TopTexts>
-                        <TopButton type='filled' onClick={() => {
-                            setIsModalInfo(true)
-                        }}>Đặt Hàng Ngay</TopButton>
                     </Top>
                     <Bottom>
                         <Info>
@@ -323,7 +354,22 @@ const Webcart = () => {
                                                     <div onClick={() => { handleClickUpdateCartItemQuantity(item, item.quantity + 1) }}>
                                                         <Add />
                                                     </div>
-                                                    <ProductAmount>{item.quantity}</ProductAmount>
+                                                    <ProductAmount>
+                                                        <AmountInput
+                                                            type='number'
+                                                            value={item.quantity}
+                                                            onChange={(e) => { onChangeQuantity(e, item) }}
+                                                        // onBlur={(e) => {
+                                                        //     if (e.target.value <= 0) {
+                                                        //         setSelectedQuantity(1)
+                                                        //     } else if (e.target.value > product.productsizes[selectedSizeIndex].quantity) {
+                                                        //         setSelectedQuantity(product.productsizes[selectedSizeIndex].quantity)
+                                                        //     } else {
+                                                        //         setSelectedQuantity(e.target.value % 1 === 0 ? e.target.value : Math.floor(e.target.value))
+                                                        //     }
+                                                        // }}
+                                                        />
+                                                    </ProductAmount>
                                                     {
                                                         item.quantity === 1 ?
                                                             (
@@ -378,7 +424,18 @@ const Webcart = () => {
                                 <SummaryItemText>Thanh toán</SummaryItemText>
                                 <SummaryItemPrice>{cartReducer.cart && formatter.format(cartReducer.cart.reduce((total, item) => { return total + item.quantity * item.price }, 0) * 1.1)}</SummaryItemPrice>
                             </SummaryItem>
-                            <Button onClick={() => {setIsModalInfo(true)}}>Đặt Hàng Ngay</Button>
+                            <Button
+                                onClick={() => { 
+                                    if(isAuth){
+                                        setIsModalInfo(true)
+                                    }else{
+                                        navigate('/login')
+                                    } 
+                                }}
+                                disabled={cartReducer.cart.length <= 0}
+                            >
+                                Đặt Hàng Ngay
+                            </Button>
                         </Summary>
                     </Bottom>
                 </Wrapper>
@@ -408,8 +465,8 @@ const Webcart = () => {
                         </CustomerInputContainer>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={() => { setIsModalInfo(false) }}>Cancel</Button>
-                        <Button onClick={() => { hanldleCheckout() }}>Subscribe</Button>
+                        <Button onClick={() => { setIsModalInfo(false) }}>Hủy Bỏ</Button>
+                        <Button onClick={() => { hanldleCheckout() }}>Đặt Hàng</Button>
                     </DialogActions>
                 </Dialog>
             </Container>

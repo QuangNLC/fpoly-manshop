@@ -3,7 +3,7 @@ import { LOG_OUT, SET_AUTH } from "../types";
 const data = localStorage.getItem("AUTH")
 
 const initialState = {
-    auth: data ? JSON.parse(data) : {},
+    auth: data ? JSON.parse(data) : undefined,
     isAuth: data ? true : false
 };
 

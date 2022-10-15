@@ -61,7 +61,6 @@ const checkItemByProductIdAndSize = (arr, id, size) => {
     let result = -1;
 
     arr.forEach((item, index) => {
-        console.log(item.size.size.tile)
         if (item.product.id === id && item.size.size.title === size) {
             result = index;
         };

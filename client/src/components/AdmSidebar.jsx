@@ -100,12 +100,15 @@ const AdmSidebar = () => {
                                 </ItemText>
                             </Item>
                         </Link>
-                        <Item>
-                            <EventNoteIcon style={{ fontSize: "20px" }} />
-                            <ItemText>
-                                Orders
-                            </ItemText>
-                        </Item>
+                        <Link to="/admin/order-list" style={{ textDecoration: "none", color: "unset" }}>
+                            <Item>
+                                <EventNoteIcon style={{ fontSize: "20px" }} />
+                                <ItemText>
+                                    Orders
+                                </ItemText>
+                            </Item>
+                        </Link>
+
                         <Item>
                             <BarChartIcon style={{ fontSize: "20px" }} />
                             <ItemText>

@@ -5,7 +5,7 @@ import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlin
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import { formatter } from "../utils";
 import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '../redux/actions/CartReducerAtion';
 
 const HoverOptionsContainer = styled.div`
@@ -88,21 +88,27 @@ const OldPrice = styled.div`
 `
 
 const Product = ({ item }) => {
+    const isAuth = useSelector(state => state.auth.isAuth)
     const dispatch = useDispatch();
 
     const navigate = useNavigate();
 
     const handleClickAddToCart = (item) => {
-        const payload = {
-            size: item.productsizes[0],
-            quantity: 1,
-            price: item.export_price,
-            product: {
-                ...item
+        if (isAuth) {
+            const payload = {
+                size: item.productsizes[0],
+                quantity: 1,
+                price: item.export_price,
+                product: {
+                    ...item
+                }
             }
+            dispatch(addToCart(payload))
+            navigate("/cart")
+        } else {
+            navigate("/login")
         }
-        dispatch(addToCart(payload))
-        navigate("/cart")
+
     };
 
     return (
@@ -113,7 +119,7 @@ const Product = ({ item }) => {
                     <HoverOptionsContainer>
                         <HoverOption onClick={() => handleClickAddToCart(item)}><AddShoppingCartOutlinedIcon /></HoverOption>
                         <HoverOption><FavoriteBorderOutlinedIcon /></HoverOption>
-                        <Link to={`/product/${item.id}`} style={{color: 'black'}}>
+                        <Link to={`/product/${item.id}`} style={{ color: 'black' }}>
                             <HoverOption><SearchOutlinedIcon /></HoverOption>
                         </Link>
                     </HoverOptionsContainer>
