@@ -14,7 +14,7 @@ import java.util.Date;
 public class JwtUtils {
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
-    private String jwtSecret = "manshop";
+    private String jwtSecret = "RS256";
 
     private Long jwtExpirationMs = 604800000L;
 
@@ -23,7 +23,7 @@ public class JwtUtils {
                 .setSubject((userDetails.getUsername()))
                 .setIssuedAt(new Date())
                 .setExpiration(generateExpirationDate())
-                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .signWith(SignatureAlgorithm.ES256, jwtSecret)    
                 .compact();
     }
 

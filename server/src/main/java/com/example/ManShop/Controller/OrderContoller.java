@@ -1,11 +1,9 @@
 package com.example.ManShop.Controller;
 
 import com.example.ManShop.DTOS.OrderRequestDTO;
+import com.example.ManShop.DTOS.PageOrderRespone;
 import com.example.ManShop.Entitys.*;
-import com.example.ManShop.JPAs.CustomerJPA;
-import com.example.ManShop.JPAs.OrderDetailJPA;
-import com.example.ManShop.JPAs.OrderJPA;
-import com.example.ManShop.JPAs.UserJPA;
+import com.example.ManShop.JPAs.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
@@ -13,10 +11,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin("*")
@@ -31,6 +28,7 @@ public class OrderContoller {
 //    OrderDetailJPA orderDetailJPA;
 //    @Autowired
 //    OrderJPA orderJPA;
+
     private final Logger log = LoggerFactory.getLogger(OrderContoller.class);
     final
     UserJPA userJPA;
@@ -40,12 +38,16 @@ public class OrderContoller {
     OrderDetailJPA orderDetailJPA;
     final
     OrderJPA orderJPA;
+    final ProductsizeJPA productsizeJPA;
+    final SizeJPA sizeJPA;
 
-    public OrderContoller(UserJPA userJPA, CustomerJPA customerJPA, OrderDetailJPA orderDetailJPA, OrderJPA orderJPA) {
+    public OrderContoller(UserJPA userJPA, CustomerJPA customerJPA, OrderDetailJPA orderDetailJPA, OrderJPA orderJPA, ProductsizeJPA productsizeJPA, SizeJPA sizeJPA) {
         this.userJPA = userJPA;
         this.customerJPA = customerJPA;
         this.orderDetailJPA = orderDetailJPA;
         this.orderJPA = orderJPA;
+        this.productsizeJPA = productsizeJPA;
+        this.sizeJPA = sizeJPA;
     }
 
 
@@ -69,7 +71,10 @@ public class OrderContoller {
         }else{
             setpage = PageRequest.of(ix, limit);
         }
-        return ResponseEntity.ok(orderJPA.findAll(setpage).stream());
+        List<Orders> resList = orderJPA.findAll(setpage).stream().collect(Collectors.toList());
+        Integer totalItems = orderJPA.findAll().stream().collect(Collectors.toList()).size()%limit == 0 ? orderJPA.findAll().stream().collect(Collectors.toList()).size()/limit : orderJPA.findAll().stream().collect(Collectors.toList()).size()/limit+1;
+        PageOrderRespone response = new PageOrderRespone(resList,limit,page,totalItems);
+        return ResponseEntity.ok(response);
     }
 
 
@@ -123,6 +128,7 @@ public class OrderContoller {
     @GetMapping("/my-order/{username}/{page}/{limit}")
     public ResponseEntity<?> getmyorder(@PathVariable("username") String username,@PathVariable("page") Integer page,@PathVariable("limit") Integer limit){
         Pageable setpage;
+        Pageable pagedefault = PageRequest.of(0,1000000);
         int ix= page -1;
         log.info("gọi vào hàm phân trang order với số (page)= "+ix +" số phần tử (limit)= "+limit);
         if(ix <0  ){
@@ -130,7 +136,41 @@ public class OrderContoller {
         }else{
             setpage = PageRequest.of(ix, limit);
         }
-        return ResponseEntity.ok(orderJPA.findByUsers_Username(setpage,username));
+        List<Orders> resList = orderJPA.findByUsers_Username(setpage,username).stream().collect(Collectors.toList());
+        Integer totalItems = orderJPA.findByUsers_Username(pagedefault,username).stream().collect(Collectors.toList()).size()%limit == 0 ? orderJPA.findByUsers_Username(pagedefault,username).stream().collect(Collectors.toList()).size()/limit : orderJPA.findByUsers_Username(pagedefault,username).stream().collect(Collectors.toList()).size()/limit+1;
+        PageOrderRespone response = new PageOrderRespone(resList,limit,page,totalItems);
+        return ResponseEntity.ok(response);
     }
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> updateOrder(@PathVariable("id") Integer id, @RequestBody Orders orders){
+        log.info("Cập nhập đơn hàng với số đơn hàng (id)= "+ id);
+        if(!orderJPA.existsById(id)){
+            return ResponseEntity.badRequest().body("Không tìm thấy đơn hàng với id()"+id);
+        }else {
+            orders.setId(id);
+            orderJPA.save(orders);
+            System.out.println(orders);
+            int checkorder =orders.getStatusOrders().getId();
+            if(checkorder == 4){
+                log.info("Đơn hàng với (id)= "+ id +" đã được kết thúc!");
+                int totalProduct ;
+                List<OrderDetail> orderDetaillist = orders.getOrderDetail();
+                System.out.println("chua check");
+//                try{
 
+//                    for (OrderDetail s : orderDetaillist) {
+//                        ProductSize updateSize = new ProductSize();
+//                        System.out.println("1");
+//                        updateSize= productsizeJPA.findBySize_Title(s.getSize());
+//                        System.out.println("2");
+//                        updateSize.setQuantity(updateSize.getQuantity()-s.getQuantity());
+//                        System.out.println("3");
+
+//                    }
+//                }catch (Exception e){
+//                     return ResponseEntity.badRequest().body("Có gì đó sai sai khi kết thúc đơn hàng");
+//                }
+            }
+        }        return ResponseEntity.ok("cập nhập thành công order với (id)= " +id);
+    }
 }

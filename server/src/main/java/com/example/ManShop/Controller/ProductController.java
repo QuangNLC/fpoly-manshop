@@ -78,22 +78,30 @@ public class ProductController {
         List<Product> resList = productJPA.findAll(setpage).stream().collect(Collectors.toList());
         Integer totalItems = productJPA.findAll().stream().collect(Collectors.toList()).size()%limit == 0 ? productJPA.findAll().stream().collect(Collectors.toList()).size()/limit : productJPA.findAll().stream().collect(Collectors.toList()).size()/limit+1;
         PagePaginationResponeDTO response = new PagePaginationResponeDTO(resList,limit,page,totalItems);
-
 //        return ResponseEntity.ok(productJPA.findAll(setpage).stream());
         return ResponseEntity.ok(response);
 
     }
+//    @GetMapping("byfilter")
+//    public ResponseEntity<?> byfilter(@RequestParam("") )
 
     @GetMapping("/category/{page}/{limit}")
     public ResponseEntity<?> getbyCategory(@RequestParam Integer categoryid,@PathVariable("page") Integer page,@PathVariable("limit")Integer limit){
         Pageable setpage;
+        Pageable pagedefalut =PageRequest.of(0,1000000);
         int ix = page -1;
         if(ix >0 ){
             setpage = PageRequest.of(ix, limit);
         }else{
             setpage = PageRequest.of(0, limit);
         }
-        return ResponseEntity.ok(productJPA.findByCategory_Id(setpage,categoryid).stream());
+        List<Product> resList = productJPA.findByCategory_Id(setpage,categoryid).stream().collect(Collectors.toList());
+        Integer totalItems = productJPA.findByCategory_Id(pagedefalut,categoryid).stream().collect(Collectors.toList()).size()%limit == 0 ? productJPA.findByCategory_Id(pagedefalut,categoryid).stream().collect(Collectors.toList()).size()/limit : productJPA.findByCategory_Id(pagedefalut,categoryid).stream().collect(Collectors.toList()).size()/limit+1;
+        PagePaginationResponeDTO response = new PagePaginationResponeDTO(resList,limit,page,totalItems);
+
+//        return ResponseEntity.ok(productJPA.findAll(setpage).stream());
+        return ResponseEntity.ok(response);
+     //   return ResponseEntity.ok(productJPA.findByCategory_Id(setpage,categoryid).stream());
 
     }
     @PostMapping("/create")
@@ -149,8 +157,12 @@ public class ProductController {
         if(!productJPA.existsById(id)){
             return "not found product with (id)=" +id;
         }else {
-            productJPA.deleteById(id);
-            return "delete product with (id)= "+id;
+            try {
+                productJPA.deleteById(id);
+                return "delete product with (id)= "+id;
+            }catch (Exception e){
+                return ResponseEntity.badRequest().body("xóa không thành công");
+            }
         }
 
     }

@@ -21,6 +21,7 @@ public class Product {
     @Column(name = "export_price")
     private double export_price;
     @Column(name = "import_price")
+    @JsonIgnore
     private  double import_price;
     @Column(name = "created_date")
     private Date create_date;

@@ -2,9 +2,11 @@ package com.example.ManShop.Controller;
 
 import com.example.ManShop.DTOS.JwtRespone;
 import com.example.ManShop.DTOS.LoginRequest;
+import com.example.ManShop.DTOS.OrderStatusRequest;
 import com.example.ManShop.DTOS.RegisterRequest;
 import com.example.ManShop.Entitys.Role;
 import com.example.ManShop.Entitys.Users;
+import com.example.ManShop.JPAs.OrderJPA;
 import com.example.ManShop.JPAs.RolesJPA;
 import com.example.ManShop.JPAs.UserJPA;
 import com.example.ManShop.security.JwtUtils;
@@ -36,13 +38,15 @@ public class AuthController {
     final RolesJPA rolesJPA;
     final PasswordEncoder passwordEncoder;
     final JwtUtils jwtUtils;
+    final OrderJPA orderJPA;
 
-    public AuthController(AuthenticationManager authenticationManager, UserJPA userJPA, RolesJPA rolesJPA, PasswordEncoder passwordEncoder, JwtUtils jwtUtils) {
+    public AuthController(AuthenticationManager authenticationManager, UserJPA userJPA, RolesJPA rolesJPA, PasswordEncoder passwordEncoder, JwtUtils jwtUtils, OrderJPA orderJPA) {
         this.authenticationManager = authenticationManager;
         this.userJPA = userJPA;
         this.rolesJPA = rolesJPA;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtils = jwtUtils;
+        this.orderJPA = orderJPA;
     }
 
     @PostMapping("/signin")
@@ -91,4 +95,5 @@ public class AuthController {
 
         return ResponseEntity.ok(users);
     }
+
 }

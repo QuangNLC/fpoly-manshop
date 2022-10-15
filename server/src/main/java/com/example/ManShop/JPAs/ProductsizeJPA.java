@@ -11,4 +11,5 @@ import java.util.List;
 public interface ProductsizeJPA extends JpaRepository<ProductSize,Integer> {
     //List<ProductSize> findAllById(Iterator<ProductSize> productsizes);
     //  List<Images> findAllById(List<ProductSize> productsizes);
+    ProductSize findBySize_Title(String title);
 }

@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("main")
@@ -19,14 +21,32 @@ public class MainController {
     OrderDetailJPA orderDetailJPA;
     @Autowired
     CustomerJPA customerJPA;
-    @GetMapping("/test")
-    public ResponseEntity<?> Test(){
-        System.out.println("test");
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm:ss");
-        LocalDateTime now = LocalDateTime.now();
-        System.out.println(dtf.format(now));
-        return  ResponseEntity.ok(customerJPA.findAll());
+ //   @GetMapping("/test")
+    public void Test(){
+//        System.out.println("test");
+//        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm:ss");
+//        LocalDateTime now = LocalDateTime.now();
+//        System.out.println(dtf.format(now));
+
+        List<String> list = new ArrayList<String>();
+        list.add("Java");
+        list.add("C++");
+        list.add("PHP");
+        for (int i =0 ; i< list.size();i++){
+            System.out.println(i);
+        }
+//        return  null;
     }
 
+    public static void main(String args[]) {
+        List<String> list = new ArrayList<String>();
+        list.add("Java");
+        list.add("C++");
+        list.add("PHP");
+        for (String s : list) {
+            String a = s+" ssss";
+            System.out.println(a);
+        }
+        }
+    }
 
-}
