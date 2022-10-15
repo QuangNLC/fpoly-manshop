@@ -57,6 +57,7 @@ const WebProductList = (props) => {
     productAPI.getAll(false,currPage, 16)
       .then(res => {
         setProducts(res.list)
+        console.log(res.list)
         setTotalPage(res.totalItems)
       })
       .catch(err =>

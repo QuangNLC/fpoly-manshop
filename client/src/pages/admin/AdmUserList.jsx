@@ -118,7 +118,7 @@ const AdmUserList = () => {
             field: 'username', headerName: 'Username', width: 200,
             renderCell: (params) => (
                 <UserContainer>
-                    <UserImg src={params.row.photoImg ? params.row.avatar : defaultAvt} alt="" />
+                    <UserImg src={params.row.photo ? params.row.photo : defaultAvt} alt="" />
                     {params.row.username}
                 </UserContainer>
             )

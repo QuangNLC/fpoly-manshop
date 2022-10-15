@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Helmet from '../../components/Helmet'
 import styled from 'styled-components'
 import { Add, OtherHouses, Remove } from '@mui/icons-material'
@@ -6,12 +6,16 @@ import { useDispatch, useSelector } from 'react-redux'
 import { formatter } from '../../utils';
 import checkoutAPI from '../../api/checkoutAPI';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import DialogHOC from '../../hoc/DialogHOC';
+import { Link } from 'react-router-dom'
+import { clearCartAction } from '../../redux/actions/CartReducerAtion'
+import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import Paper from '@mui/material/Paper';
+
 
 const Container = styled.div``
 const Wrapper = styled.div`
@@ -144,9 +148,33 @@ const Button = styled.button`
     color: white;
     font-weight: 600;
 `
-const Webcart = () => {
+const CustomerInputContainer = styled.div`
+    margin-top: 30px;
+`
+const InputGroup = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-item: left;
+`
+const Label = styled.label`
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 5px;
+`
+const Input = styled.input`
+    padding: 10px;
+    border: none;
+    border-bottom: 1px solid gray;
+`
 
+const Webcart = () => {
+    const [isModalInfo, setIsModalInfo] = useState(false);
     const cartReducer = useSelector(state => state.cartReducer);
+    const auth = useSelector(state => state.auth.auth)
+    const [customerValue, setCustomerValue] = useState({
+        adress: auth.info ? auth.info.adress : "",
+        phone: auth.info ? auth.info.phone : ""
+    });
 
     const dispatch = useDispatch();
 
@@ -154,15 +182,15 @@ const Webcart = () => {
         if (cartReducer.cart && cartReducer.cart.length > 0) {
             let payload = {
                 "users": {
-                    "username": "vanteo"
+                    "username": auth.info.username
                 },
                 "total_price": cartReducer.cart.reduce((total, item) => { return total + item.quantity * item.price }, 0) * 1.1,
                 "customers": {
-                    "phone": 947034933,
-                    "address": "Thái Bình",
+                    "phone": customerValue.phone,
+                    "address": customerValue.adress,
                     "customerInfor": "hoang chuong canh ba phu tho",
                     "user": {
-                        "username": "vanteo"
+                        "username": auth.info.username
                     }
                 },
                 "orderDetail": [
@@ -170,16 +198,19 @@ const Webcart = () => {
                         product: {
                             id: item.product.id
                         },
-                        size: item.size,
+                        size: item.size.size.tile,
                         quantity: item.quantity,
-                        total_ptice: item.price * item.quantity
+                        total_price: item.price * item.quantity
                     }))
                 ]
-            }
-            console.log(payload);
+            };
             checkoutAPI.checkout(payload)
                 .then(res => {
                     console.log(res);
+                    dispatch({
+                        type: "CLEAR_CART"
+                    });
+                    setIsModalInfo(false);
                 })
                 .catch(err => {
                     console.log(err);
@@ -194,7 +225,8 @@ const Webcart = () => {
             payload: item
         }
 
-        dispatch(action);
+        // dispatch(action);
+        console.log(item)
     }
 
     const handleClickUpdateCartItemQuantity = (item, newQuantity) => {
@@ -214,15 +246,17 @@ const Webcart = () => {
             }
             dispatch(action);
         }
-    }   
+    }
     const handleClearCart = () => {
-        let action = {
-            type : "CLEAR_CART"
-        };
-        dispatch(action);
+        dispatch(clearCartAction());
     }
 
-    console.log(cartReducer.cart)
+    const onChangeCustomerValue = (e) => {
+        setCustomerValue({
+            ...customerValue,
+            [e.target.name]: e.target.value
+        })
+    }
 
     return (
         <Helmet
@@ -232,20 +266,46 @@ const Webcart = () => {
                 <Wrapper>
                     <Title>Giỏ Hàng</Title>
                     <Top>
-                        <TopButton onClick={() => {handleClearCart()}}>Xóa Giỏ Hàng</TopButton>
+                        {
+                            cartReducer.cart.length > 0 &&
+                            <DialogHOC
+                                title="Xác Nhận"
+                                content="Bạn có muốn xóa hết mặt hàng trong giỏ không?"
+                                cancelText="Hủy Bỏ"
+                                okText="Đồng Ý"
+                                onYes={() => { handleClearCart() }}
+                            >
+                                <TopButton>Xóa Giỏ Hàng</TopButton>
+                            </DialogHOC>
+                        }
                         <TopTexts>
                             <TopText>Danh sách yêu thích</TopText>
                         </TopTexts>
-                        <TopButton type='filled'>Đặt Hàng Ngay</TopButton>
+                        <TopButton type='filled' onClick={() => {
+                            setIsModalInfo(true)
+                        }}>Đặt Hàng Ngay</TopButton>
                     </Top>
                     <Bottom>
                         <Info>
                             {
-                                cartReducer.cart && cartReducer.cart.length > 0 &&  cartReducer.cart.map((item, index) => {
+                                cartReducer.cart && cartReducer.cart.length <= 0 &&
+                                (
+                                    <>
+                                        <p>
+                                            Không có sản phẩm trong giỏ hàng
+                                        </p>
+                                        <Link to="/products">
+                                            Mua Hàng Ngay
+                                        </Link>
+                                    </>
+                                )
+                            }
+                            {
+                                cartReducer.cart && cartReducer.cart.length > 0 && cartReducer.cart.map((item, index) => {
                                     return (
                                         <Product key={index}>
                                             <ProductDetail>
-                                                <Image src={item.product.img || "https://hips.hearstapps.com/vader-prod.s3.amazonaws.com/1614188818-TD1MTHU_SHOE_ANGLE_GLOBAL_MENS_TREE_DASHERS_THUNDER_b01b1013-cd8d-48e7-bed9-52db26515dc4.png?crop=1xw:1.00xh;center,top&resize=480%3A%2A"} />
+                                                <Image src={item.product.images[0].photo || "https://hips.hearstapps.com/vader-prod.s3.amazonaws.com/1614188818-TD1MTHU_SHOE_ANGLE_GLOBAL_MENS_TREE_DASHERS_THUNDER_b01b1013-cd8d-48e7-bed9-52db26515dc4.png?crop=1xw:1.00xh;center,top&resize=480%3A%2A"} />
                                                 <Details>
                                                     <ProductName>
                                                         <b>Product:</b> {item.product?.name}
@@ -254,7 +314,7 @@ const Webcart = () => {
                                                         <b>ID:</b> {item.product.id}
                                                     </ProductId>
                                                     <ProductSize>
-                                                        <b>Size:</b> {item.size}
+                                                        <b>Size:</b> {item.size.size.title}
                                                     </ProductSize>
                                                 </Details>
                                             </ProductDetail>
@@ -264,41 +324,96 @@ const Webcart = () => {
                                                         <Add />
                                                     </div>
                                                     <ProductAmount>{item.quantity}</ProductAmount>
-                                                    <div onClick={() => { handleClickUpdateCartItemQuantity(item, item.quantity - 1) }} >
-                                                    <Remove/>
-                                                    </div>
+                                                    {
+                                                        item.quantity === 1 ?
+                                                            (
+                                                                <DialogHOC
+                                                                    title="Xác Nhận"
+                                                                    content="Bạn có muốn xóa sản phẩm này khỏi giỏ hàng không?"
+                                                                    onYes={() => { handleClickUpdateCartItemQuantity(item, item.quantity - 1) }}
+                                                                    okText="Xác Nhận"
+                                                                    cancelText="Hủy Bỏ"
+                                                                >
+                                                                    <Remove />
+                                                                </DialogHOC>
+                                                            )
+                                                            :
+                                                            (
+                                                                <div onClick={() => { handleClickUpdateCartItemQuantity(item, item.quantity - 1) }} >
+                                                                    <Remove />
+                                                                </div>
+                                                            )
+                                                    }
+
                                                 </ProductAmountContainer>
                                                 <ProductPrice>{formatter.format(item.quantity * item.price)}</ProductPrice>
                                             </PriceDetail>
                                             <ProductDelete>
-                                                <DeleteOutlineOutlinedIcon onClick={() => hanldeDeleteCartIem(item)} />
+                                                <DialogHOC
+                                                    title="Xác Nhận"
+                                                    content="Bạn có muốn xóa sản phẩm này khỏi giỏ hàng không?"
+                                                    onYes={() => hanldeDeleteCartIem(item)}
+                                                    okText="Xác Nhận"
+                                                    cancelText="Hủy Bỏ"
+                                                >
+                                                    <DeleteOutlineOutlinedIcon />
+                                                </DialogHOC>
                                             </ProductDelete>
                                         </Product>
                                     )
                                 })
                             }
-
                         </Info>
                         <Summary>
                             <SummaryTitle>Thông Tin Hóa Đơn</SummaryTitle>
                             <SummaryItem>
                                 <SummaryItemText>Tổng tiền</SummaryItemText>
-                                <SummaryItemPrice>{cartReducer.cart  && formatter.format(cartReducer.cart.reduce((total, item) => { return total + item.quantity * item.price }, 0))}</SummaryItemPrice>
+                                <SummaryItemPrice>{cartReducer.cart && formatter.format(cartReducer.cart.reduce((total, item) => { return total + item.quantity * item.price }, 0))}</SummaryItemPrice>
                             </SummaryItem>
                             <SummaryItem>
                                 <SummaryItemText>VAT</SummaryItemText>
-                                <SummaryItemPrice>{cartReducer.cart  && formatter.format(cartReducer.cart.reduce((total, item) => { return total + item.quantity * item.price }, 0) * 0.1)}</SummaryItemPrice>
+                                <SummaryItemPrice>{cartReducer.cart && formatter.format(cartReducer.cart.reduce((total, item) => { return total + item.quantity * item.price }, 0) * 0.1)}</SummaryItemPrice>
                             </SummaryItem>
                             <SummaryItem type="total">
                                 <SummaryItemText>Thanh toán</SummaryItemText>
-                                <SummaryItemPrice>{cartReducer.cart  && formatter.format(cartReducer.cart.reduce((total, item) => { return total + item.quantity * item.price }, 0) * 1.1)}</SummaryItemPrice>
+                                <SummaryItemPrice>{cartReducer.cart && formatter.format(cartReducer.cart.reduce((total, item) => { return total + item.quantity * item.price }, 0) * 1.1)}</SummaryItemPrice>
                             </SummaryItem>
-                            <Button onClick={hanldleCheckout}>Đặt Hàng Ngay</Button>
+                            <Button onClick={() => {setIsModalInfo(true)}}>Đặt Hàng Ngay</Button>
                         </Summary>
                     </Bottom>
                 </Wrapper>
+                <Dialog open={isModalInfo} onClose={() => { setIsModalInfo(false) }}>
+                    <DialogTitle>Thông tin nhận hàng</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            Vui lòng nhập thông tin nhận hàng
+                        </DialogContentText>
+                        <CustomerInputContainer>
+                            <InputGroup>
+                                <Label>Địa chỉ nhận hàng</Label>
+                                <Input
+                                    value={customerValue.adress}
+                                    onChange={onChangeCustomerValue}
+                                    name="adress"
+                                />
+                            </InputGroup>
+                            <InputGroup>
+                                <Label>Số điện thoại</Label>
+                                <Input
+                                    value={customerValue.phone}
+                                    onChange={onChangeCustomerValue}
+                                    name="phone"
+                                />
+                            </InputGroup>
+                        </CustomerInputContainer>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => { setIsModalInfo(false) }}>Cancel</Button>
+                        <Button onClick={() => { hanldleCheckout() }}>Subscribe</Button>
+                    </DialogActions>
+                </Dialog>
             </Container>
-        </Helmet>
+        </Helmet >
     )
 }
 

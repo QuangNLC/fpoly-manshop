@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react'
 import { Add, Remove } from '@mui/icons-material'
 import Helmet from '../../components/Helmet'
 import styled from '@emotion/styled'
-import { useParams } from 'react-router-dom'
+import {  useNavigate, useParams } from 'react-router-dom'
 import productAPI from '../../api/productsAPI'
 import Skeleton from '@mui/material/Skeleton';
 import Avatar from '@mui/material/Avatar';
 import { formatter } from '../../utils'
 import { useDispatch } from 'react-redux'
+import { addToCart } from '../../redux/actions/CartReducerAtion'
 
 const Container = styled.div``
 const Wrapper = styled.div`
@@ -83,7 +84,7 @@ const AmountContainer = styled.div`
     margin-top: 30px;
 `
 const Amount = styled.div`
-    width:30px;
+    width:60px;
     height:30px;
     border-radius: 10px;
     border: 1px solid teal;
@@ -91,7 +92,15 @@ const Amount = styled.div`
     align-items: center;
     justify-content: center;
     margin: 0 5px;
+    padding: 5px;
 `
+const AmountInput = styled.input`
+    width :100%;
+    height: 100%;
+    border:none;
+    outline: none;
+`
+
 const Button = styled.button`
     padding: 15px;
     border: 2px solid teal;
@@ -111,7 +120,10 @@ const PreviewImageList = styled.div`
 const ImageList = styled.ul`
     width: 100%;
     display: flex;
-    overflow-x: scroll;
+    -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+    box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+    overflow: hidden;
+
 `
 const ImageListItem = styled.li`
     width: 120px;
@@ -121,39 +133,53 @@ const ImageListItem = styled.li`
 const ImageListDetail = styled.img`
     width: 100%;
     height: 100%;
-    object-fit:cover;    
+    object-fit:cover;
+    cursor: pointer; 
+`
+
+const ButtonContainer = styled.div`
+    width: 50%;
+    margin-top: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 `
 
 const ProductDetail = () => {
     const { id } = useParams();
     const [isLoading, setIsLoading] = useState(true);
     const [product, setProduct] = useState(null);
-    const [selectedSize, setSelectedSize] = useState(null);
+    const [selectedSizeIndex, setSelectedSizeIndex] = useState(0);
     const [selectedQuantity, setSelectedQuantity] = useState(1);
-
+    const [previewImg, setPreviewImg] = useState(null)
+    const navigate = useNavigate();
     const dispatch = useDispatch();
 
     const handleAddToCart = (product) => {
-        const action = {
-            type: "ADD_TO_CART",
-            payload: {
-                size: selectedSize,
-                quantity: selectedQuantity,
-                price: product.import_price,
-                product: {
-                    id: product.id,
-                    name: product.name,
-                    img: product.images[0] && product.images[0].photo
-                }
+        const payload = {
+            size: product.productsizes[selectedSizeIndex],
+            quantity: selectedQuantity,
+            price: product.export_price,
+            product: {
+                ...product
             }
         }
-        dispatch(action)
+        dispatch(addToCart(payload))
     };
 
-    const hanleChangeSize = (e) => {
-        setSelectedSize(e.target.value)
+    const hanleChangeSize = (value) => {
+        setSelectedSizeIndex(value)
     }
 
+
+    const onChangeQuantity = (e) => {
+        if (e.target.value <= 0) {
+            setSelectedQuantity(1);
+        } else if (e.target.value > product.productsizes[selectedSizeIndex].quantity) {
+            setSelectedQuantity(product.productsizes[selectedSizeIndex].quantity)
+        }
+        setSelectedQuantity(e.target.value);
+    }
 
 
     useEffect(() => {
@@ -161,12 +187,11 @@ const ProductDetail = () => {
         productAPI.getProduct(id)
             .then((res) => {
                 if (!res.status) {
-                    console.log(res)
                     setIsLoading(false);
                     setProduct(res);
-                    setSelectedSize(res.productsizes[0].size.title)
+                    setPreviewImg(res.images[0].photo);
+                    setSelectedSizeIndex(0)
                 } else {
-                    console.log(res)
                 }
             })
     }, [id])
@@ -187,14 +212,14 @@ const ProductDetail = () => {
                                 <>
                                     <ImageContainer>
                                         <ShowedImage>
-                                            <Image src={product?.images[0]?.photo || "https://i.ibb.co/S6qMxwr/jean.jpg"} />
+                                            <Image src={previewImg} />
                                         </ShowedImage>
                                         <PreviewImageList>
                                             <ImageList>
                                                 {
                                                     product.images && product.images.map((item, index) => {
                                                         return (
-                                                            <ImageListItem key={index}>
+                                                            <ImageListItem key={index} onClick={() => {setPreviewImg(item.photo)}}>
                                                                 <ImageListDetail src={item.photo || "https://i.ibb.co/S6qMxwr/jean.jpg"} />
                                                             </ImageListItem>
                                                         )
@@ -215,11 +240,11 @@ const ProductDetail = () => {
                                         <FilterContainer>
                                             <Filter>
                                                 <FilterTitle>Size</FilterTitle>
-                                                <FilterSize onChange={hanleChangeSize}>
+                                                <FilterSize onChange={(e) => hanleChangeSize(e.target.value)}>
                                                     {
-                                                        product?.productsizes.map(item => (
+                                                        product?.productsizes.map((item, index) => (
                                                             <React.Fragment key={item.id}>
-                                                                <FilterSizeOption value={item.size.title}>{item.size.title}</FilterSizeOption>
+                                                                <FilterSizeOption value={index}>{item.size.title}</FilterSizeOption>
                                                             </React.Fragment>
                                                         ))
                                                     }
@@ -229,11 +254,29 @@ const ProductDetail = () => {
                                         <AddContainer>
                                             <AmountContainer>
                                                 <Remove onClick={() => { setSelectedQuantity(selectedQuantity > 0 ? selectedQuantity - 1 : 0) }} />
-                                                <Amount>{selectedQuantity}</Amount>
+                                                <Amount>
+                                                    <AmountInput
+                                                        type='number'
+                                                        value={selectedQuantity}
+                                                        onChange={onChangeQuantity}
+                                                        onBlur={(e) => {
+                                                            if (e.target.value <= 0) {
+                                                                setSelectedQuantity(1)
+                                                            } else if (e.target.value > product.productsizes[selectedSizeIndex].quantity) {
+                                                                setSelectedQuantity(product.productsizes[selectedSizeIndex].quantity)
+                                                            }else{
+                                                                setSelectedQuantity(e.target.value % 1 === 0 ? e.target.value : Math.floor(e.target.value))
+                                                            }
+                                                        }}
+                                                    />
+                                                </Amount>
                                                 <Add onClick={() => { setSelectedQuantity(selectedQuantity + 1) }} />
                                             </AmountContainer>
-                                            <Button onClick={() => { handleAddToCart(product) }}>ADD TO CART</Button>
                                         </AddContainer>
+                                        <ButtonContainer>
+                                            <Button onClick={() => { handleAddToCart(product) }}>Thêm Vào Giỏ Hàng</Button>
+                                            <Button onClick={() => { handleAddToCart(product); navigate("/cart") }}> Mua Ngay</Button>               
+                                        </ButtonContainer>
                                     </InfoContainer></>
                             )
                     }

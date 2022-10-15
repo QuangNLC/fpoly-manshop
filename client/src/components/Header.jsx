@@ -1,11 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { Link, useLocation } from "react-router-dom";
-import ImageAvatar from "./ImageAvatar";
 import CartIcon from "./Products/CartIcon";
 import LocalMallOutlinedIcon from '@mui/icons-material/LocalMallOutlined';
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Badge from '@mui/material/Badge';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import { logOutAction } from "../redux/actions/AuthReducerAction";
 
 const Container = styled.div`
   position: fixed;
@@ -98,6 +100,14 @@ const AuthContainer = styled.div`
   justify-content: center;
   flex: 1;
 `;
+const AvatarImg = styled.img`
+  width: 40px;
+  height: 40px;
+  margin: 0 10px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+`
 
 const Button = styled.div`
   background-color: white;
@@ -118,8 +128,52 @@ const Button = styled.div`
   }
 `;
 
+const AvatarContainer = ({ auth }) => {
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const dispatch = useDispatch();
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleClickLogOut = () => {
+    dispatch(logOutAction())
+  };
+  
+  return (
+    <>
+      <AvatarImg src={auth.info.photo} onClick={handleClick} />
+      <Menu
+        id="basic-menu"
+        open={open}
+        onClose={handleClose}
+        anchorEl={anchorEl}
+
+      >
+        <MenuItem onClick={handleClose}>
+          <Link to="my-account" style={{color: 'black'}}>
+            Tài Khoản Của Tôi
+          </Link>
+        </MenuItem>
+        <MenuItem onClick={handleClose}>
+          <Link to="my-orders" style={{color: 'black'}}>
+            Đơn Hàng Của Tôi
+          </Link>
+        </MenuItem>
+        <MenuItem onClick={handleClickLogOut}>
+          Đăng Xuất
+        </MenuItem>
+      </Menu>
+    </>
+  )
+}
+
 const Header = () => {
-  const isAuth = false;
+  const isAuth = useSelector(state => state.auth.isAuth);
+  const auth = useSelector(state => state.auth.auth);
   const cartReducer = useSelector(state => state.cartReducer);
   const location = useLocation();
 
@@ -167,9 +221,8 @@ const Header = () => {
           </CartContainer>
           <AuthContainer>
             {isAuth ? (
-              <>
-                <ImageAvatar src="../assets/imgs/avt.png" />
-              </>
+              <AvatarContainer auth={{ ...auth }}>
+              </AvatarContainer>
             ) : (
               <>
                 <Link to="/login">

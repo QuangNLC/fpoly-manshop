@@ -17,8 +17,12 @@ import AdminLayout from "./layout/AdminLayout";
 import AdmDashboard from "./pages/admin/AdmDashboard";
 import AdmUserList from "./pages/admin/AdmUserList";
 import AdmNewUser from "./pages/admin/AdmNewUser";
+import ProductList from "./components/Products/ProductList";
 import AdmUserDetail from "./pages/admin/AdmUserDetail";
+import WebLogin from "./pages/website/WebLogin";
 
+import {data} from './data'
+import WebMyOrders from "./pages/website/WebMyOrders";
 function App() {
   const store = createStore(rootReducer);
 
@@ -29,13 +33,17 @@ function App() {
           <Route path="/" element={<WebsiteLayout />}>
             <Route index element={<WebHomePage />} />
             <Route path="products" element={<WebProductList />} />
+            {/* <Route path="products" element={<ProductList data={data}/>} /> */}
             {/* <Route path="cart" element={<Cart />} /> */}
+            {/* <Route path="login" element={<Login />} /> */}
+
             <Route path="cart" element={<Webcart />} />
+            <Route path="my-orders" element={<WebMyOrders />} />
             <Route path="about-us" element={<WebAboutUs />} />
             <Route path="contact" element={<WebContact />} />
             <Route path="productdetail" element={<ProductDetail />} />
             <Route path="product/:id" element={<ProductDetailPage />} />
-            <Route path="login" element={<Login />} />
+            <Route path="login" element={<WebLogin />} />
             <Route path="register" element={<Register />} />
             <Route path="*" element={<div>Trang khong ton tai</div>} />
           </Route>

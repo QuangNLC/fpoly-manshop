@@ -4,8 +4,10 @@ import AddShoppingCartOutlinedIcon from '@mui/icons-material/AddShoppingCartOutl
 import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import { formatter } from "../utils";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
+import { addToCart } from '../redux/actions/CartReducerAtion';
+
 const HoverOptionsContainer = styled.div`
     position:absolute;
     overflow: hidden;
@@ -87,21 +89,20 @@ const OldPrice = styled.div`
 
 const Product = ({ item }) => {
     const dispatch = useDispatch();
+
+    const navigate = useNavigate();
+
     const handleClickAddToCart = (item) => {
-        const action = {
-            type: "ADD_TO_CART",
-            payload:{
-                size: item.productsizes[0].size.title,
-                quantity: 1,
-                price : item.import_price,
-                product: {
-                    id: item.id,
-                    name: item.name,
-                    img: item.images[0] && item.images[0].photo
-                }
+        const payload = {
+            size: item.productsizes[0],
+            quantity: 1,
+            price: item.export_price,
+            product: {
+                ...item
             }
         }
-        dispatch(action)
+        dispatch(addToCart(payload))
+        navigate("/cart")
     };
 
     return (

@@ -7,4 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface OrderJPA extends JpaRepository<Orders,Integer> {
     Page<Orders> findByUsers_Username(Pageable pageable,String username);
+
 }

@@ -6,8 +6,11 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
 
-const DialogHOC = ({ children, title, content, onYes }) => {
+
+
+const DialogHOC = ({ children, title, content, onYes, okText, cancelText }) => {
     const [open, setOpen] = useState(false);
+
 
 
     const handleClickOpen = () => {
@@ -36,12 +39,12 @@ const DialogHOC = ({ children, title, content, onYes }) => {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose}>Disagree</Button>
+                    <Button onClick={handleClose}>{cancelText ?  cancelText : 'Disagree'}</Button>
                     <Button onClick={() => {
                         onYes()
                         setOpen(false)
                     }} autoFocus>
-                        Agree
+                        {okText ?  okText : 'Agree'}
                     </Button>
                 </DialogActions>
             </Dialog>

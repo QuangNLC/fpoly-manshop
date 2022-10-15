@@ -26,6 +26,8 @@ public class Users {
     private int phone;
     @Column(name = "activated")
     private Boolean activated;
+    @Column(name="adress")
+    private String adress;
     @Column(name = "verificode", length = 64)
     @JsonIgnore
     private String verificode;

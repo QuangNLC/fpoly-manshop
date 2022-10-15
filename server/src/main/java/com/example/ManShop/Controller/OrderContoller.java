@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.websocket.server.PathParam;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -104,7 +105,13 @@ public class OrderContoller {
         customerJPA.save(customers);
         newOrder.setCustomers(customers);
         }if(check.equals("for-me")){
-        newOrder.setCustomers(null);
+            Customers customers  = new Customers();
+            customers.setCustomerInfor(orderRequest.getCustomers().getCustomerInfor());
+            customers.setAddress(orderRequest.getCustomers().getAddress());
+            customers.setPhone(orderRequest.getCustomers().getPhone());
+            customers.setUser(orderRequest.getUsers());
+            customerJPA.save(customers);
+        newOrder.setCustomers(customers);
         }
         StatusOrder sttOrder = new StatusOrder();
         sttOrder.setId(1);
@@ -140,6 +147,12 @@ public class OrderContoller {
         Integer totalItems = orderJPA.findByUsers_Username(pagedefault,username).stream().collect(Collectors.toList()).size()%limit == 0 ? orderJPA.findByUsers_Username(pagedefault,username).stream().collect(Collectors.toList()).size()/limit : orderJPA.findByUsers_Username(pagedefault,username).stream().collect(Collectors.toList()).size()/limit+1;
         PageOrderRespone response = new PageOrderRespone(resList,limit,page,totalItems);
         return ResponseEntity.ok(response);
+    }
+    @GetMapping("/my-orders")
+    public ResponseEntity<List<Orders>> getMyOrders(@PathParam("username") String username){
+        Pageable pagedefault = PageRequest.of(0,1000000);
+        List<Orders> resList = orderJPA.findByUsers_Username(pagedefault,username).stream().collect(Collectors.toList());
+        return ResponseEntity.ok(resList);
     }
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateOrder(@PathVariable("id") Integer id, @RequestBody Orders orders){
