@@ -188,6 +188,7 @@ const Webcart = () => {
     const navigate = useNavigate()
 
     const hanldleCheckout = () => {
+        console.log(customerValue)
         if (cartReducer.cart && cartReducer.cart.length > 0) {
             let payload = {
                 "users": {

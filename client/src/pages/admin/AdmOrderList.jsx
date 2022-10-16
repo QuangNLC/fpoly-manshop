@@ -90,7 +90,7 @@ function Row(props) {
                 </TableCell>
                 <TableCell align="right">{row.createdDate}</TableCell>
                 <TableCell align="right">{row.total_price}</TableCell>
-                <TableCell align="right">{row.statusOrders.title}</TableCell>
+                <TableCell align="right">{row.statusOrders ? row.statusOrders.title : ''}</TableCell>
             </TableRow>
             <TableRow>
                 <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -102,7 +102,6 @@ function Row(props) {
                             <Table size="small" aria-label="purchases">
                                 <TableHead>
                                     <TableRow>
-                                        <TableCell>Id</TableCell>
                                         <TableCell>Sản Phẩm</TableCell>
                                         <TableCell align="right">Size</TableCell>
                                         <TableCell align="right">Giá Bán</TableCell>
@@ -113,9 +112,6 @@ function Row(props) {
                                 <TableBody>
                                     {row.orderDetail.map((item, index) => (
                                         <TableRow key={item.id}>
-                                            <TableCell component="th" scope="row">
-                                                {item.id}
-                                            </TableCell>
                                             <TableCell>
                                                 <ProductImg src={item.product.images[0].photo} />
                                             </TableCell>

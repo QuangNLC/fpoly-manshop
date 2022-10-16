@@ -14,9 +14,10 @@ import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import {useSelector} from 'react-redux'
+import { useSelector } from 'react-redux'
 import ordersAPI from '../../api/ordersAPI';
-import {formatter} from '../../utils/index'
+import { formatter } from '../../utils/index'
+import { Navigate, useNavigate } from 'react-router-dom';
 
 const Container = styled.div`
     width: 100%;
@@ -44,7 +45,7 @@ const ProductImg = styled.img`
     width: 50px;
     height: 50px;
     border-radius: 50%;
-
+    margin-right: 20px;
 `
 
 function createData(name, calories, fat, carbs, protein, price) {
@@ -117,7 +118,10 @@ function Row(props) {
                                                 {item.id}
                                             </TableCell>
                                             <TableCell>
-                                                <ProductImg src={item.product.images[0].photo} />
+                                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                    <ProductImg src={item.product.images[0].photo} />
+                                                    {item.product.name}
+                                                </div>
                                             </TableCell>
                                             <TableCell align="right">{item.size}</TableCell>
                                             <TableCell align="right">{item.product.export_price}</TableCell>
@@ -139,48 +143,67 @@ function Row(props) {
 
 const WebMyOrders = () => {
     const auth = useSelector(state => state.auth.auth);
-    const {username} = auth.info;
+    const isAuth = useSelector(state => state.auth.isAuth);
+    const { username } = auth ? auth.info : "";
     const [data, setData] = useState([]);
+    const navigate = useNavigate();
 
 
     useEffect(() => {
-        ordersAPI.getMyOrders(username)
-        .then(res => {
-            if(!res.status){
-                setData(res);
-            }else{
-                console.log(res)
-            }
-        })
-        .catch(err => console.log(err));
-    }, [auth, username])
+        if (auth) {
+            ordersAPI.getMyOrders(username)
+                .then(res => {
+                    if (!res.status) {
+                        setData(res);
+                    } else {
+                        console.log(res)
+                    }
+                })
+                .catch(err => console.log(err));
+        }else{
+            navigate("/login")
+        }
+
+    }, [auth])
     return (
         <Helmet
             title="Đơn Hàng Của Tôi"
         >
             <Container>
                 <Wrapper>
-                    <ListContainer>
-                    <Title>danh sách đơn hàng của tôi</Title>
-                        <TableContainer component={Paper}>
-                            <Table aria-label="collapsible table">
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell />
-                                        <TableCell>Id</TableCell>
-                                        <TableCell align="right">Ngày Tạo</TableCell>
-                                        <TableCell align="right">Thanh Toán</TableCell>
-                                        <TableCell align="right">Trạng Thái</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {data.length > 0 && data.map((item, index) => (
-                                        <Row key={item.id} row={item} />
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                    </ListContainer>
+                    {
+                        isAuth ?
+                            (
+                                <ListContainer>
+                                    <Title>danh sách đơn hàng của tôi</Title>
+                                    <TableContainer component={Paper}>
+                                        <Table aria-label="collapsible table">
+                                            <TableHead>
+                                                <TableRow>
+                                                    <TableCell />
+                                                    <TableCell>Id</TableCell>
+                                                    <TableCell align="right">Ngày Tạo</TableCell>
+                                                    <TableCell align="right">Thanh Toán</TableCell>
+                                                    <TableCell align="right">Trạng Thái</TableCell>
+                                                </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                                {data.length > 0 && data.map((item, index) => (
+                                                    <Row key={item.id} row={item} />
+                                                ))}
+                                            </TableBody>
+                                        </Table>
+                                    </TableContainer>
+                                </ListContainer>
+                            )
+                            :
+                            (
+                                <>
+                                    Loading...
+                                </>
+                        )
+                    }
+
                 </Wrapper>
             </Container>
         </Helmet>
