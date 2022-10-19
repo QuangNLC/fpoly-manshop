@@ -24,7 +24,7 @@ const Image = styled.img`
     object-fit: cover;
 `
 const Container = styled.div`
-    width: 25%;
+    width: 340px;
     height: 520px;
     padding: 20px;
     display:flex;

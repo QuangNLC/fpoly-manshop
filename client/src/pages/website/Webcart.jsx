@@ -188,7 +188,6 @@ const Webcart = () => {
     const navigate = useNavigate()
 
     const hanldleCheckout = () => {
-        console.log(customerValue)
         if (cartReducer.cart && cartReducer.cart.length > 0) {
             let payload = {
                 "users": {
@@ -208,12 +207,13 @@ const Webcart = () => {
                         product: {
                             id: item.product.id
                         },
-                        size: item.size.size.tile,
+                        size: item.size.size.title,
                         quantity: item.quantity,
                         total_price: item.price * item.quantity
                     }))
                 ]
             };
+            console.log(payload)
             checkoutAPI.checkout(payload)
                 .then(res => {
                     console.log(res);
