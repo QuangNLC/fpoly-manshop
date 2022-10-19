@@ -166,24 +166,47 @@ public class OrderContoller {
             int checkorder =orders.getStatusOrders().getId();
             if(checkorder == 4){
                 log.info("Đơn hàng với (id)= "+ id +" đã được kết thúc!");
-                int totalProduct ;
                 List<OrderDetail> orderDetaillist = orders.getOrderDetail();
                 System.out.println("chua check");
-//                try{
 
-//                    for (OrderDetail s : orderDetaillist) {
-//                        ProductSize updateSize = new ProductSize();
-//                        System.out.println("1");
-//                        updateSize= productsizeJPA.findBySize_Title(s.getSize());
-//                        System.out.println("2");
-//                        updateSize.setQuantity(updateSize.getQuantity()-s.getQuantity());
-//                        System.out.println("3");
+                for(int i=0; i< orderDetaillist.size();i++){
+                    OrderDetail element= orderDetaillist.get(i);
+                        int a= element.getQuantity();
+                        int b = element.getProduct().getId();
+                        String c = element.getSize();
+                        try {
+                            ProductSize update = productsizeJPA.findBySize_IdAndProduct_Id(check(c),b);
+                            update.setId(update.getId());
+                            update.setQuantity(update.getQuantity()-a);
+                            productsizeJPA.save(update);
 
-//                    }
-//                }catch (Exception e){
-//                     return ResponseEntity.badRequest().body("Có gì đó sai sai khi kết thúc đơn hàng");
-//                }
+                        }catch (Exception e){
+                            e.printStackTrace();
+                            return ResponseEntity.status(420).body("lỗi khi trừ số lượng sản phẩm");
+                        }
+                }
+
             }
         }        return ResponseEntity.ok("cập nhập thành công order với (id)= " +id);
+    }
+
+    private int check(String b) {
+        switch (b){
+            case "X":
+                int i;
+                return  i=1;
+            case "L":
+                int i1;
+                return  i1=1;
+            case "XL":
+                int i2;
+                return  i2=1;
+            case "XXL":
+                int i3;
+                return  i3=1;
+            default:
+                return 0;
+
+        }
     }
 }
