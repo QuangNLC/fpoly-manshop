@@ -1,0 +1,26 @@
+.gio-hang-trong {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.mua-ngay{
+    font-size: 20px;
+    background-color: #4c4c4c;
+    margin-top: 20px;
+    padding: 10px 25px;
+    color: #fff;
+
+}
+.mua-ngay:hover{
+    font-size: 20px;
+    background-color: #191919;
+    margin-top: 20px;
+    padding: 11px 26px;
+    color: #fff;
+    
+}
+.thong-tin-hoa-don {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
