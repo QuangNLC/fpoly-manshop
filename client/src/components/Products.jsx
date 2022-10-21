@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import Product from './Product'
 
 const Container = styled.div`
-    width: 100vw;
+    width: 100%;
 `
 const Wrapper = styled.div`
     width: 100%;
