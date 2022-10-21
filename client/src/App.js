@@ -26,6 +26,7 @@ import WebMyOrders from "./pages/website/WebMyOrders";
 import AdmOrderList from "./pages/admin/AdmOrderList";
 import AdmNewProduct from "./pages/admin/AdmNewProduct";
 import AdmCategoryList from "./pages/admin/AdmCategoryList";
+import WebMessage from "./pages/website/WebMessage";
 function App() {
   const store = createStore(rootReducer);
 
@@ -48,6 +49,7 @@ function App() {
             <Route path="product/:id" element={<ProductDetailPage />} />
             <Route path="login" element={<WebLogin />} />
             <Route path="register" element={<Register />} />
+            <Route path="message" element={<WebMessage />} />
             <Route path="*" element={<div>Trang khong ton tai</div>} />
           </Route>
           <Route path="/admin" element={<AdminLayout />}>
@@ -58,6 +60,7 @@ function App() {
             <Route path="category-list" element={<AdmCategoryList />} />
             <Route path="new-product" element={<AdmNewProduct />} />
             <Route path="user/:username" element={<AdmUserDetail />} />
+            <Route path="message" element={<WebMessage />} />
             <Route path="*" element={<div>Trang khong ton tai</div>} />
           </Route>
         </Routes>

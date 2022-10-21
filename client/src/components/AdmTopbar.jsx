@@ -79,7 +79,9 @@ const AdmTopbar = () => {
                     </IconContainer>
                     <IconContainer>
                         <Badge badgeContent={1} color="primary">
-                            <ChatBubbleIcon color="action" />
+                            <Link to="/admin/message">
+                                <ChatBubbleIcon color="action" />
+                            </Link>
                         </Badge>
                     </IconContainer>
                     <IconContainer>
