@@ -25,6 +25,7 @@ import {data} from './data'
 import WebMyOrders from "./pages/website/WebMyOrders";
 import AdmOrderList from "./pages/admin/AdmOrderList";
 import AdmNewProduct from "./pages/admin/AdmNewProduct";
+import AdmCategoryList from "./pages/admin/AdmCategoryList";
 function App() {
   const store = createStore(rootReducer);
 
@@ -34,16 +35,16 @@ function App() {
         <Routes>
           <Route path="/" element={<WebsiteLayout />}>
             <Route index element={<WebHomePage />} />
-            <Route path="products" element={<WebProductList />} />
             {/* <Route path="products" element={<ProductList data={data}/>} /> */}
             {/* <Route path="cart" element={<Cart />} /> */}
             {/* <Route path="login" element={<Login />} /> */}
+            {/* <Route path="productdetail" element={<ProductDetail />} /> */}
 
+            <Route path="products" element={<WebProductList />} />
             <Route path="cart" element={<Webcart />} />
             <Route path="my-orders" element={<WebMyOrders />} />
             <Route path="about-us" element={<WebAboutUs />} />
             <Route path="contact" element={<WebContact />} />
-            <Route path="productdetail" element={<ProductDetail />} />
             <Route path="product/:id" element={<ProductDetailPage />} />
             <Route path="login" element={<WebLogin />} />
             <Route path="register" element={<Register />} />
@@ -54,6 +55,7 @@ function App() {
             <Route path="user-list" element={<AdmUserList />} />
             <Route path="new-user" element={<AdmNewUser />} />
             <Route path="order-list" element={<AdmOrderList />} />
+            <Route path="category-list" element={<AdmCategoryList />} />
             <Route path="new-product" element={<AdmNewProduct />} />
             <Route path="user/:username" element={<AdmUserDetail />} />
             <Route path="*" element={<div>Trang khong ton tai</div>} />

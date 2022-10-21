@@ -90,7 +90,6 @@ public class ProductController {
         PagePaginationResponeDTO response = new PagePaginationResponeDTO(resList,limit,page,totalItems);
 //        return ResponseEntity.ok(productJPA.findAll(setpage).stream());
         return ResponseEntity.ok(response);
-
     }
 
     @GetMapping("/get/filter/info")

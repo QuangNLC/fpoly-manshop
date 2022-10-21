@@ -92,6 +92,14 @@ const AdmSidebar = () => {
                                 </ItemText>
                             </Item>
                         </Link>
+                        <Link to="/admin/category-list" style={{ textDecoration: "none", color: "unset" }}>
+                            <Item>
+                                <StorefrontIcon style={{ fontSize: "20px" }} />
+                                <ItemText>
+                                    Categories
+                                </ItemText>
+                            </Item>
+                        </Link>
                         <Link to="/admin/product-list" style={{ textDecoration: "none", color: "unset" }}>
                             <Item>
                                 <StorefrontIcon style={{ fontSize: "20px" }} />
