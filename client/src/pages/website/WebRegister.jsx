@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 import authAPI from '../../api/authAPI'
 import usersAPI from '../../api/usersAPI'
-import jwt_decode from "jwt-decode";
 import { useDispatch, useSelector } from 'react-redux';
 import { setAuthAction } from '../../redux/actions/AuthReducerAction'
 import { useNavigate } from 'react-router-dom';
@@ -54,13 +53,10 @@ const FormContainer = styled.div`
     -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
     box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
 `
-
-
 const FormTitle = styled.h2`
     width: 100%;
     text-transform: capitalize;
 `
-
 const Button = styled.button`
     padding: 8px 20px;
     border: none;
@@ -87,89 +83,29 @@ const openNotificationWithIcon = (type, title, des) => {
     });
 };
 
-const WebLogin = () => {
+const WebRegister = () => {
 
     const isAuth = useSelector(state => state.auth.isAuth);
     const [checkingAuth, setCheckingAuth] = useState(true);
-    const [loginValue, setLoginValue] = useState({
-        username: "",
-        password: "",
-    });
 
     const [form] = useForm();
-    const inputPasswordRefElement = useRef();
     const navigate = useNavigate();
-    const [token, setToken] = useState('');
 
     const dispatch = useDispatch();
 
-    const onSubmit = e => {
-        e.preventDefault();
-        console.log(loginValue);
-        try {
-            let auth = {};
-            authAPI.signin(loginValue)
-                .then(res => {
-                    if (!res.status) {
-                        auth = { ...auth, token: res.token }
-                        usersAPI.getUser(res.username)
-                            .then(res => {
-                                if (!res.status) {
-                                    auth = { ...auth, info: res };
-                                    dispatch(setAuthAction(auth));
-                                    navigate('/')
-                                } else {
-                                    console.log(res)
-                                }
-                            })
-                            .catch(err => console.log(err));
-                    } else {
-                        console.log(res)
-                    }
-
-                })
-                .catch(err => console.log(err));
-        } catch (err) {
-            console.log(err)
-        }
-
-    };
-
-    const onChange = e => {
-        setLoginValue({
-
-            ...loginValue,
-            [e.target.name]: e.target.value
-        }
-        )
-    };
-
 
     const onFinish = (value) => {
+        console.log(value)
         try {
-            let auth = {};
-            authAPI.signin(value)
+            authAPI.register({ ...value, phone: 666666666 })
                 .then(res => {
                     if (!res.status) {
-                        auth = { ...auth, token: res.token }
-                        usersAPI.getUser(res.username)
-                            .then(res => {
-                                if (!res.status) {
-                                    auth = { ...auth, info: res };
-                                    dispatch(setAuthAction(auth));
-                                    openNotificationWithIcon('success','Đăng nhập thành công!','Đăng nhập thành công!');
-                                    navigate('/')
-                                } else {
-                                    console.log(res)
-                                }
-                            })
-                            .catch(err => console.log(err));
+                        openNotificationWithIcon('success', 'Đăng ký thành công!', 'Đăng ký thành công!');
+                        navigate('/login')
+
                     } else {
+                        openNotificationWithIcon('error', 'Đăng ký thất bại!', 'Đăng ký thất bại!');
                         console.log(res)
-                        if(res.status == 401){
-                            openNotificationWithIcon('error','Đăng nhập thất bại!','Thông tin đăng nhập không chính xác!');
-                            inputPasswordRefElement.current.focus();
-                        }
                     }
 
                 })
@@ -201,7 +137,7 @@ const WebLogin = () => {
                                 <BackgroundImg src={loginImg} />
                             </BackgroundImgContainer>
                             <FormContainer>
-                                <FormTitle>Đăng Nhập</FormTitle>
+                                <FormTitle>Đăng Ký</FormTitle>
                                 <Form
                                     name='login'
                                     labelCol={{ span: 24 }}
@@ -215,21 +151,68 @@ const WebLogin = () => {
                                         label="Tên đăng nhập"
                                         name="username"
                                         rules={[
-                                            {required: true},
-                                            {whitespace: true}
+                                            { required: true },
+                                            { whitespace: true }
                                         ]}
                                     >
                                         <Input placeholder='Tên đăng nhập' />
                                     </Form.Item>
                                     <Form.Item
+                                        label="Họ và tên"
+                                        name="fullname"
+                                        rules={[
+                                            { required: true },
+                                            { whitespace: true }
+                                        ]}
+                                    >
+                                        <Input placeholder='Họ và tên' />
+                                    </Form.Item>
+                                    <Form.Item
+                                        label="Email"
+                                        name="email"
+                                        rules={[
+                                            { required: true },
+                                            { whitespace: true },
+                                            { type: 'email' }
+                                        ]}
+                                    >
+                                        <Input placeholder='email' type='email' />
+                                    </Form.Item>
+                                    <Form.Item
+                                        label="Số điện thoại"
+                                        name="phone"
+                                        rules={[
+                                            { required: true },
+                                            { whitespace: true }
+                                        ]}
+                                    >
+                                        <Input placeholder='Số điện thoại' />
+                                    </Form.Item>
+                                    <Form.Item
                                         label="Mật khẩu"
                                         name="password"
                                         rules={[
-                                            {required: true},
-                                            {whitespace: true}
+                                            { required: true },
                                         ]}
                                     >
-                                        <Input.Password placeholder='Mật khẩu' ref={inputPasswordRefElement}/>
+                                        <Input.Password placeholder='Mật khẩu'/>
+                                    </Form.Item>
+                                    <Form.Item
+                                        label="Xác nhận mật khẩu"
+                                        name="confirmPasswrod"
+                                        rules={[
+                                            { required: true },
+                                            ({ getFieldValue }) => ({
+                                                validator(_, value) {
+                                                    if (!value || getFieldValue('password') === value) {
+                                                        return Promise.resolve()
+                                                    }
+                                                    return Promise.reject('Confirm password does not match!')
+                                                }
+                                            })
+                                        ]}
+                                    >
+                                        <Input.Password placeholder='Nhập lại mật khẩu'/>
                                     </Form.Item>
                                     <Form.Item
                                     >
@@ -246,4 +229,4 @@ const WebLogin = () => {
     )
 }
 
-export default WebLogin
+export default WebRegister
