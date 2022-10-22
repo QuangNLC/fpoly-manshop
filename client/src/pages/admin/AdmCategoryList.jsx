@@ -9,6 +9,8 @@ import usersAPI from '../../api/usersAPI';
 import defaultAvt from '../../assets/imgs/default-avt.jpg';
 import DialogHOC from '../../hoc/DialogHOC';
 import productAPI from '../../api/productsAPI';
+import { Button, Form, Input, notification } from 'antd';
+import { useForm } from 'antd/es/form/Form';
 
 const Container = styled.div`
     width: 100%;
@@ -164,6 +166,14 @@ const DataContainer = styled.div`
     height: 100%;
 `
 
+const openNotificationWithIcon = (type, title, des) => {
+    notification[type]({
+        message: title,
+        description:
+            des,
+    });
+};
+
 
 const AdmCategoryList = () => {
 
@@ -173,7 +183,7 @@ const AdmCategoryList = () => {
     const [isOpenForm, setIsOpenForm] = useState(false);
     const [updatingId, setUpdatingId] = useState(undefined);
     const [categoryValue, setCategoryValue] = useState({ id: undefined, title: "" });
-
+    const [form] = useForm();
 
     const handleClickEditButton = (id) => {
         console.log(id)
@@ -236,21 +246,21 @@ const AdmCategoryList = () => {
 
     const handleUpdateCategoryDetails = (value) => {
         productAPI.updateCategoryDetails(value)
-        .then(res => {
-            if(!res.status){
-                setData(data.map((item, index) => {
-                    if(item.id === res.id){
-                        return {...res};
-                    }else{
-                        return item;
-                    }
-                }));
-                haldeCloseForm();
-            }else{
-                console.log(res)
-            }
-        })
-        .catch(err => console.log(err));
+            .then(res => {
+                if (!res.status) {
+                    setData(data.map((item, index) => {
+                        if (item.id === res.id) {
+                            return { ...res };
+                        } else {
+                            return item;
+                        }
+                    }));
+                    haldeCloseForm();
+                } else {
+                    console.log(res)
+                }
+            })
+            .catch(err => console.log(err));
     }
 
     const toggleOpenForm = () => {
@@ -276,17 +286,54 @@ const AdmCategoryList = () => {
     }
 
     const handleDeleteCategory = (id) => {
-        if(id){
+        if (id) {
             productAPI.deleteCategory(id)
-            .then(res => {
-                if(!res.status){
-                    setData(data.filter((item, index) => item.id !== id));
-                    haldeCloseForm();
-                }else{
-                    console.log(res)
-                }
-            })
-            .catch(err => console.log(err))
+                .then(res => {
+                    if (!res.status) {
+                        setData(data.filter((item, index) => item.id !== id));
+                        openNotificationWithIcon('warning', 'Successfully!', 'Delete category successfully!');
+                        haldeCloseForm();
+                    } else {
+                        console.log(res)
+                    }
+                })
+                .catch(err => console.log(err))
+        }
+    }
+
+
+    const onFinish = (value) => {
+        if (!value.id) {
+            productAPI.createCategory({ title: value.title })
+                .then(res => {
+                    if (!res.status) {
+                        const newData = [{ ...res }, ...data];
+                        setData(newData);
+                        openNotificationWithIcon('success', 'Successfully!', 'Create category successfully!');
+                        haldeCloseForm();
+                    } else {
+                        console.log(res);
+                    }
+                })
+                .catch(err => console.log(err));
+        } else {
+            productAPI.updateCategoryDetails(value)
+                .then(res => {
+                    if (!res.status) {
+                        setData(data.map((item, index) => {
+                            if (item.id === res.id) {
+                                return { ...res };
+                            } else {
+                                return item;
+                            }
+                        }));
+                        openNotificationWithIcon('success','Success','Update category details successfully!')
+                        haldeCloseForm();
+                    } else {
+                        console.log(res)
+                    }
+                })
+                .catch(err => console.log(err));
         }
     }
 
@@ -305,6 +352,11 @@ const AdmCategoryList = () => {
                 console.log(err);
             });
     }, [])
+
+
+    useEffect(() => {
+        form.resetFields();
+    }, [categoryValue])
 
     return (
         <Helmet
@@ -347,7 +399,7 @@ const AdmCategoryList = () => {
                         <FormWrapper>
                             <FormTitle>{updatingId ? "Update Category Details" : "Create New Category"}</FormTitle>
                             <CateFormContainer>
-                                <CateForm>
+                                {/* <CateForm>
                                     {
                                         updatingId ?
                                             (
@@ -399,7 +451,89 @@ const AdmCategoryList = () => {
                                             )
                                     }
 
-                                </CateForm>
+                                </CateForm> */}
+                                <Form
+                                    name='category'
+                                    labelCol={{ span: 24 }}
+                                    wrapperCol={{ span: 24 }}
+                                    onFinish={onFinish}
+                                    layout='horizontal'
+                                    autoComplete='off'
+                                    initialValues={categoryValue}
+                                    form={form}
+                                >
+                                    {
+                                        updatingId ?
+                                            (
+                                                <>
+                                                    <Form.Item
+                                                        label="Id"
+                                                        name="id"
+                                                        hasFeedback
+                                                    >
+                                                        <Input disabled />
+                                                    </Form.Item>
+                                                    <Form.Item
+                                                        label="Title"
+                                                        name="title"
+                                                        rules={[
+                                                            { required: true, message: 'Please input this field!' },
+                                                            { whitespace: true },
+                                                            { min: 3 },
+                                                            { max: 10 }
+                                                        ]}
+                                                        hasFeedback
+                                                    >
+                                                        <Input />
+                                                    </Form.Item>
+                                                </>
+                                            )
+                                            :
+                                            (
+                                                <>
+                                                    <Form.Item
+                                                        label="Title"
+                                                        name="title"
+                                                        rules={[
+                                                            { required: true, message: 'Please input this field!' },
+                                                            { whitespace: true },
+                                                            { min: 3 },
+                                                            { max: 10 }
+                                                        ]}
+                                                        hasFeedback
+                                                    >
+                                                        <Input placeholder='Title' />
+                                                    </Form.Item>
+                                                </>
+                                            )
+                                    }
+
+                                    <Form.Item>
+                                        {
+                                            updatingId ?
+                                                (
+                                                    <>
+                                                        <DialogHOC
+                                                            title="Confirm Dialog"
+                                                            content="Do you want to update this category ?"
+                                                            onYes={() => form.submit()}
+                                                        >
+                                                            <CateFormButton>Update</CateFormButton>
+                                                        </DialogHOC>
+                                                    </>
+                                                )
+                                                :
+                                                (
+                                                    <>
+                                                        <CateFormButton onClick={() => { form.submit() }}>Create</CateFormButton>
+                                                    </>
+                                                )
+                                        }
+                                    </Form.Item>
+                                    <Form.Item>
+                                        <CateFormButton onClick={haldeCloseForm}>Close</CateFormButton>
+                                    </Form.Item>
+                                </Form>
                             </CateFormContainer>
                         </FormWrapper>
                     </FormContainer>

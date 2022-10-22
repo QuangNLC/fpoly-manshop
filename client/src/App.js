@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import './app.css';
 import WebsiteLayout from "./layout/WebsiteLayout";
 import WebHomePage from "./pages/website/WebHomePage";
 import WebProductList from "./pages/website/WebProductList";
@@ -27,6 +28,7 @@ import AdmOrderList from "./pages/admin/AdmOrderList";
 import AdmNewProduct from "./pages/admin/AdmNewProduct";
 import AdmCategoryList from "./pages/admin/AdmCategoryList";
 import WebMessage from "./pages/website/WebMessage";
+import AdmProductList from "./pages/admin/AdmProductList";
 function App() {
   const store = createStore(rootReducer);
 
@@ -58,6 +60,7 @@ function App() {
             <Route path="new-user" element={<AdmNewUser />} />
             <Route path="order-list" element={<AdmOrderList />} />
             <Route path="category-list" element={<AdmCategoryList />} />
+            <Route path="product-list" element={<AdmProductList />} />
             <Route path="new-product" element={<AdmNewProduct />} />
             <Route path="user/:username" element={<AdmUserDetail />} />
             <Route path="message" element={<WebMessage />} />
