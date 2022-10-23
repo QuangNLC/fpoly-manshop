@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.Nationalized;
 import org.hibernate.annotations.Type;
 
@@ -13,6 +14,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @Data
+@ToString
 @AllArgsConstructor
 @Table(name="Categorys")
 public class Categorys {

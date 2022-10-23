@@ -35,7 +35,7 @@ import javax.websocket.server.PathParam;
 public class ProductController {
     private final Logger log = LoggerFactory.getLogger(ProductController.class);
     final
-    ProductJPA productJPA;
+    ProductJPA  productJPA;
 
     final
     CategoryJPA categoryJPA;
@@ -70,7 +70,7 @@ public class ProductController {
             log.error("không thấy sản phẩm");
             return ResponseEntity.notFound().build();
         }
-            log.info("đã tìm thấy sản phẩm với id " +id);
+        log.info("đã tìm thấy sản phẩm với id " +id);
         return ResponseEntity.ok(productJPA.findById(id).get());
 
     }
@@ -102,6 +102,7 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
+
     @GetMapping("/weblist")
     public ResponseEntity<?> GetByNiq(@RequestBody(required = false) FilterRequestDTO filter, @PathParam(value = "page") Integer page, @PathParam("limit") Integer limit){
 
@@ -120,34 +121,15 @@ public class ProductController {
             List<Product> resList = new ArrayList<>();
             Integer totalItems = 0;
             if(!(filter.getCategoryId() != -1)){
-
-
             }else{
                 resList = productJPA.findByCategory_Id(setpage,filter.getCategoryId()).stream().collect(Collectors.toList());
                 totalItems = productJPA.findByCategory_Id(pagedefalut,filter.getCategoryId()).stream().collect(Collectors.toList()).size()%limit == 0 ? productJPA.findByCategory_Id(pagedefalut,filter.getCategoryId()).stream().collect(Collectors.toList()).size()/limit : productJPA.findByCategory_Id(pagedefalut,filter.getCategoryId()).stream().collect(Collectors.toList()).size()/limit+1;
                 PagePaginationResponeDTO response = new PagePaginationResponeDTO(resList,limit,page,totalItems);
                 return ResponseEntity.ok(response);
             }
-
         }
-
-//        Pageable setpage;
-//        int ix= page-1;
-//        log.info("gọi vào hàm phân trang với số (page)= "+ix +" số phần tử (limit)= "+limit);
-//        System.out.println(ix);
-//        if(page >0 ){
-//            setpage = PageRequest.of(ix, limit);
-//        }else{
-//            setpage = PageRequest.of(0, limit);
-//        }
-//        List<Product> resList = productJPA.findAll(setpage).stream().collect(Collectors.toList());
-//        Integer totalItems = productJPA.findAll().stream().collect(Collectors.toList()).size()%limit == 0 ? productJPA.findAll().stream().collect(Collectors.toList()).size()/limit : productJPA.findAll().stream().collect(Collectors.toList()).size()/limit+1;
-//        PagePaginationResponeDTO response = new PagePaginationResponeDTO(resList,limit,page,totalItems);
-//        return ResponseEntity.ok(productJPA.findAll(setpage).stream());
         return ResponseEntity.ok().build();
     }
-//    @GetMapping("byfilter")
-//    public ResponseEntity<?> byfilter(@RequestParam("") )
 
     @GetMapping("/category/{page}/{limit}")
     public ResponseEntity<?> getbyCategory(@RequestParam Integer categoryid,@PathVariable("page") Integer page,@PathVariable("limit")Integer limit){
@@ -163,10 +145,7 @@ public class ProductController {
         Integer totalItems = productJPA.findByCategory_Id(pagedefalut,categoryid).stream().collect(Collectors.toList()).size()%limit == 0 ? productJPA.findByCategory_Id(pagedefalut,categoryid).stream().collect(Collectors.toList()).size()/limit : productJPA.findByCategory_Id(pagedefalut,categoryid).stream().collect(Collectors.toList()).size()/limit+1;
         PagePaginationResponeDTO response = new PagePaginationResponeDTO(resList,limit,page,totalItems);
 
-//        return ResponseEntity.ok(productJPA.findAll(setpage).stream());
         return ResponseEntity.ok(response);
-     //   return ResponseEntity.ok(productJPA.findByCategory_Id(setpage,categoryid).stream());
-
     }
     @PostMapping("/create")
     public ResponseEntity<?> createProduct(@RequestBody productcreateDTO product) {
@@ -230,14 +209,52 @@ public class ProductController {
         }
 
     }
+    @GetMapping("/byFilter")
+    public ResponseEntity<?> Test(@RequestBody FilterRequestDTO a) {
 
+        FilterRequestDTO lastfilter = suportFilter(a);
+        if (lastfilter.getCategoryId() == 0) {
+            if (lastfilter.getSortname().equals("desc")) {
+                List<Product> abc = productJPA.findByListSizeAndDesscPrice(lastfilter.getSizes(), lastfilter.getMinPrice(), lastfilter.getMaxPrice());
+                return ResponseEntity.ok().body(abc);
+            } else {
+                List<Product> abc = productJPA.findByListSizeAndAsscPrice(lastfilter.getSizes(), lastfilter.getMinPrice(), lastfilter.getMaxPrice());
+                return ResponseEntity.ok().body(abc);}
+        } else {
+            if (lastfilter.getSortname().equals("desc")) {
+                List<Product> abc = productJPA.findByCategory_IdAndSizeListAndDecccPrice(lastfilter.getCategoryId(), lastfilter.getSizes(), lastfilter.getMinPrice(), lastfilter.getMaxPrice());
+                return ResponseEntity.ok().body(abc);
+            } else {
+                List<Product> abc = productJPA.findByCategory_IdAndSizeListAndAsscPrice(lastfilter.getCategoryId(), lastfilter.getSizes(), lastfilter.getMinPrice(), lastfilter.getMaxPrice());
+                return ResponseEntity.ok().body(abc);
+            }
+        }
+//        return  ResponseEntity.ok().body(lastfilter);
+    }
 
-
-
-    @GetMapping("/getList/filter")
-    public ResponseEntity<?> getProductListByFilter(@RequestBody  FilterRequestDTO filter){
-        List<Product> resList = productJPA.findByFilter(filter.getSizeId(), filter.getCategoryId(), filter.getMinPrice(), filter.getMaxPrice());
-        System.out.println(resList.size());
-        return ResponseEntity.ok(resList);
+    public FilterRequestDTO suportFilter(FilterRequestDTO a){
+        FilterRequestDTO up = new FilterRequestDTO();
+        Integer id = a.getCategoryId();
+        List<Integer> aaaa = a.getSizes();
+        double min = a.getMinPrice();
+        double max = a.getMaxPrice();
+        String sort = a.getSortname();
+        if (min == 0 || max == 0) {
+            max = 1000000000000.0;
+        }
+        if(aaaa.size()==0){
+            aaaa.add(1);
+            aaaa.add(2);
+            aaaa.add(3);
+            aaaa.add(4);
+            aaaa.add(5);
+            aaaa.add(6);
+        }
+        up.setCategoryId(id);
+        up.setSizes(aaaa);
+        up.setMinPrice(min);
+        up.setMaxPrice(max);
+        up.setSortname(sort);
+        return up;
     }
 }

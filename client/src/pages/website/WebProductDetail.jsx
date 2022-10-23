@@ -9,6 +9,7 @@ import Avatar from '@mui/material/Avatar';
 import { formatter } from '../../utils'
 import { useDispatch, useSelector } from 'react-redux'
 import { addToCart } from '../../redux/actions/CartReducerAtion'
+import { notification } from 'antd';
 
 const Container = styled.div``
 const Wrapper = styled.div`
@@ -145,6 +146,14 @@ const ButtonContainer = styled.div`
     justify-content: space-between;
 `
 
+const openNotificationWithIcon = (type, title, des) => {
+    notification[type]({
+        message: title,
+        description: des,
+    });
+};
+
+
 const ProductDetail = () => {
     const { id } = useParams();
     const [isLoading, setIsLoading] = useState(true);
@@ -183,6 +192,7 @@ const ProductDetail = () => {
             setSelectedQuantity(1);
         } else if (e.target.value > product.productsizes[selectedSizeIndex].quantity) {
             setSelectedQuantity(product.productsizes[selectedSizeIndex].quantity)
+            openNotificationWithIcon('warning', 'Thông báo', `Trong kho hiện  còn lại ${product.productsizes[selectedSizeIndex].quantity}  sản phẩm!`)
         }
         setSelectedQuantity(e.target.value);
     }

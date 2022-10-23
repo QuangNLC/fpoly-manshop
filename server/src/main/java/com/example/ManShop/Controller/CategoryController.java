@@ -49,15 +49,11 @@ public class CategoryController {
         if(!categoryJPA.existsById(categoryId)){
             return ResponseEntity.notFound().build();
         }
-
         Categorys updatedCate = categoryJPA.findById(categoryId).get();
         updatedCate.setTitle(reqCate.getTitle());
-
         Categorys resCate = categoryJPA.save(updatedCate);
-
         return ResponseEntity.ok(resCate);
     }
-
     @DeleteMapping()
     public ResponseEntity<?> deleteCategory(@PathParam("categoryId") Integer categoryId){
         if(!categoryJPA.existsById(categoryId)){

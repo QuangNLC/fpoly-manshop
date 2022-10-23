@@ -3,6 +3,7 @@ package com.example.ManShop.Entitys;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -11,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@ToString
 @Entity
 @Table(name = "Promotions")
 public class Promotions {

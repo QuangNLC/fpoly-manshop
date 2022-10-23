@@ -8,13 +8,15 @@ import checkoutAPI from '../../api/checkoutAPI';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import DialogHOC from '../../hoc/DialogHOC';
 import { Link, useNavigate } from 'react-router-dom'
-import { clearCartAction } from '../../redux/actions/CartReducerAtion'
+import { changeCartItemQuantity, changeCartItemQuantityAction, clearCartAction } from '../../redux/actions/CartReducerAtion'
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import { notification } from 'antd';
+import { CHANGE_CART_ITEM_QUANTITY } from '../../redux/types'
 
 
 const Container = styled.div``
@@ -94,9 +96,23 @@ const ProductAmountContainer = styled.div`
     align-items: center;
     margin-bottom: 20px;
 `
+const QuantityButton = styled.div`
+    width:  30px;
+    height: 30px;
+    border: 0.5px  solid  lightgray;
+`
 const ProductAmount = styled.div`
     font-size: 24px;
     margin: 5px;
+    width: max-content;
+`
+
+const AmountInput = styled.input`
+    width:  120px;
+    height: 100%;
+    border:none;
+    outline: none;   
+    padding: 5px;
 `
 const ProductPrice = styled.div`
     font-size: 30px;
@@ -166,21 +182,23 @@ const Input = styled.input`
     border: none;
     border-bottom: 1px solid gray;
 `
-const AmountInput = styled.input`
-    width :30px;
-    height: 100%;
-    border:none;
-    outline: none;
-`
+
+const openNotificationWithIcon = (type, title, des) => {
+    notification[type]({
+        message: title,
+        description: des,
+    });
+};
 
 const Webcart = () => {
     const [isModalInfo, setIsModalInfo] = useState(false);
     const cartReducer = useSelector(state => state.cartReducer);
+    const [data, setData] = useState([]);
     const auth = useSelector(state => state.auth.auth);
     const isAuth = useSelector(state => state.auth.isAuth);
     const [customerValue, setCustomerValue] = useState({
-        adress: auth ? auth.info.adress :"",
-        phone:auth ? auth.info.phone : "",
+        adress: auth ? auth.info.adress : "",
+        phone: auth ? auth.info.phone : "",
     });
 
 
@@ -188,12 +206,12 @@ const Webcart = () => {
     const navigate = useNavigate()
 
     const hanldleCheckout = () => {
-        if (cartReducer.cart && cartReducer.cart.length > 0) {
+        if (data && data.length > 0) {
             let payload = {
                 "users": {
                     "username": auth.info.username
                 },
-                "total_price": cartReducer.cart.reduce((total, item) => { return total + item.quantity * item.price }, 0) * 1.1,
+                "total_price": data.reduce((total, item) => { return total + item.quantity * item.price }, 0) * 1.1,
                 "customers": {
                     "phone": customerValue.phone,
                     "address": customerValue.adress,
@@ -203,7 +221,7 @@ const Webcart = () => {
                     }
                 },
                 "orderDetail": [
-                    ...cartReducer.cart.map((item) => ({
+                    ...data.map((item) => ({
                         product: {
                             id: item.product.id
                         },
@@ -217,10 +235,10 @@ const Webcart = () => {
             checkoutAPI.checkout(payload)
                 .then(res => {
                     console.log(res);
-                    dispatch({
-                        type: "CLEAR_CART"
-                    });
+                    dispatch(clearCartAction());
                     setIsModalInfo(false);
+                    openNotificationWithIcon('success','Đặt hàng thành công!', 'Đơn đặt hàng  của  bạn đã  được tạo thành công!');
+                    navigate("/my-orders")
                 })
                 .catch(err => {
                     console.log(err);
@@ -268,21 +286,62 @@ const Webcart = () => {
         });
     };
 
-    const onChangeQuantity = (e, item) => {
-        console.log(item)
-        if (e.target.value) {
-            if (e.target.value > 0) {
-                if (e.target.value > item.size.quantity) {
-                    handleClickUpdateCartItemQuantity(item, 30);
+    const handleChangeCartItemQuantity = (e, item) => {
+        let index = data.findIndex(dataItem => (dataItem.product.id === item.product.id && dataItem.size.id === item.size.id));
+        if (index !== -1) {
+            data[index].quantity = e.target.value;
+            setData([...data])
+        }
+    }
+
+    const handleBlurCartItemQuantityInput = (e, item) => {
+        let index = data.findIndex(dataItem => (dataItem.product.id === item.product.id && dataItem.size.id === item.size.id));
+        if (index !== -1) {
+            if (Number.isNaN(Number.parseInt(data[index].quantity))) {
+                data[index].quantity = 1;
+                let payload = {
+                    ...item,
+                    quantity: 1
+                }
+                dispatch(changeCartItemQuantityAction(payload));
+                setData([...data])
+                openNotificationWithIcon('error', 'Lỗi nhập liệu', 'Vui lòng nhập  số lượng mua hàng là một số tự nhiên lớn hơn  0!')
+            } else {
+                if (Number.parseInt(data[index].quantity) < 0) {
+                    data[index].quantity = 1;
+                    let payload = {
+                        ...item,
+                        quantity: 1
+                    }
+                    dispatch(changeCartItemQuantityAction(payload));
+                    setData([...data])
+                    openNotificationWithIcon('error', 'Lỗi nhập liệu', 'Vui lòng nhập  số lượng mua hàng là một số tự nhiên lớn hơn  0!')
                 } else {
-                    handleClickUpdateCartItemQuantity(item, e.target.value);
+                    let  quantity =  Number.parseInt(data[index].quantity)
+                    console.log(quantity)
+                    if (quantity > cartReducer.cart[index].size.quantity) {
+                        quantity   = cartReducer.cart[index].size.quantity
+                        data[index].quantity = quantity;
+                        let payload = {
+                            ...item,
+                            quantity: quantity
+                        }
+                        dispatch(changeCartItemQuantityAction(payload));
+                        setData([...data])
+                        openNotificationWithIcon('warning', 'Thông báo', `Trong kho hiện  còn lại ${cartReducer.cart[index].size.quantity}  sản phẩm!`)
+                    }else{
+                        data[index].quantity = quantity;
+                        let payload = {
+                            ...item,
+                            quantity: quantity
+                        }
+                        dispatch(changeCartItemQuantityAction(payload));
+                        setData([...data])
+                    }
                 }
             }
-            else {
-                handleClickUpdateCartItemQuantity(item, 1);
-            };
-        };
-    };
+        }
+    }
 
     useEffect(() => {
         setCustomerValue(
@@ -293,6 +352,11 @@ const Webcart = () => {
         )
     }, [auth])
 
+    useEffect(() => {
+        let cartData = [...cartReducer.cart];
+        setData([...cartData])
+    }, [cartReducer.cart])
+
     return (
         <Helmet
             title={"Giỏ Hàng"}
@@ -302,7 +366,7 @@ const Webcart = () => {
                     <Title>Giỏ Hàng</Title>
                     <Top>
                         {
-                            cartReducer.cart.length > 0 &&
+                            data.length > 0 &&
                             <DialogHOC
                                 title="Xác Nhận"
                                 content="Bạn có muốn xóa hết mặt hàng trong giỏ không?"
@@ -320,7 +384,7 @@ const Webcart = () => {
                     <Bottom>
                         <Info>
                             {
-                                cartReducer.cart && cartReducer.cart.length <= 0 &&
+                                data && data.length <= 0 &&
                                 (
                                     <>
                                         <p>
@@ -333,7 +397,7 @@ const Webcart = () => {
                                 )
                             }
                             {
-                                cartReducer.cart && cartReducer.cart.length > 0 && cartReducer.cart.map((item, index) => {
+                                data && data.length > 0 && data.map((item, index) => {
                                     return (
                                         <Product key={index}>
                                             <ProductDetail>
@@ -352,23 +416,15 @@ const Webcart = () => {
                                             </ProductDetail>
                                             <PriceDetail>
                                                 <ProductAmountContainer>
-                                                    <div onClick={() => { handleClickUpdateCartItemQuantity(item, item.quantity + 1) }}>
+                                                    <QuantityButton onClick={() => { handleClickUpdateCartItemQuantity(item, item.quantity + 1) }}>
                                                         <Add />
-                                                    </div>
+                                                    </QuantityButton>
                                                     <ProductAmount>
                                                         <AmountInput
-                                                            type='number'
+                                                            type='text'
                                                             value={item.quantity}
-                                                            onChange={(e) => { onChangeQuantity(e, item) }}
-                                                        // onBlur={(e) => {
-                                                        //     if (e.target.value <= 0) {
-                                                        //         setSelectedQuantity(1)
-                                                        //     } else if (e.target.value > product.productsizes[selectedSizeIndex].quantity) {
-                                                        //         setSelectedQuantity(product.productsizes[selectedSizeIndex].quantity)
-                                                        //     } else {
-                                                        //         setSelectedQuantity(e.target.value % 1 === 0 ? e.target.value : Math.floor(e.target.value))
-                                                        //     }
-                                                        // }}
+                                                            onChange={(e) => { handleChangeCartItemQuantity(e, item) }}
+                                                            onBlur={(e) => { handleBlurCartItemQuantityInput(e, item) }}
                                                         />
                                                     </ProductAmount>
                                                     {
@@ -381,14 +437,16 @@ const Webcart = () => {
                                                                     okText="Xác Nhận"
                                                                     cancelText="Hủy Bỏ"
                                                                 >
-                                                                    <Remove />
+                                                                    <QuantityButton>
+                                                                        <Remove />
+                                                                    </QuantityButton>
                                                                 </DialogHOC>
                                                             )
                                                             :
                                                             (
-                                                                <div onClick={() => { handleClickUpdateCartItemQuantity(item, item.quantity - 1) }} >
+                                                                <QuantityButton onClick={() => { handleClickUpdateCartItemQuantity(item, item.quantity - 1) }} >
                                                                     <Remove />
-                                                                </div>
+                                                                </QuantityButton>
                                                             )
                                                     }
 
@@ -415,25 +473,25 @@ const Webcart = () => {
                             <SummaryTitle>Thông Tin Hóa Đơn</SummaryTitle>
                             <SummaryItem>
                                 <SummaryItemText>Tổng tiền</SummaryItemText>
-                                <SummaryItemPrice>{cartReducer.cart && formatter.format(cartReducer.cart.reduce((total, item) => { return total + item.quantity * item.price }, 0))}</SummaryItemPrice>
+                                <SummaryItemPrice>{data && formatter.format(data.reduce((total, item) => { return total + item.quantity * item.price }, 0))}</SummaryItemPrice>
                             </SummaryItem>
                             <SummaryItem>
                                 <SummaryItemText>VAT</SummaryItemText>
-                                <SummaryItemPrice>{cartReducer.cart && formatter.format(cartReducer.cart.reduce((total, item) => { return total + item.quantity * item.price }, 0) * 0.1)}</SummaryItemPrice>
+                                <SummaryItemPrice>{data && formatter.format(data.reduce((total, item) => { return total + item.quantity * item.price }, 0) * 0.1)}</SummaryItemPrice>
                             </SummaryItem>
                             <SummaryItem type="total">
                                 <SummaryItemText>Thanh toán</SummaryItemText>
-                                <SummaryItemPrice>{cartReducer.cart && formatter.format(cartReducer.cart.reduce((total, item) => { return total + item.quantity * item.price }, 0) * 1.1)}</SummaryItemPrice>
+                                <SummaryItemPrice>{data && formatter.format(data.reduce((total, item) => { return total + item.quantity * item.price }, 0) * 1.1)}</SummaryItemPrice>
                             </SummaryItem>
                             <Button
-                                onClick={() => { 
-                                    if(isAuth){
+                                onClick={() => {
+                                    if (isAuth) {
                                         setIsModalInfo(true)
-                                    }else{
+                                    } else {
                                         navigate('/login')
-                                    } 
+                                    }
                                 }}
-                                disabled={cartReducer.cart.length <= 0}
+                                disabled={data.length <= 0}
                             >
                                 Đặt Hàng Ngay
                             </Button>
