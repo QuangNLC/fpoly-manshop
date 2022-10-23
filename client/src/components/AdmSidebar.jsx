@@ -92,6 +92,14 @@ const AdmSidebar = () => {
                                 </ItemText>
                             </Item>
                         </Link>
+                        <Link to="/admin/category-list" style={{ textDecoration: "none", color: "unset" }}>
+                            <Item>
+                                <StorefrontIcon style={{ fontSize: "20px" }} />
+                                <ItemText>
+                                    Categories
+                                </ItemText>
+                            </Item>
+                        </Link>
                         <Link to="/admin/product-list" style={{ textDecoration: "none", color: "unset" }}>
                             <Item>
                                 <StorefrontIcon style={{ fontSize: "20px" }} />
@@ -100,12 +108,15 @@ const AdmSidebar = () => {
                                 </ItemText>
                             </Item>
                         </Link>
-                        <Item>
-                            <EventNoteIcon style={{ fontSize: "20px" }} />
-                            <ItemText>
-                                Orders
-                            </ItemText>
-                        </Item>
+                        <Link to="/admin/order-list" style={{ textDecoration: "none", color: "unset" }}>
+                            <Item>
+                                <EventNoteIcon style={{ fontSize: "20px" }} />
+                                <ItemText>
+                                    Orders
+                                </ItemText>
+                            </Item>
+                        </Link>
+
                         <Item>
                             <BarChartIcon style={{ fontSize: "20px" }} />
                             <ItemText>

@@ -25,7 +25,7 @@ public class UsersController {
 
     @GetMapping("/getall")
     public ResponseEntity<?> getUsers() {
-        log.info("gọi vào hàm tìm kiếm tất cả sản phẩm");
+        log.info("gọi vào hàm tìm kiếm tất cả user");
         return ResponseEntity.ok(userJPA.findAll());
     }
 
@@ -35,7 +35,7 @@ public class UsersController {
             log.error("không thấy tài khoản" + username);
             return ResponseEntity.notFound().build();
         }
-        log.info("đã tìm thấy sản phẩm với tài khoản " +username);
+        log.info("đã tìm thấy  tài khoản voi username: " +username);
         return ResponseEntity.ok(userJPA.findById(username).get());
     }
 
@@ -53,8 +53,8 @@ public class UsersController {
         }
     }
 
-    @PutMapping("/{username}")
-    public ResponseEntity<Object> insert(@PathVariable("username") String username,
+    @PutMapping()
+    public ResponseEntity<Users> insert(@PathParam("username") String username,
                                     @RequestBody Users users) {
         Optional<Users> usersOptional = userJPA.findById(username);
         if (usersOptional.isEmpty()) {
@@ -62,9 +62,10 @@ public class UsersController {
             return ResponseEntity.notFound().build();
         }
         users.setUsername(username);
-        userJPA.save(users);
+        users.setEmail(usersOptional.get().getEmail());
+        Users resUser = userJPA.save(users);
         log.info("cập nhật tài khoản thành công " +username);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(resUser);
     }
 
     @DeleteMapping()

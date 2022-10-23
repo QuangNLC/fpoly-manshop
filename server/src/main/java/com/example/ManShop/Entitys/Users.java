@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Table(name = "Users")
 public class Users {
     @Id
@@ -26,6 +28,8 @@ public class Users {
     private int phone;
     @Column(name = "activated")
     private Boolean activated;
+    @Column(name="adress")
+    private String adress;
     @Column(name = "verificode", length = 64)
     @JsonIgnore
     private String verificode;

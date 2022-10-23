@@ -5,6 +5,7 @@ import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import SettingsIcon from '@mui/icons-material/Settings';
 import Badge from '@mui/material/Badge';
 import avt from '../assets/imgs/avt.png';
+import { Link } from 'react-router-dom';
 
 const Container = styled.div`
     width: 100%;
@@ -46,7 +47,7 @@ const IconContainer = styled.div`
     align-items: center;
     cursor: pointer;
 `
-const Avatar= styled.div`
+const Avatar = styled.div`
     width: 40px;
     height: 40px;
     border-radius: 50%;
@@ -66,7 +67,9 @@ const AdmTopbar = () => {
         <Container>
             <Wrapper>
                 <Left>
-                    <Logo>Mnc 4 Man</Logo>
+                    <Link to="/">
+                        <Logo>Mnc 4 Man</Logo>
+                    </Link>
                 </Left>
                 <Right>
                     <IconContainer>
@@ -76,14 +79,16 @@ const AdmTopbar = () => {
                     </IconContainer>
                     <IconContainer>
                         <Badge badgeContent={1} color="primary">
-                            <ChatBubbleIcon color="action" />
+                            <Link to="/admin/message">
+                                <ChatBubbleIcon color="action" />
+                            </Link>
                         </Badge>
                     </IconContainer>
                     <IconContainer>
-                            <SettingsIcon color="action" />
+                        <SettingsIcon color="action" />
                     </IconContainer>
                     <Avatar>
-                        <AvatarImage src={avt}/>
+                        <AvatarImage src={avt} />
                     </Avatar>
                 </Right>
             </Wrapper>

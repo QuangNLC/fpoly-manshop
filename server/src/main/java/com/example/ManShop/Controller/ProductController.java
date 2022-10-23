@@ -1,26 +1,33 @@
 package com.example.ManShop.Controller;
 
+import com.example.ManShop.DTOS.FilterInfoResponseDTO;
+import com.example.ManShop.DTOS.FilterRequestDTO;
 import com.example.ManShop.DTOS.productcreateDTO;
 import com.example.ManShop.Entitys.Categorys;
 import com.example.ManShop.Entitys.Images;
 import com.example.ManShop.Entitys.Product;
 import com.example.ManShop.Entitys.ProductSize;
+import com.example.ManShop.JPAs.SizeJPA;
 import com.example.ManShop.JPAs.CategoryJPA;
 import com.example.ManShop.JPAs.ImagesJPA;
 import com.example.ManShop.JPAs.ProductJPA;
 import com.example.ManShop.JPAs.ProductsizeJPA;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.example.ManShop.DTOS.PagePaginationResponeDTO;
+
+import javax.websocket.server.PathParam;
 
 @RestController
 @CrossOrigin("*")
@@ -28,7 +35,7 @@ import com.example.ManShop.DTOS.PagePaginationResponeDTO;
 public class ProductController {
     private final Logger log = LoggerFactory.getLogger(ProductController.class);
     final
-    ProductJPA productJPA;
+    ProductJPA  productJPA;
 
     final
     CategoryJPA categoryJPA;
@@ -38,6 +45,9 @@ public class ProductController {
 
     final
     ProductsizeJPA productsizeJPA;
+
+    @Autowired
+    SizeJPA sizesJPA;
 
     public ProductController(ProductJPA productJPA, CategoryJPA categoryJPA, ImagesJPA imagesJPA, ProductsizeJPA productsizeJPA) {
         this.productJPA = productJPA;
@@ -60,7 +70,7 @@ public class ProductController {
             log.error("không thấy sản phẩm");
             return ResponseEntity.notFound().build();
         }
-            log.info("đã tìm thấy sản phẩm với id " +id);
+        log.info("đã tìm thấy sản phẩm với id " +id);
         return ResponseEntity.ok(productJPA.findById(id).get());
 
     }
@@ -80,10 +90,46 @@ public class ProductController {
         PagePaginationResponeDTO response = new PagePaginationResponeDTO(resList,limit,page,totalItems);
 //        return ResponseEntity.ok(productJPA.findAll(setpage).stream());
         return ResponseEntity.ok(response);
-
     }
-//    @GetMapping("byfilter")
-//    public ResponseEntity<?> byfilter(@RequestParam("") )
+
+    @GetMapping("/get/filter/info")
+    public ResponseEntity<FilterInfoResponseDTO> getFilterInfo(){
+        log.info("Gọi hàm get thông tin của bộ lọc(filter) trang sản phẩm");
+        FilterInfoResponseDTO response = new FilterInfoResponseDTO();
+        response.setCategories(categoryJPA.findAll());
+        response.setSizes(sizesJPA.findAll());
+        response.setMaxPrice(Double.parseDouble("1000000000"));
+        return ResponseEntity.ok(response);
+    }
+
+
+    @GetMapping("/weblist")
+    public ResponseEntity<?> GetByNiq(@RequestBody(required = false) FilterRequestDTO filter, @PathParam(value = "page") Integer page, @PathParam("limit") Integer limit){
+
+        System.out.println(sizesJPA.findAll().size());
+        if(filter == null){
+            return ResponseEntity.ok(productJPA.findAll());
+        }else{
+            Pageable setpage;
+            Pageable pagedefalut =PageRequest.of(0,1000000);
+            int ix = page -1;
+            if(ix >0 ){
+                setpage = PageRequest.of(ix, limit);
+            }else{
+                setpage = PageRequest.of(0, limit);
+            }
+            List<Product> resList = new ArrayList<>();
+            Integer totalItems = 0;
+            if(!(filter.getCategoryId() != -1)){
+            }else{
+                resList = productJPA.findByCategory_Id(setpage,filter.getCategoryId()).stream().collect(Collectors.toList());
+                totalItems = productJPA.findByCategory_Id(pagedefalut,filter.getCategoryId()).stream().collect(Collectors.toList()).size()%limit == 0 ? productJPA.findByCategory_Id(pagedefalut,filter.getCategoryId()).stream().collect(Collectors.toList()).size()/limit : productJPA.findByCategory_Id(pagedefalut,filter.getCategoryId()).stream().collect(Collectors.toList()).size()/limit+1;
+                PagePaginationResponeDTO response = new PagePaginationResponeDTO(resList,limit,page,totalItems);
+                return ResponseEntity.ok(response);
+            }
+        }
+        return ResponseEntity.ok().build();
+    }
 
     @GetMapping("/category/{page}/{limit}")
     public ResponseEntity<?> getbyCategory(@RequestParam Integer categoryid,@PathVariable("page") Integer page,@PathVariable("limit")Integer limit){
@@ -99,10 +145,7 @@ public class ProductController {
         Integer totalItems = productJPA.findByCategory_Id(pagedefalut,categoryid).stream().collect(Collectors.toList()).size()%limit == 0 ? productJPA.findByCategory_Id(pagedefalut,categoryid).stream().collect(Collectors.toList()).size()/limit : productJPA.findByCategory_Id(pagedefalut,categoryid).stream().collect(Collectors.toList()).size()/limit+1;
         PagePaginationResponeDTO response = new PagePaginationResponeDTO(resList,limit,page,totalItems);
 
-//        return ResponseEntity.ok(productJPA.findAll(setpage).stream());
         return ResponseEntity.ok(response);
-     //   return ResponseEntity.ok(productJPA.findByCategory_Id(setpage,categoryid).stream());
-
     }
     @PostMapping("/create")
     public ResponseEntity<?> createProduct(@RequestBody productcreateDTO product) {
@@ -165,5 +208,69 @@ public class ProductController {
             }
         }
 
+    }
+
+    @GetMapping("/byFilter")
+    public ResponseEntity<?> Test(@RequestBody FilterRequestDTO a,@RequestParam("page") Integer page,@RequestParam("limit")Integer limit) {
+        Pageable setpage;
+        Pageable pagedefalut = PageRequest.of(0, 1000000);
+        int ix = page - 1;
+        if (ix > 0) {
+            setpage = PageRequest.of(ix, limit);
+        } else {
+            setpage = PageRequest.of(0, limit);
+        }
+        FilterRequestDTO lastfilter = suportFilter(a);
+        if (lastfilter.getCategoryId() == 0) {
+            if (lastfilter.getSortname().equals("desc")) {
+                List<Product> resList = productJPA.findByListSizeAndDesscPrice(lastfilter.getSizes(), lastfilter.getMinPrice(), lastfilter.getMaxPrice(), setpage).stream().collect(Collectors.toList());
+                Integer totalItems = productJPA.findByListSizeAndDesscPrice(lastfilter.getSizes(), lastfilter.getMinPrice(), lastfilter.getMaxPrice(), pagedefalut).stream().collect(Collectors.toList()).size() % limit == 0 ? productJPA.findByListSizeAndDesscPrice(lastfilter.getSizes(), lastfilter.getMinPrice(), lastfilter.getMaxPrice(), pagedefalut).stream().collect(Collectors.toList()).size() / limit : productJPA.findByListSizeAndDesscPrice(lastfilter.getSizes(), lastfilter.getMinPrice(), lastfilter.getMaxPrice(), pagedefalut).stream().collect(Collectors.toList()).size() / limit + 1;
+                PagePaginationResponeDTO response = new PagePaginationResponeDTO(resList, limit, page, totalItems);
+                return ResponseEntity.ok(response);
+            } else {
+                List<Product> resList = productJPA.findByListSizeAndAsscPrice(lastfilter.getSizes(), lastfilter.getMinPrice(), lastfilter.getMaxPrice(), setpage).stream().collect(Collectors.toList());
+                Integer totalItems = productJPA.findByListSizeAndAsscPrice(lastfilter.getSizes(), lastfilter.getMinPrice(), lastfilter.getMaxPrice(), pagedefalut).stream().collect(Collectors.toList()).size() % limit == 0 ? productJPA.findByListSizeAndAsscPrice(lastfilter.getSizes(), lastfilter.getMinPrice(), lastfilter.getMaxPrice(), pagedefalut).stream().collect(Collectors.toList()).size() / limit : productJPA.findByListSizeAndAsscPrice(lastfilter.getSizes(), lastfilter.getMinPrice(), lastfilter.getMaxPrice(), pagedefalut).stream().collect(Collectors.toList()).size() / limit + 1;
+                PagePaginationResponeDTO response = new PagePaginationResponeDTO(resList, limit, page, totalItems);
+                return ResponseEntity.ok(response);
+            }
+        }else{
+            if (lastfilter.getSortname().equals("desc")) {
+                List<Product> resList = productJPA.findByCategory_IdAndSizeListAndDecccPrice(lastfilter.getCategoryId(), lastfilter.getSizes(), lastfilter.getMinPrice(), lastfilter.getMaxPrice(), setpage).stream().collect(Collectors.toList());
+                Integer totalItems = productJPA.findByCategory_IdAndSizeListAndDecccPrice(lastfilter.getCategoryId(), lastfilter.getSizes(), lastfilter.getMinPrice(), lastfilter.getMaxPrice(), pagedefalut).stream().collect(Collectors.toList()).size() % limit == 0 ? productJPA.findByCategory_IdAndSizeListAndDecccPrice(lastfilter.getCategoryId(), lastfilter.getSizes(), lastfilter.getMinPrice(), lastfilter.getMaxPrice(), pagedefalut).stream().collect(Collectors.toList()).size() / limit : productJPA.findByCategory_IdAndSizeListAndDecccPrice(lastfilter.getCategoryId(), lastfilter.getSizes(), lastfilter.getMinPrice(), lastfilter.getMaxPrice(), pagedefalut).stream().collect(Collectors.toList()).size() / limit + 1;
+                PagePaginationResponeDTO response = new PagePaginationResponeDTO(resList, limit, page, totalItems);
+                return ResponseEntity.ok(response);
+            } else {
+                List<Product> resList = productJPA.findByCategory_IdAndSizeListAndAsscPrice(lastfilter.getCategoryId(), lastfilter.getSizes(), lastfilter.getMinPrice(), lastfilter.getMaxPrice(), setpage).stream().collect(Collectors.toList());
+                Integer totalItems = productJPA.findByCategory_IdAndSizeListAndAsscPrice(lastfilter.getCategoryId(), lastfilter.getSizes(), lastfilter.getMinPrice(), lastfilter.getMaxPrice(), pagedefalut).stream().collect(Collectors.toList()).size() % limit == 0 ? productJPA.findByCategory_IdAndSizeListAndAsscPrice(lastfilter.getCategoryId(), lastfilter.getSizes(), lastfilter.getMinPrice(), lastfilter.getMaxPrice(), pagedefalut).stream().collect(Collectors.toList()).size() / limit : productJPA.findByCategory_IdAndSizeListAndAsscPrice(lastfilter.getCategoryId(), lastfilter.getSizes(), lastfilter.getMinPrice(), lastfilter.getMaxPrice(), pagedefalut).stream().collect(Collectors.toList()).size() / limit + 1;
+                PagePaginationResponeDTO response = new PagePaginationResponeDTO(resList, limit, page, totalItems);
+                return ResponseEntity.ok(response);
+            }
+        }
+    }
+
+    public FilterRequestDTO suportFilter(FilterRequestDTO a){
+        FilterRequestDTO up = new FilterRequestDTO();
+        Integer id = a.getCategoryId();
+        List<Integer> aaaa = a.getSizes();
+        double min = a.getMinPrice();
+        double max = a.getMaxPrice();
+        String sort = a.getSortname();
+        if (min == 0 || max == 0) {
+            max = 1000000000000.0;
+        }
+        if(aaaa.size()==0){
+            aaaa.add(1);
+            aaaa.add(2);
+            aaaa.add(3);
+            aaaa.add(4);
+            aaaa.add(5);
+            aaaa.add(6);
+        }
+        up.setCategoryId(id);
+        up.setSizes(aaaa);
+        up.setMinPrice(min);
+        up.setMaxPrice(max);
+        up.setSortname(sort);
+        return up;
     }
 }

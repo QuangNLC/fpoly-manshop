@@ -1,3 +1,4 @@
+import { ADD_TO_CART, DELETE_CART_ITEM, CHANGE_CART_ITEM_QUANTITY, CLEAR_CART } from "../types";
 const data = localStorage.getItem("CART");
 
 const initialState = {
@@ -6,8 +7,9 @@ const initialState = {
 
 const cartReducer = (state = initialState, action) => {
     switch (action.type) {
-        case ("ADD_TO_CART"): {
-            let index = checkItemByProductIdAndSize(state.cart, action.payload.product.id, action.payload.size);
+        case (ADD_TO_CART): {
+            console.log(action.payload)
+            let index = checkItemByProductIdAndSize(state.cart, action.payload.product.id, action.payload.size.size.title);
             if (index == -1) {
                 state.cart.push(action.payload);
             } else {
@@ -19,8 +21,8 @@ const cartReducer = (state = initialState, action) => {
                 ...state
             }
         }
-        case ("DELETE_CART_ITEM"): {
-            let index = checkItemByProductIdAndSize(state.cart, action.payload.product.id, action.payload.size);
+        case (DELETE_CART_ITEM): {
+            let index = checkItemByProductIdAndSize(state.cart, action.payload.product.id, action.payload.size.size.title);
             if (index == -1) {
             } else {
                 state.cart.splice(index, 1);
@@ -30,8 +32,8 @@ const cartReducer = (state = initialState, action) => {
                 ...state
             }
         }
-        case("CHANGE_CART_ITEM_QUANTITY"): {
-            let index = checkItemByProductIdAndSize(state.cart, action.payload.product.id, action.payload.size);
+        case(CHANGE_CART_ITEM_QUANTITY): {
+            let index = checkItemByProductIdAndSize(state.cart, action.payload.product.id, action.payload.size.size.title);
             if(index == -1){
 
             }else{
@@ -42,11 +44,11 @@ const cartReducer = (state = initialState, action) => {
                 ...state
             }
         }
-        case("CLEAR_CART"):{
+        case(CLEAR_CART):{
             state.cart = []
             localStorage.setItem("CART", JSON.stringify(state));
             return({
-                state
+                ...state
             });
         }
         default: {
@@ -59,7 +61,7 @@ const checkItemByProductIdAndSize = (arr, id, size) => {
     let result = -1;
 
     arr.forEach((item, index) => {
-        if (item.product.id === id && item.size === size) {
+        if (item.product.id === id && item.size.size.title === size) {
             result = index;
         };
     });

@@ -4,8 +4,10 @@ import AddShoppingCartOutlinedIcon from '@mui/icons-material/AddShoppingCartOutl
 import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import { formatter } from "../utils";
-import { Link } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { addToCart } from '../redux/actions/CartReducerAtion';
+
 const HoverOptionsContainer = styled.div`
     position:absolute;
     overflow: hidden;
@@ -22,7 +24,7 @@ const Image = styled.img`
     object-fit: cover;
 `
 const Container = styled.div`
-    width: 25%;
+    width: 340px;
     height: 520px;
     padding: 20px;
     display:flex;
@@ -86,22 +88,27 @@ const OldPrice = styled.div`
 `
 
 const Product = ({ item }) => {
+    const isAuth = useSelector(state => state.auth.isAuth)
     const dispatch = useDispatch();
+
+    const navigate = useNavigate();
+
     const handleClickAddToCart = (item) => {
-        const action = {
-            type: "ADD_TO_CART",
-            payload:{
-                size: item.productsizes[0].size.title,
+        if (isAuth) {
+            const payload = {
+                size: item.productsizes[0],
                 quantity: 1,
-                price : item.import_price,
+                price: item.export_price,
                 product: {
-                    id: item.id,
-                    name: item.name,
-                    img: item.images[0] && item.images[0].photo
+                    ...item
                 }
             }
+            dispatch(addToCart(payload))
+            navigate("/cart")
+        } else {
+            navigate("/login")
         }
-        dispatch(action)
+
     };
 
     return (
@@ -112,7 +119,7 @@ const Product = ({ item }) => {
                     <HoverOptionsContainer>
                         <HoverOption onClick={() => handleClickAddToCart(item)}><AddShoppingCartOutlinedIcon /></HoverOption>
                         <HoverOption><FavoriteBorderOutlinedIcon /></HoverOption>
-                        <Link to={`/product/${item.id}`} style={{color: 'black'}}>
+                        <Link to={`/product/${item.id}`} style={{ color: 'black' }}>
                             <HoverOption><SearchOutlinedIcon /></HoverOption>
                         </Link>
                     </HoverOptionsContainer>

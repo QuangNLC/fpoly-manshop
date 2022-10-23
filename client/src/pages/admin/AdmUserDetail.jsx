@@ -9,6 +9,7 @@ import PublishIcon from '@mui/icons-material/Publish';
 import { Link, useParams } from 'react-router-dom';
 import usersAPI from '../../api/usersAPI';
 import defaultAvt from '../../assets/imgs/default-avt.jpg';
+import DialogHOC from '../../hoc/DialogHOC'
 
 const Container = styled.div`
     width: 100%;
@@ -107,10 +108,17 @@ const UserUpdateItem = styled.div`
     display: flex;
     flex-direction: column;
     margin-top: 10px;
+    margin-bottom: 30px;
 `
 const ItemLabel = styled.label`
     margin-bottom: 5px;
     font-size: 14px;
+`
+const ItemError = styled.span`
+    padding: 5px;
+    font-size: 12px;
+    color: red;
+    display: none;
 `
 const ItemInput = styled.input`
     border: none;
@@ -118,7 +126,21 @@ const ItemInput = styled.input`
     height: 30px;
     padding: 5px;
     border-bottom: 1px solid gray;
+
+    &:disabled {
+        background-color: rgba(0,0,0, 0.25);
+    }
+
+    &:invalid {
+        border-bottom: 1px solid red;
+    }
+
+    &:invalid ~ span {
+        display: block;
+    }
 `
+
+
 const UserUpdateRight = styled.div`
     display: flex;
     flex-direction: column;
@@ -136,21 +158,47 @@ const UserUpdateUploadLabel = styled.label``
 const UserUpdateUploadInput = styled.input`
     display: none;
 `
-const UpdateButton = styled.button`
+const UpdateButton = styled.div`
     border-radius: 5px;
     border: none;
     padding: 5px;
     cursor: pointer;
-    background-color: darkblue;
+    background-color: teal;
     color: white;
     font-weight: 500;
+    transition: all 0.25s ease-in;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    &:hover{
+        background-color: darkblue;
+    }
 `
+
+
+
 
 const AdmUserDetail = () => {
     const { username } = useParams();
     const [isLoading, setIsLoading] = useState(true)
     const [user, setUser] = useState(null)
 
+    const [updateValue, setUpdateValue] = useState({});
+
+    const handleUpdateUser = (user) => {
+        console.log('updatevalue: ', [user]);
+    }
+
+    const onChangeUpdateValue = (e) => {
+        setUpdateValue({
+            ...updateValue,
+            [e.target.name]: e.target.value
+        })
+    }
+
+
+
+    console.log(updateValue)
 
     useEffect(() => {
         console.log(username);
@@ -158,6 +206,7 @@ const AdmUserDetail = () => {
             .then(res => {
                 console.log(res);
                 setUser(res);
+                setUpdateValue(res);
                 setIsLoading(false)
             })
             .catch(err => {
@@ -188,11 +237,11 @@ const AdmUserDetail = () => {
                     :
                     (
                         <>
-                            {user &&
+                            {updateValue &&
                                 <UserContainer>
                                     <UserShow>
                                         <UserShowTop>
-                                            <UserShowTopImg src={user.photoImg || defaultAvt} alt="" />
+                                            <UserShowTopImg src={user.photo || defaultAvt} alt="" />
                                             <UserShowTopTitle>
                                                 <UserShowTopUsername>{user.fullname}</UserShowTopUsername>
                                             </UserShowTopTitle>
@@ -213,10 +262,6 @@ const AdmUserDetail = () => {
                                                 <UserShowInfoTitle>{user.phone}</UserShowInfoTitle>
                                             </UserShowInfo>
                                             <UserShowInfo>
-                                                <UserShowInfoIcon><EmailOutlinedIcon /></UserShowInfoIcon>
-                                                <UserShowInfoTitle>{user.email}</UserShowInfoTitle>
-                                            </UserShowInfo>
-                                            <UserShowInfo>
                                                 <UserShowInfoIcon><LocationSearchingOutlinedIcon /></UserShowInfoIcon>
                                                 <UserShowInfoTitle>New York | USA</UserShowInfoTitle>
                                             </UserShowInfo>
@@ -228,32 +273,52 @@ const AdmUserDetail = () => {
                                             <UserUpdateLeft>
                                                 <UserUpdateItem>
                                                     <ItemLabel>Username</ItemLabel>
-                                                    <ItemInput placeholder='annabeck99' type="text" disabled/>
-                                                </UserUpdateItem>
-                                                <UserUpdateItem>
-                                                    <ItemLabel>Full Name</ItemLabel>
-                                                    <ItemInput placeholder={user.fullname} type="text" />
+                                                    <ItemInput placeholder='annabeck99' type="text" name="username" value={updateValue.username} disabled />
                                                 </UserUpdateItem>
                                                 <UserUpdateItem>
                                                     <ItemLabel>Email</ItemLabel>
-                                                    <ItemInput placeholder={user.email} type="email" />
+                                                    <ItemInput placeholder={updateValue.email} type="email" name="email" value={updateValue.email} disabled />
+                                                </UserUpdateItem>
+                                                <UserUpdateItem>
+                                                    <ItemLabel>Full Name</ItemLabel>
+                                                    <ItemInput
+                                                        placeholder={updateValue.fullname}
+                                                        type="text"
+                                                        value={updateValue.fullname}
+                                                        name="fullname"
+                                                        onChange={onChangeUpdateValue}
+                                                    />
+                                                    <ItemError>Fullname should be 3-100 characters and shounld't any special character!</ItemError>
                                                 </UserUpdateItem>
                                                 <UserUpdateItem>
                                                     <ItemLabel>Phone</ItemLabel>
-                                                    <ItemInput placeholder={user.phone} type="text" />
+                                                    <ItemInput
+                                                        placeholder={updateValue.phone}
+                                                        value={updateValue.phone}
+                                                        type="number"
+                                                        name="phone"
+                                                        onChange={onChangeUpdateValue}
+                                                    />
+                                                    <ItemError>Phonenumber is invalid!</ItemError>
                                                 </UserUpdateItem>
-                                                <UserUpdateItem>
+                                                {/* <UserUpdateItem>
                                                     <ItemLabel>Adress</ItemLabel>
                                                     <ItemInput placeholder='New York | USA' type="text" />
-                                                </UserUpdateItem>
+                                                </UserUpdateItem> */}
                                             </UserUpdateLeft>
                                             <UserUpdateRight>
                                                 <UserUpdateUpload>
-                                                    <UserUpdateUploadImg src={user.photoImg || defaultAvt} alt="" />
+                                                    <UserUpdateUploadImg src={updateValue.photo || defaultAvt} alt="" />
                                                     <UserUpdateUploadLabel htmlFor='file'><PublishIcon style={{ cursor: "pointer" }} /></UserUpdateUploadLabel>
                                                     <UserUpdateUploadInput type={"file"} id="file" />
                                                 </UserUpdateUpload>
-                                                <UpdateButton>Update</UpdateButton>
+                                                <DialogHOC
+                                                    title="Confirm Dialog"
+                                                    content="Do you want to update this user?"
+                                                    onYes={() => { handleUpdateUser(updateValue) }}
+                                                >
+                                                    <UpdateButton>Update</UpdateButton>
+                                                </DialogHOC>
                                             </UserUpdateRight>
                                         </UserUpdateForm>
                                     </UserUpdate>
