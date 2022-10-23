@@ -32,13 +32,13 @@ public interface ProductJPA extends JpaRepository<Product,Integer> {
     );
 
     @Query("select DISTINCT p from Product p join   ProductSize pr on pr.product.id =p.id  join  Sizes s on s.id=pr.size.id where  pr.quantity>0 AND s.id  in :idsize AND p.import_price between :minPrice and :maxPrice ORDER BY p.import_price asc ")
-    List<Product> findByListSizeAndAsscPrice(List<Integer> idsize,double minPrice, double maxPrice);
+    List<Product> findByListSizeAndAsscPrice(List<Integer> idsize,double minPrice, double maxPrice,Pageable pageable);
     @Query("select DISTINCT p from Product p join   ProductSize pr on pr.product.id =p.id  join  Sizes s on s.id=pr.size.id where  pr.quantity>0 AND s.id  in :idsize AND p.import_price between :minPrice and :maxPrice ORDER BY p.import_price desc ")
-    List<Product> findByListSizeAndDesscPrice(List<Integer> idsize,double minPrice, double maxPrice);
+    List<Product> findByListSizeAndDesscPrice(List<Integer> idsize,double minPrice, double maxPrice,Pageable pageable);
     @Query("select DISTINCT p from Product p join   ProductSize pr on pr.product.id =p.id  join  Sizes s on s.id=pr.size.id where p.category.id =:idcate AND pr.quantity>0 AND s.id  in :idsize AND p.import_price between :minPrice and :maxPrice ORDER BY p.import_price asc ")
-    List<Product> findByCategory_IdAndSizeListAndAsscPrice(int idcate, List<Integer> idsize,double minPrice, double maxPrice);
+    List<Product> findByCategory_IdAndSizeListAndAsscPrice(int idcate, List<Integer> idsize,double minPrice, double maxPrice,Pageable pageable);
     @Query("select DISTINCT p from Product p join   ProductSize pr on pr.product.id =p.id  join  Sizes s on s.id=pr.size.id where p.category.id =:idcate AND pr.quantity>0 AND s.id  in :idsize AND p.import_price between :minPrice and :maxPrice ORDER BY p.import_price desc ")
-    List<Product> findByCategory_IdAndSizeListAndDecccPrice(int idcate, List<Integer> idsize,double minPrice, double maxPrice);
+    List<Product> findByCategory_IdAndSizeListAndDecccPrice(int idcate, List<Integer> idsize,double minPrice, double maxPrice,Pageable pageable);
 
 
 
