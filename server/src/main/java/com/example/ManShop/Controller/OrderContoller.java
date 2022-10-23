@@ -21,14 +21,6 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/order")
 public class OrderContoller {
 
-//    @Autowired
-//    UserJPA userJPA;
-//    @Autowired
-//    CustomerJPA customerJPA;
-//    @Autowired
-//    OrderDetailJPA orderDetailJPA;
-//    @Autowired
-//    OrderJPA orderJPA;
 
     private final Logger log = LoggerFactory.getLogger(OrderContoller.class);
     final
