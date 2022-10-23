@@ -23,7 +23,7 @@ const DialogHOC = ({ children, title, content, onYes, okText, cancelText }) => {
 
     return (
         <>
-            <div onClick={handleClickOpen}>
+            <div style={{width: '100%'}} onClick={handleClickOpen}>
                 {children}
             </div>
             <Dialog

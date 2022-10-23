@@ -12,6 +12,7 @@ import productAPI from "../../api/productsAPI";
 import styled from 'styled-components'
 import { Filter, South } from "@mui/icons-material";
 import Helmet from "../../components/Helmet";
+import DialogHOC from "../../hoc/DialogHOC";
 
 const Container = styled.div`
   width: 100%;
@@ -56,6 +57,16 @@ const FilterItemTitle = styled.p`
   margin-bottom: 10px;
 `
 
+const SortSelect = styled.select`
+  padding : 10px;
+  border-radius: 10px;
+  font-size: 18px;
+`
+const SortSelectOption = styled.option`
+  padding : 10px;
+  font-size: 18px;
+`
+
 const CategorySelect = styled.select`
   padding : 10px;
   border-radius: 10px;
@@ -76,13 +87,8 @@ const SizeOption = styled.div`
   display: flex;
   align-items: center;
 `
-const SizeCheckbox = styled.input`
-  width: 20px;
-  height: 20px;
-  margin-right: 10px;
-`
-const SizeCheckboxLabel = styled.label`
-  font-size: 14px;
+const Size = styled.input`
+  margin-right: 10px
 `
 const PriceContainer = styled.div`
   display: flex;
@@ -123,7 +129,7 @@ const FilterButtonContainer = styled.div`
 `
 
 const FilterButton = styled.div`
-  width: 40%;
+  width: 80%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -171,6 +177,14 @@ const Page = styled.div`
   }
 
 `
+const sortOption = [
+  { id: 1, by: 'name', sort: 'asc', title: 'Từ A-Z' },
+  { id: 2, by: 'name', sort: 'desc', title: 'Từ Z-A' },
+  { id: 3, by: 'price', sort: 'asc', title: 'Từ Giá tăng dần' },
+  { id: 4, by: 'price', sort: 'desc', title: 'Từ Giá giảm dần' },
+  { id: 5, by: 'createdAt', sort: 'asc', title: 'Ngày ra mắt(gần nhất)' },
+  { id: 6, by: 'createdAt', sort: 'desc', title: 'Ngày ra mắt(lâu nhất)' }
+]
 
 const WebProductList = (props) => {
   const [products, setProducts] = useState([])
@@ -183,8 +197,17 @@ const WebProductList = (props) => {
     sizes: [],
     minPrice: 0,
     maxPrice: undefined,
+    selectedSizeId: undefined,
+    sortOptionId: 1
   })
 
+
+  const onChangeSortOption = (e) => {
+    setFilterInfo({
+      ...filterInfo,
+      sortOptionId: e.target.value
+    })
+  }
   const onChangeCate = (e) => {
     setFilterInfo({
       ...filterInfo,
@@ -213,7 +236,6 @@ const WebProductList = (props) => {
     }
   }
 
-  console.log(filterInfo)
 
   const checkSizeCheckbox = (arr, id) => {
     let result = false;
@@ -223,6 +245,31 @@ const WebProductList = (props) => {
     }
 
     return result;
+  }
+
+  const handleClearFilterInfo = () => {
+    productAPI.getAll(false, 1, 16)
+      .then(res => {
+        setProducts(res.list)
+        setTotalPage(res.totalItems)
+        console.log('clear filter')
+        setFilterInfo({
+          ...filterInfo,
+          categoryId: -1,
+          minPrice: 0,
+          maxPrice: undefined,
+          selectedSizeId: undefined,
+          sortOptionId: 1
+        })
+      })
+      .catch(err =>
+        console.log(err)
+      )
+
+  }
+
+  const handleFilterProduct = () => {
+    console.log(filterInfo)
   }
 
   useEffect(() => {
@@ -240,7 +287,6 @@ const WebProductList = (props) => {
     productAPI.getFilterInfo()
       .then(res => {
         if (!res.status) {
-          console.log(res);
           setCategories(res.categories)
           setSizes(res.sizes)
         } else {
@@ -261,12 +307,25 @@ const WebProductList = (props) => {
             <FilterTitle>bộ lọc sản phẩm</FilterTitle>
             <FilterItemContainer>
               <FilterItemTitle>sắp xếp theo</FilterItemTitle>
+              <SortSelect
+                name="sortOptionId"
+                onChange={onChangeSortOption}
+                value={filterInfo.sortOptionId}
+              >
+                {
+                  sortOption.map((item, index) => (
+                    <SortSelectOption key={item.id} value={item.id}>{item.title}</SortSelectOption>
+                  ))
+                }
+
+              </SortSelect>
             </FilterItemContainer>
             <FilterItemContainer>
               <FilterItemTitle>thể loại</FilterItemTitle>
               <CategorySelect
                 onChange={onChangeCate}
                 name="categoryId"
+                value={filterInfo.categoryId}
               >
                 <CategorySelectOption value={-1} >Tất cả</CategorySelectOption>
                 {
@@ -279,11 +338,26 @@ const WebProductList = (props) => {
             <FilterItemContainer>
               <FilterItemTitle>Size</FilterItemTitle>
               <SizeContainer>
-                {
+                {/* {
                   sizes.length > 0 && sizes.map((item, index) => (
                     <SizeOption key={item.id}>
                       <SizeCheckbox type='checkbox' value={item.id} onChange={onChangeSizes} />
                       <SizeCheckboxLabel>{item.title}</SizeCheckboxLabel>
+                    </SizeOption>
+                  ))
+                } */}
+                <SizeOption>
+                  <Size type="radio" name="size" onChange={() => { setFilterInfo({ ...filterInfo, selectedSizeId: undefined }) }} checked={!filterInfo.selectedSizeId} /> Tất cả
+                </SizeOption>
+                {
+                  sizes.length > 0 && sizes.map((item, index) => (
+                    <SizeOption key={item.id}>
+                      <Size
+                        type="radio"
+                        name="size"
+                        onChange={() => { setFilterInfo({ ...filterInfo, selectedSizeId: item.id }) }}
+                        checked={filterInfo.selectedSizeId === item.id}
+                      /> {item.title}
                     </SizeOption>
                   ))
                 }
@@ -301,8 +375,16 @@ const WebProductList = (props) => {
               </PriceContainer>
             </FilterItemContainer>
             <FilterButtonContainer>
-              <FilterButton>xóa bộ lọc</FilterButton>
-              <FilterButton>lọc sản phẩm</FilterButton>
+              <DialogHOC
+                titlle="Xác nhận"
+                content="Bạn có muốn xóa bộ lọc sản phẩm hiện tại hay không?"
+                okText="Xác Nhận"
+                cancelText="Hủy Bỏ"
+                onYes={() => { handleClearFilterInfo() }}
+              >
+                <FilterButton>xóa bộ lọc</FilterButton>
+              </DialogHOC>
+                <FilterButton onClick={handleFilterProduct}>lọc sản phẩm</FilterButton>
             </FilterButtonContainer>
           </FilterContainer>
           <ProductListContainer>

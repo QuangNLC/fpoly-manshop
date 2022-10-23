@@ -5,7 +5,7 @@ import usersAPI from '../../api/usersAPI'
 import jwt_decode from "jwt-decode";
 import { useDispatch, useSelector } from 'react-redux';
 import { setAuthAction } from '../../redux/actions/AuthReducerAction'
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import loginImg from '../../assets/imgs/login-img.jpg'
 import { Form, Input, notification } from 'antd';
 import { useForm } from 'antd/es/form/Form';
@@ -234,6 +234,9 @@ const WebLogin = () => {
                                     <Form.Item
                                     >
                                         <Button type='submit'>Đăng Nhập</Button>
+                                    </Form.Item>
+                                    <Form.Item>
+                                        Chưa có tài khoản <Link to="/register">Đăng ký ngay</Link>
                                     </Form.Item>
                                 </Form>
                             </FormContainer>

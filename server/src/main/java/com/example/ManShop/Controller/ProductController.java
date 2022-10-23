@@ -230,4 +230,14 @@ public class ProductController {
         }
 
     }
+
+
+
+
+    @GetMapping("/getList/filter")
+    public ResponseEntity<?> getProductListByFilter(@RequestBody  FilterRequestDTO filter){
+        List<Product> resList = productJPA.findByFilter(filter.getSizeId(), filter.getCategoryId(), filter.getMinPrice(), filter.getMaxPrice());
+        System.out.println(resList.size());
+        return ResponseEntity.ok(resList);
+    }
 }
