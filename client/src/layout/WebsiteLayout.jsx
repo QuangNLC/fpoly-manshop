@@ -10,12 +10,14 @@ const Container = styled.div`
     position: relative;
     width: 100%;
     overflow: hidden;
+    margin: 0 auto;
 `
 
 const Content = styled.div`
+    margin: 80px auto 0 auto;
+    padding: 20px 0;
+    max-width: 50%;
     min-height: 100vh;
-    margin-top: 80px;
-    width: 100%;
 `
 const MessageContainer = styled.div`
     position: fixed;
