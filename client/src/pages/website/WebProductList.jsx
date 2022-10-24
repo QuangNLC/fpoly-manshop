@@ -87,6 +87,12 @@ const SizeOption = styled.div`
   display: flex;
   align-items: center;
 `
+const SizeCheckbox = styled.input`
+    width: 20px;
+    height:  20px;
+    margin-right:  10px;
+`
+const SizeCheckboxLabel = styled.label``
 const Size = styled.input`
   margin-right: 10px
 `
@@ -178,12 +184,12 @@ const Page = styled.div`
 
 `
 const sortOption = [
-  { id: 1, by: 'name', sort: 'asc', title: 'Từ A-Z' },
-  { id: 2, by: 'name', sort: 'desc', title: 'Từ Z-A' },
+  // { id: 1, by: 'name', sort: 'asc', title: 'Từ A-Z' },
+  // { id: 2, by: 'name', sort: 'desc', title: 'Từ Z-A' },
   { id: 3, by: 'price', sort: 'asc', title: 'Từ Giá tăng dần' },
   { id: 4, by: 'price', sort: 'desc', title: 'Từ Giá giảm dần' },
-  { id: 5, by: 'createdAt', sort: 'asc', title: 'Ngày ra mắt(gần nhất)' },
-  { id: 6, by: 'createdAt', sort: 'desc', title: 'Ngày ra mắt(lâu nhất)' }
+  // { id: 5, by: 'createdAt', sort: 'asc', title: 'Ngày ra mắt(gần nhất)' },
+  // { id: 6, by: 'createdAt', sort: 'desc', title: 'Ngày ra mắt(lâu nhất)' }
 ]
 
 const WebProductList = (props) => {
@@ -193,14 +199,12 @@ const WebProductList = (props) => {
   const [categories, setCategories] = useState([])
   const [sizes, setSizes] = useState([])
   const [filterInfo, setFilterInfo] = useState({
-    categoryId: -1,
+    categoryId: 0,
     sizes: [],
-    minPrice: 0,
+    minPrice: undefined,
     maxPrice: undefined,
-    selectedSizeId: undefined,
-    sortOptionId: 1
+    sortname: ""
   })
-
 
   const onChangeSortOption = (e) => {
     setFilterInfo({
@@ -215,7 +219,19 @@ const WebProductList = (props) => {
     })
   }
 
-  const onChangeSizes = (e) => {
+  const onChangeSizes = (e, id) => {
+    let index  =  filterInfo.sizes.findIndex(item  =>  item ===  id)
+    if(index  !==  -1){
+      filterInfo.sizes.splice(index,1);
+      setFilterInfo({
+        ...filterInfo
+      }) 
+    }else{
+      setFilterInfo({
+        ...filterInfo,
+        sizes:  [...filterInfo.sizes, id]
+      })  
+    }
     if (e.target.checked) {
       if (!checkSizeCheckbox(filterInfo.sizes, e.target.value)) {
         const newSizes = filterInfo.sizes;
@@ -248,7 +264,13 @@ const WebProductList = (props) => {
   }
 
   const handleClearFilterInfo = () => {
-    productAPI.getAll(false, 1, 16)
+    productAPI.getByFilter({
+      "categoryId": 0,
+      "sizes": [],
+      "minPrice": null,
+      "maxPrice": null,
+      "sortname": ""
+    }, 1, 16)
       .then(res => {
         setProducts(res.list)
         setTotalPage(res.totalItems)
@@ -269,18 +291,44 @@ const WebProductList = (props) => {
   }
 
   const handleFilterProduct = () => {
-    console.log(filterInfo)
+    productAPI.getByFilter(filterInfo, currPage, 16)
+      .then((res) => {
+        if (!res.status) {
+          setProducts(res.list);
+          setTotalPage(res.totalItems)
+        } else {
+          console.log(res)
+        }
+      })
+      .catch(err => console.log(err))
+
   }
 
   useEffect(() => {
-    productAPI.getAll(false, currPage, 16)
-      .then(res => {
-        setProducts(res.list)
-        setTotalPage(res.totalItems)
+    // productAPI.getAll(false, currPage, 16)
+    //   .then(res => {
+    //     if (!res.status) {
+    //       setProducts(res.list)
+    //       setTotalPage(res.totalItems)
+    //     } else {
+    //       setProducts([])
+    //     }
+    //   })
+    //   .catch(err =>
+    //     console.log(err)
+    //   )
+    productAPI.getByFilter(filterInfo, currPage, 16)
+      .then((res) => {
+        if (!res.status) {
+          setProducts(res.list);
+          setTotalPage(res.totalItems)
+        } else {
+          console.log(res)
+        }
       })
-      .catch(err =>
-        console.log(err)
-      )
+      .catch(err => console.log(err))
+
+
   }, [currPage])
 
   useEffect(() => {
@@ -294,6 +342,19 @@ const WebProductList = (props) => {
         }
       })
       .catch(err => console.log(err));
+
+
+    productAPI.testFilter({
+      "categoryId": 0,
+      "sizes": [1, 3],
+      "minPrice": 100,
+      "maxPrice": 2000000,
+      "sortname": ""
+    }, 1, 16)
+      .then((res) => {
+        console.log(res)
+      })
+      .catch(err => console.log(err))
   }, [])
 
   return (
@@ -305,7 +366,7 @@ const WebProductList = (props) => {
         <Wrapper>
           <FilterContainer>
             <FilterTitle>bộ lọc sản phẩm</FilterTitle>
-            <FilterItemContainer>
+            {/* <FilterItemContainer>
               <FilterItemTitle>sắp xếp theo</FilterItemTitle>
               <SortSelect
                 name="sortOptionId"
@@ -319,7 +380,7 @@ const WebProductList = (props) => {
                 }
 
               </SortSelect>
-            </FilterItemContainer>
+            </FilterItemContainer> */}
             <FilterItemContainer>
               <FilterItemTitle>thể loại</FilterItemTitle>
               <CategorySelect
@@ -327,7 +388,7 @@ const WebProductList = (props) => {
                 name="categoryId"
                 value={filterInfo.categoryId}
               >
-                <CategorySelectOption value={-1} >Tất cả</CategorySelectOption>
+                <CategorySelectOption value={0} >Tất cả</CategorySelectOption>
                 {
                   categories.length > 0 && categories.map((item, index) => (
                     <CategorySelectOption key={item.id} value={item.id}>{item.title}</CategorySelectOption>
@@ -338,15 +399,15 @@ const WebProductList = (props) => {
             <FilterItemContainer>
               <FilterItemTitle>Size</FilterItemTitle>
               <SizeContainer>
-                {/* {
+                {
                   sizes.length > 0 && sizes.map((item, index) => (
-                    <SizeOption key={item.id}>
-                      <SizeCheckbox type='checkbox' value={item.id} onChange={onChangeSizes} />
-                      <SizeCheckboxLabel>{item.title}</SizeCheckboxLabel>
+                    <SizeOption key={item.id}  onClick={(e)  => onChangeSizes(e, item.id)}>
+                      <SizeCheckbox type='checkbox' value={item.id}  checked={filterInfo.sizes.findIndex(size  => size === item.id) !== -1 ?  true :  false }/>
+                      <SizeCheckboxLabel  onClick={(e)=> onChangeSizes(e, item.id)}>{item.title}</SizeCheckboxLabel>
                     </SizeOption>
                   ))
-                } */}
-                <SizeOption>
+                }
+                {/* <SizeOption>
                   <Size type="radio" name="size" onChange={() => { setFilterInfo({ ...filterInfo, selectedSizeId: undefined }) }} checked={!filterInfo.selectedSizeId} /> Tất cả
                 </SizeOption>
                 {
@@ -360,7 +421,7 @@ const WebProductList = (props) => {
                       /> {item.title}
                     </SizeOption>
                   ))
-                }
+                } */}
               </SizeContainer>
             </FilterItemContainer>
             <FilterItemContainer>
@@ -384,7 +445,7 @@ const WebProductList = (props) => {
               >
                 <FilterButton>xóa bộ lọc</FilterButton>
               </DialogHOC>
-                <FilterButton onClick={handleFilterProduct}>lọc sản phẩm</FilterButton>
+              <FilterButton onClick={handleFilterProduct}>lọc sản phẩm</FilterButton>
             </FilterButtonContainer>
           </FilterContainer>
           <ProductListContainer>

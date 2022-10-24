@@ -210,10 +210,11 @@ public class ProductController {
 
     }
 
-    @GetMapping("/byFilter")
+    @PostMapping("/byFilter")
     public ResponseEntity<?> Test(@RequestBody FilterRequestDTO a,@RequestParam("page") Integer page,@RequestParam("limit")Integer limit) {
         Pageable setpage;
         Pageable pagedefalut = PageRequest.of(0, 1000000);
+        log.info("goi ham filter "  + page.toString() + "-" +  limit.toString());
         int ix = page - 1;
         if (ix > 0) {
             setpage = PageRequest.of(ix, limit);
@@ -246,6 +247,13 @@ public class ProductController {
                 return ResponseEntity.ok(response);
             }
         }
+    }
+
+    @PostMapping("testFilter")
+    public ResponseEntity<?>  testFilter(@RequestBody FilterRequestDTO a,@RequestParam("page") Integer page,@RequestParam("limit")Integer limit){
+        log.info("test" +  page.toString()  +  "/"  + limit.toString());
+
+        return  ResponseEntity.ok(a);
     }
 
     public FilterRequestDTO suportFilter(FilterRequestDTO a){

@@ -27,6 +27,14 @@ const productAPI = {
 
         return axiosClient.get(url);
     },
+    getByFilter: (filter, page, limit) => {
+        const url  =`/product/byFilter?page=${page}&limit=${limit}`;
+        return  axiosClient.post(url,  filter);
+    },
+    testFilter  :  (filter, page, limit) =>  {
+        const url  =`/product/testFilter?page=${page}&limit=${limit}`;
+        return  axiosClient.post(url, filter);
+    },
     getFilterInfo: () => {
         const url = '/product/get/filter/info';
         return axiosClient.get(url);
