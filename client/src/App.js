@@ -30,6 +30,7 @@ import AdmCategoryList from "./pages/admin/AdmCategoryList";
 import WebMessage from "./pages/website/WebMessage";
 import AdmProductList from "./pages/admin/AdmProductList";
 import WebRegister from "./pages/website/WebRegister";
+import AdmEditProductDetails from "./pages/admin/AdmEditProductDetails";
 function App() {
   const store = createStore(rootReducer);
 
@@ -64,6 +65,7 @@ function App() {
             <Route path="category-list" element={<AdmCategoryList />} />
             <Route path="product-list" element={<AdmProductList />} />
             <Route path="new-product" element={<AdmNewProduct />} />
+            <Route path="edit-product/:productId" element={<AdmEditProductDetails />} />
             <Route path="user/:username" element={<AdmUserDetail />} />
             <Route path="message" element={<WebMessage />} />
             <Route path="*" element={<div>Trang khong ton tai</div>} />

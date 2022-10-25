@@ -22,6 +22,7 @@ const Image = styled.img`
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: top;
 `
 const Container = styled.div`
     width: 340px;
@@ -71,7 +72,10 @@ const DetailContainer = styled.div`
     padding: 20px;
     border: 0.5px solid #999;
 `
-const Title = styled.h2``
+const Title = styled.h2`
+    height: 35px;
+    overflow: hidden;
+`
 const PriceContainer = styled.div`
     display: flex;
     align-items:center;
@@ -115,7 +119,7 @@ const Product = ({ item }) => {
         <Container>
             <Wrapper>
                 <ImgContainer>
-                    <Image src={item.images && item.images[0].photo || item.img} />
+                    <Image src={item.images && `http://localhost:8080/api/file/images/${item.images[0].photo}`} />
                     <HoverOptionsContainer>
                         <HoverOption onClick={() => handleClickAddToCart(item)}><AddShoppingCartOutlinedIcon /></HoverOption>
                         <HoverOption><FavoriteBorderOutlinedIcon /></HoverOption>

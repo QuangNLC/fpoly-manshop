@@ -152,7 +152,6 @@ public class ProductController {
         log.info("tạo sản phẩm");
         Categorys category = categoryJPA.findById(product.getCategory().getId()).get();
         Product newproduct = new Product();
-        newproduct.setCover(product.getCover());
         newproduct.setCreate_date(new Date());
         newproduct.setExport_price(product.getExport_price());
         newproduct.setImport_price(product.getImport_price());

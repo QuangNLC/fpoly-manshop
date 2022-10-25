@@ -154,7 +154,7 @@ const AdmProductList = () => {
             field: 'action', headerName: "Action", width: 250,
             renderCell: (params) => (
                 <ActionContainer>
-                    <Link to={"/admin/user/" + params.row.username}>
+                    <Link to={"/admin/edit-product/" + params.row.id}>
                         <EditButton>Edit</EditButton>
                     </Link>
                     <DialogHOC title="Confirm Dialog" content="Do you want to delete this user?" onYes={() => { hadleDeleteUser(params.row.username) }}>
@@ -199,62 +199,6 @@ const AdmProductList = () => {
     return (
         <Container>
             <Wrapper>
-                <Top>
-                    <Left>
-                        <ProductDetailsFormContainer>
-                            <Form
-                                name='product-details'
-                                wrapperCol={24}
-                                labelCol={24}
-                                layout={'vertical'}
-                            >
-                                <Form.Item>
-                                    Create Product
-                                </Form.Item>
-                                <Form.Item
-                                    label="Name"
-                                    name="name"
-                                >
-                                    <Input />
-                                </Form.Item>
-                                <Form.Item
-                                    label="Desc"
-                                    name="title"
-                                >
-                                    <Input />
-                                </Form.Item>
-                                <Form.Item
-                                    label="Import Price"
-                                    name="import_price"
-                                >
-                                    <Input />
-                                </Form.Item>
-                                <Form.Item
-                                    label="Export Price"
-                                    name="export_price"
-                                >
-                                    <Input />
-                                </Form.Item>
-                                <Form.Item
-                                    label="Category"
-                                    name="category"
-                                >
-                                    <Select>
-                                        <Select.Option>
-
-                                        </Select.Option>
-                                    </Select>
-                                </Form.Item>
-                            </Form>
-                        </ProductDetailsFormContainer>
-                    </Left>
-                    <Right>
-                        <ProductSizesDetails>
-                            <ProductSizesTitle>Product Sizes</ProductSizesTitle>
-                            
-                        </ProductSizesDetails>
-                    </Right>
-                </Top>
                 <Bottom>
                     <TitleContainer>
                         <Title>List Product</Title>

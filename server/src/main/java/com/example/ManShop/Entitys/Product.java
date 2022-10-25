@@ -28,14 +28,10 @@ public class Product {
     private Date create_date;
     @Column(name = "update_create")
     private Date update_create_date;
-    @Column(name = "name")
+    @Column(name = "name", columnDefinition = "NVARCHAR(500)")
     private String name;
-    @Column(name = "title")
+    @Column(name = "title", columnDefinition = "NVARCHAR(2500)")
     private String title;
-    @Column(name = "cover")
-    private String cover;
-
-
     @ManyToOne @JoinColumn(name="category")
     private Categorys category;
 

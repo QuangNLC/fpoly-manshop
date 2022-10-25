@@ -24,6 +24,7 @@ const Image = styled.img`
     width: 100%;
     height: 90vh;
     object-fit: cover;
+    object-position: top;
 `
 const InfoContainer = styled.div`
     flex: 1;
@@ -113,7 +114,9 @@ const Button = styled.button`
         background-color: #f8f4f4;
     }
 `
-const ShowedImage = styled.div``
+const ShowedImage = styled.div`
+
+`
 
 const PreviewImageList = styled.div`
     width: 100%;
@@ -205,7 +208,7 @@ const ProductDetail = () => {
                 if (!res.status) {
                     setIsLoading(false);
                     setProduct(res);
-                    setPreviewImg(res.images[0].photo);
+                    setPreviewImg(`http://localhost:8080/api/file/images/${res.images[0].photo}`);
                     setSelectedSizeIndex(0)
                 } else {
                 }
@@ -235,8 +238,8 @@ const ProductDetail = () => {
                                                 {
                                                     product.images && product.images.map((item, index) => {
                                                         return (
-                                                            <ImageListItem key={index} onClick={() => {setPreviewImg(item.photo)}}>
-                                                                <ImageListDetail src={item.photo || "https://i.ibb.co/S6qMxwr/jean.jpg"} />
+                                                            <ImageListItem key={index} onClick={() => {setPreviewImg(`http://localhost:8080/api/file/images/${item.photo}`)}}>
+                                                                <ImageListDetail src={`http://localhost:8080/api/file/images/${item.photo}`} />
                                                             </ImageListItem>
                                                         )
                                                     })

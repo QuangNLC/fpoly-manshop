@@ -1,18 +1,15 @@
 import React, { useEffect, useState } from "react";
-import CardItem from "../../components/Products/CardItem";
-import Grid from "@mui/material/Grid";
 import "../../styles/productCard.css";
 import Filters from "../../components/Products/Filters";
 import Search from "../../components/Products/Search";
 import ProductList from "../../components/Products/ProductList";
-import { data } from "../../data";
 import Products from '../../components/Products'
 import productAPI from "../../api/productsAPI";
 
 import styled from 'styled-components'
-import { Filter, South } from "@mui/icons-material";
 import Helmet from "../../components/Helmet";
 import DialogHOC from "../../hoc/DialogHOC";
+import {Popconfirm} from 'antd'
 
 const Container = styled.div`
   width: 100%;
@@ -130,12 +127,14 @@ const FilterButtonContainer = styled.div`
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  flex-direction:  column;
   margin-bottom: 10px;
 `
 
 const FilterButton = styled.div`
-  width: 80%;
+  margin-bottom: 10px;
+  width: 60%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -220,36 +219,54 @@ const WebProductList = (props) => {
   }
 
   const onChangeSizes = (e, id) => {
-    let index  =  filterInfo.sizes.findIndex(item  =>  item ===  id)
-    if(index  !==  -1){
-      filterInfo.sizes.splice(index,1);
-      setFilterInfo({
-        ...filterInfo
-      }) 
-    }else{
-      setFilterInfo({
-        ...filterInfo,
-        sizes:  [...filterInfo.sizes, id]
-      })  
-    }
+    // let index  =  filterInfo.sizes.findIndex(item  =>  item ===  id)
+    // if(index  !==  -1){
+    //   filterInfo.sizes.splice(index,1);
+    //   setFilterInfo({
+    //     ...filterInfo
+    //   }) 
+    // }else{
+    //   setFilterInfo({
+    //     ...filterInfo,
+    //     sizes:  [...filterInfo.sizes, id]
+    //   })  
+    // }
+    // if (e.target.checked) {
+    //   if (!checkSizeCheckbox(filterInfo.sizes, e.target.value)) {
+    //     const newSizes = filterInfo.sizes;
+    //     newSizes.push(e.target.value)
+    //     setFilterInfo({
+    //       ...filterInfo,
+    //       sizes: newSizes
+    //     })
+    //   }
+    // } else {
+    //   if (checkSizeCheckbox(filterInfo.sizes, e.target.value)) {
+    //     const newSizes = filterInfo.sizes.filter(item => item !== e.target.value);
+    //     setFilterInfo({
+    //       ...filterInfo,
+    //       sizes: newSizes
+    //     })
+    //   }
+    // }
+
     if (e.target.checked) {
-      if (!checkSizeCheckbox(filterInfo.sizes, e.target.value)) {
-        const newSizes = filterInfo.sizes;
-        newSizes.push(e.target.value)
+      if (!checkSizeCheckbox(filterInfo.sizes, id)) {
         setFilterInfo({
           ...filterInfo,
-          sizes: newSizes
+          sizes: [...filterInfo.sizes, id]
         })
       }
     } else {
-      if (checkSizeCheckbox(filterInfo.sizes, e.target.value)) {
-        const newSizes = filterInfo.sizes.filter(item => item !== e.target.value);
+      if (checkSizeCheckbox(filterInfo.sizes, id)) {
         setFilterInfo({
           ...filterInfo,
-          sizes: newSizes
+          sizes: filterInfo.sizes.filter(item => item !== id)
         })
       }
     }
+
+
   }
 
 
@@ -280,7 +297,7 @@ const WebProductList = (props) => {
           categoryId: -1,
           minPrice: 0,
           maxPrice: undefined,
-          selectedSizeId: undefined,
+          sizes: [],
           sortOptionId: 1
         })
       })
@@ -305,18 +322,6 @@ const WebProductList = (props) => {
   }
 
   useEffect(() => {
-    // productAPI.getAll(false, currPage, 16)
-    //   .then(res => {
-    //     if (!res.status) {
-    //       setProducts(res.list)
-    //       setTotalPage(res.totalItems)
-    //     } else {
-    //       setProducts([])
-    //     }
-    //   })
-    //   .catch(err =>
-    //     console.log(err)
-    //   )
     productAPI.getByFilter(filterInfo, currPage, 16)
       .then((res) => {
         if (!res.status) {
@@ -327,7 +332,6 @@ const WebProductList = (props) => {
         }
       })
       .catch(err => console.log(err))
-
 
   }, [currPage])
 
@@ -344,17 +348,29 @@ const WebProductList = (props) => {
       .catch(err => console.log(err));
 
 
-    productAPI.testFilter({
+    productAPI.getByFilter({
       "categoryId": 0,
-      "sizes": [1, 3],
-      "minPrice": 100,
-      "maxPrice": 2000000,
+      "sizes": [],
+      "minPrice": null,
+      "maxPrice": null,
       "sortname": ""
     }, 1, 16)
-      .then((res) => {
-        console.log(res)
+      .then(res => {
+        setProducts(res.list)
+        setTotalPage(res.totalItems)
+        console.log('clear filter')
+        setFilterInfo({
+          ...filterInfo,
+          categoryId: -1,
+          minPrice: 0,
+          maxPrice: undefined,
+          sizes: [],
+          sortOptionId: 1
+        })
       })
-      .catch(err => console.log(err))
+      .catch(err =>
+        console.log(err)
+      )
   }, [])
 
   return (
@@ -401,9 +417,9 @@ const WebProductList = (props) => {
               <SizeContainer>
                 {
                   sizes.length > 0 && sizes.map((item, index) => (
-                    <SizeOption key={item.id}  onClick={(e)  => onChangeSizes(e, item.id)}>
-                      <SizeCheckbox type='checkbox' value={item.id}  checked={filterInfo.sizes.findIndex(size  => size === item.id) !== -1 ?  true :  false }/>
-                      <SizeCheckboxLabel  onClick={(e)=> onChangeSizes(e, item.id)}>{item.title}</SizeCheckboxLabel>
+                    <SizeOption key={item.id} onClick={(e) => onChangeSizes(e, item.id)}>
+                      <SizeCheckbox type='checkbox' checked={checkSizeCheckbox(filterInfo.sizes, item.id)} onChange={(e) => onChangeSizes(e, item.id)} />
+                      <SizeCheckboxLabel>{item.title}</SizeCheckboxLabel>
                     </SizeOption>
                   ))
                 }
@@ -436,15 +452,15 @@ const WebProductList = (props) => {
               </PriceContainer>
             </FilterItemContainer>
             <FilterButtonContainer>
-              <DialogHOC
-                titlle="Xác nhận"
-                content="Bạn có muốn xóa bộ lọc sản phẩm hiện tại hay không?"
-                okText="Xác Nhận"
-                cancelText="Hủy Bỏ"
-                onYes={() => { handleClearFilterInfo() }}
-              >
+                <Popconfirm
+                  title="Xóa bộ lọc"
+                  onConfirm={handleClearFilterInfo}
+                  onCancel={()  => {console.log('cancle')}}
+                  okText="Xóa"
+                  cancelText="Hủy"
+                >
                 <FilterButton>xóa bộ lọc</FilterButton>
-              </DialogHOC>
+                </Popconfirm>
               <FilterButton onClick={handleFilterProduct}>lọc sản phẩm</FilterButton>
             </FilterButtonContainer>
           </FilterContainer>

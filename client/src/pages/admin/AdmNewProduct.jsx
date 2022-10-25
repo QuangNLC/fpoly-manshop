@@ -136,6 +136,7 @@ const AdmNewProduct = () => {
     const [uploadList, setUploadList] = useState([])
     const [categories, setCategories] = useState([])
     const [sizes, setSizes] = useState([])
+    const [reqImg, setReqImg] = useState([])
     const [product, setProduct] = useState({
         "name": "",
         "export_price": 200000.0,
@@ -155,7 +156,7 @@ const AdmNewProduct = () => {
             }
         ]
     })
-    const navigate  = useNavigate();
+    const navigate = useNavigate();
     const [sizeForm] = useForm();
 
     const handleUploadImage = () => {
@@ -175,21 +176,7 @@ const AdmNewProduct = () => {
     }
 
     const onFinish = (value) => {
-        if (uploadList.length > 0) {
-            const formData = new FormData();
-            uploadList.forEach(item => {
-                formData.append('file', item)
-            })
-            fileAPI.upload('images', formData)
-                .then(res => {
-                    if (!res.status) {
-                        setProduct({ ...product, images: res.map((item, index) => { return { photo: item, isdefault: index === 1 } }) })
-                    } else {
-                        console.log(res)
-                    }
-                })
-                .catch(err => console.log(err));
-        }
+        let images = []
         let reqValue = {
             ...value,
             category: {
@@ -198,28 +185,59 @@ const AdmNewProduct = () => {
             images: product.images,
             productsizes: product.productsizes
         }
-
-        productAPI.createProduct(reqValue)
-            .then(res => {
-                if (!res.status) {
-                    openNotificationWithIcon('success','Successfully','Create  product successfully!');
-                    navigate('/admin/product-list')
-                } else {
-                    console.log(res)
-                }
+        if (uploadList.length > 0) {
+            const formData = new FormData();
+            uploadList.forEach(item => {
+                formData.append('file', item)
             })
-        .catch(err => console.log(err));
-
-        
+            fileAPI.upload('images', formData)
+                .then(res => {
+                    if (!res.status) {
+                        return res.map((item, index) => {
+                            return {
+                                photo: item,
+                                isdefault: index === 1
+                            }
+                        })
+                    } else {
+                        console.log(res)
+                    }
+                })
+                .then(imgsRes => {
+                    console.log(imgsRes)
+                    productAPI.createProduct({...reqValue, images: imgsRes})
+                        .then(res => {
+                            if (!res.status) {
+                                openNotificationWithIcon('success', 'Successfully', 'Create  product successfully!');
+                                navigate('/admin/product-list')
+                            } else {
+                                console.log(res)
+                            }
+                        })
+                        .catch(err => console.log(err));
+                })
+                .catch(err => console.log(err));
+        } else {
+            productAPI.createProduct(reqValue)
+                .then(res => {
+                    if (!res.status) {
+                        openNotificationWithIcon('success', 'Successfully', 'Create  product successfully!');
+                        navigate('/admin/product-list')
+                    } else {
+                        console.log(res)
+                    }
+                })
+                .catch(err => console.log(err));
+        }
 
     }
 
     const handleCreateProductSize = (value) => {
-        let index = product.productsizes.findIndex(item => item.sizes.id === value.id)
+        let index = product.productsizes.findIndex(item => item.size.id === value.id)
         if (index === -1) {
             setProduct({
                 ...product,
-                productsizes: [...product.productsizes, { quantity: value.quantity, sizes: sizes.find(item => item.id === value.id) }]
+                productsizes: [...product.productsizes, { quantity: value.quantity, size: sizes.find(item => item.id === value.id) }]
             })
             sizeForm.setFieldsValue({
                 id: 0,
@@ -460,11 +478,11 @@ const AdmNewProduct = () => {
                                         product.productsizes.length > 0 ?
                                             (
                                                 product.productsizes.map(item => (
-                                                    <SizeDetailsContainer key={item.sizes.id}>
+                                                    <SizeDetailsContainer key={item.size.id}>
                                                         <SizeDetails>
                                                             <SizeDetailsItem>
                                                                 <SizeDetailsItemLabel>size: </SizeDetailsItemLabel>
-                                                                <SizeDetailsItemInfo>{item.sizes.title}</SizeDetailsItemInfo>
+                                                                <SizeDetailsItemInfo>{item.size.title}</SizeDetailsItemInfo>
                                                             </SizeDetailsItem>
                                                             <SizeDetailsItem>
                                                                 <SizeDetailsItemLabel>quantity: </SizeDetailsItemLabel>
