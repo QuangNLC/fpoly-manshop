@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import productsAPI from '../../api/productsAPI';
 import DialogHOC from '../../hoc/DialogHOC';
+import {Form, Input, Select}  from  'antd';
 
 
 const Container = styled.div`
@@ -13,12 +14,52 @@ const Container = styled.div`
 `
 const Wrapper = styled.div`
     width: 100%;
-    height: 500px;
+    height:  max-content;
+    display:  flex;
+    justify-content:center;
+    flex-direction: column;
+`
+const Top = styled.div`
+    width:  100%;
+    min-height:  50vh;
+    padding:  20px;
+    display:  flex;
+    justify-content:  center;
+    align-items:  top;
+`
+const Left = styled.div`
+    width: calc(2/3 *  100%);
+    padding: 20px;
+    
+`
+const ProductDetailsFormContainer = styled.div`
+    -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+    box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+    width:  100%;
+    padding: 20px;
+`
+const Right = styled.div`
+    width: calc(1/3 *  100%);
+    padding: 20px 10px;
+    
+`
+const  ProductSizesDetails  =  styled.div`
+    width: 100%;
+    padding:  20px;
+    -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+    box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+`
+const ProductSizesTitle = styled.span``
+
+const Bottom = styled.div`
+    width:  100%;
+    height:  600px;
 `
 const TitleContainer = styled.div`   
     display: flex;
     justify-content: space-between;
     align-items: center;
+
 `
 const Title = styled.span`
     font-size: 30px;
@@ -107,8 +148,8 @@ const AdmProductList = () => {
                 <>{params.row.productsizes.reduce((total, item) => { return total + item.quantity }, 0)}</>
             )
         },
-        {field: 'export_price', headerName: "Export Price", width: 200},
-        {field: 'import_price', headerName: "Import Price", width: 200},
+        { field: 'export_price', headerName: "Export Price", width: 200 },
+        { field: 'import_price', headerName: "Import Price", width: 200 },
         {
             field: 'action', headerName: "Action", width: 250,
             renderCell: (params) => (
@@ -157,32 +198,90 @@ const AdmProductList = () => {
     }, [])
     return (
         <Container>
-            <Wrapper style={{ height: 400, width: '100%' }}>
-                <TitleContainer>
-                    <Title>List Product</Title>
-                    <Link to="/admin/new-product">
-                        <TitleButton>Create</TitleButton>
-                    </Link>
-                </TitleContainer>
-                {
-                    isLoading ?
-                        (
-                            <>
-                                Loading...
-                            </>
-                        )
-                        :
-                        <>
+            <Wrapper>
+                <Top>
+                    <Left>
+                        <ProductDetailsFormContainer>
+                            <Form
+                                name='product-details'
+                                wrapperCol={24}
+                                labelCol={24}
+                                layout={'vertical'}
+                            >
+                                <Form.Item>
+                                    Create Product
+                                </Form.Item>
+                                <Form.Item
+                                    label="Name"
+                                    name="name"
+                                >
+                                    <Input />
+                                </Form.Item>
+                                <Form.Item
+                                    label="Desc"
+                                    name="title"
+                                >
+                                    <Input />
+                                </Form.Item>
+                                <Form.Item
+                                    label="Import Price"
+                                    name="import_price"
+                                >
+                                    <Input />
+                                </Form.Item>
+                                <Form.Item
+                                    label="Export Price"
+                                    name="export_price"
+                                >
+                                    <Input />
+                                </Form.Item>
+                                <Form.Item
+                                    label="Category"
+                                    name="category"
+                                >
+                                    <Select>
+                                        <Select.Option>
 
-                            <DataGrid
-                                rows={data}
-                                columns={columns}
-                                pageSize={10}
-                                rowsPerPageOptions={[5]}
-                                style={{height: "70vh"}}
-                            />
-                        </>
-                }
+                                        </Select.Option>
+                                    </Select>
+                                </Form.Item>
+                            </Form>
+                        </ProductDetailsFormContainer>
+                    </Left>
+                    <Right>
+                        <ProductSizesDetails>
+                            <ProductSizesTitle>Product Sizes</ProductSizesTitle>
+                            
+                        </ProductSizesDetails>
+                    </Right>
+                </Top>
+                <Bottom>
+                    <TitleContainer>
+                        <Title>List Product</Title>
+                        <Link to="/admin/new-product">
+                            <TitleButton>Create</TitleButton>
+                        </Link>
+                    </TitleContainer>
+                    {
+                        isLoading ?
+                            (
+                                <>
+                                    Loading...
+                                </>
+                            )
+                            :
+                            <>
+
+                                <DataGrid
+                                    rows={data}
+                                    columns={columns}
+                                    pageSize={10}
+                                    rowsPerPageOptions={[5]}
+                                    style={{ height: "70vh" }}
+                                />
+                            </>
+                    }
+                </Bottom>
             </Wrapper>
         </Container>
     )

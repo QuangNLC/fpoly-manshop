@@ -5,6 +5,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
+import styled from 'styled-components';
+
 
 
 
@@ -23,7 +25,7 @@ const DialogHOC = ({ children, title, content, onYes, okText, cancelText }) => {
 
     return (
         <>
-            <div style={{width: '100%'}} onClick={handleClickOpen}>
+            <div onClick={() =>  handleClickOpen()}>
                 {children}
             </div>
             <Dialog
@@ -39,12 +41,12 @@ const DialogHOC = ({ children, title, content, onYes, okText, cancelText }) => {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose}>{cancelText ?  cancelText : 'Disagree'}</Button>
+                    <Button onClick={handleClose}>{cancelText ? cancelText : 'Disagree'}</Button>
                     <Button onClick={() => {
                         onYes()
                         setOpen(false)
                     }} autoFocus>
-                        {okText ?  okText : 'Agree'}
+                        {okText ? okText : 'Agree'}
                     </Button>
                 </DialogActions>
             </Dialog>

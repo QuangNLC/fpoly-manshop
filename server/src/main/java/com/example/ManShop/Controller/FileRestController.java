@@ -43,8 +43,14 @@ public class FileRestController {
 
 
     @PostMapping("{folder}")
-    public List<String> upload(@PathVariable("folder") String folder, @PathParam("file")MultipartFile[] file){
-        return  fileService.save(folder, file);
+    public ResponseEntity<List<String>> upload(@PathVariable("folder") String folder, @PathParam("file")MultipartFile[] file){
+        System.out.println(file);
+        try{
+            return  ResponseEntity.ok(fileService.save(folder, file));
+        }catch(Exception  e) {
+            System.out.println(e);
+            return ResponseEntity.badRequest().build();
+        }
     }
 
 

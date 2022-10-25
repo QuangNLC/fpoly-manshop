@@ -27,6 +27,10 @@ const productAPI = {
 
         return axiosClient.get(url);
     },
+    createProduct: (payload) => {
+        const url = '/product/create';
+        return axiosClient.post(url, payload);
+    },
     getByFilter: (filter, page, limit) => {
         const url  =`/product/byFilter?page=${page}&limit=${limit}`;
         return  axiosClient.post(url,  filter);
