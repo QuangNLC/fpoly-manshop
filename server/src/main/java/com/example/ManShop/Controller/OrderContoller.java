@@ -90,7 +90,6 @@ public class OrderContoller {
         user.setUsername(orderRequest.getUsers().getUsername());
         if(check.equals("for-someone")){
         Customers customers  = new Customers();
-        customers.setCustomerInfor(orderRequest.getCustomers().getCustomerInfor());
         customers.setAddress(orderRequest.getCustomers().getAddress());
         customers.setPhone(orderRequest.getCustomers().getPhone());
         customers.setUser(orderRequest.getUsers());
@@ -98,7 +97,6 @@ public class OrderContoller {
         newOrder.setCustomers(customers);
         }if(check.equals("for-me")){
             Customers customers  = new Customers();
-            customers.setCustomerInfor(orderRequest.getCustomers().getCustomerInfor());
             customers.setAddress(orderRequest.getCustomers().getAddress());
             customers.setPhone(orderRequest.getCustomers().getPhone());
             customers.setUser(orderRequest.getUsers());

@@ -21,10 +21,12 @@ public class Customers {
     private int id;
     @Column(name = "phone")
     private int phone;
-    @Column(name = "address")
+    @Column(name = "address", columnDefinition = "NVARCHAR(1000)")
     private String address;
-    @Column(name = "customerInfor")
-    private String customerInfor;
+    @Column(name = "name", columnDefinition = "NVARCHAR(200)")
+    private String name;
+    @Column(name = "note", columnDefinition = "NVARCHAR(2500)")
+    private String note;
     @ManyToOne @JoinColumn(name = "username")
     private Users user;
     @JsonIgnore

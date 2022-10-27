@@ -280,4 +280,10 @@ public class ProductController {
         up.setSortname(sort);
         return up;
     }
+
+
+    @PostMapping("/get/byFilter")
+    public ResponseEntity<?> niqGetListProductByFilter(@RequestBody FilterRequestDTO a,@RequestParam("categoryId") Integer categoryId,@RequestParam("page") Integer page,@RequestParam("limit")Integer limit){
+        return ResponseEntity.ok().build();
+    }
 }

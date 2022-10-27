@@ -15,9 +15,9 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { notification } from 'antd';
+import { notification, Drawer, Typography, Modal } from 'antd';
 import { CHANGE_CART_ITEM_QUANTITY } from '../../redux/types'
-
+import CustomerInfoForm from '../../components/CustomerInfoForm'
 
 const Container = styled.div``
 const Wrapper = styled.div`
@@ -192,6 +192,7 @@ const openNotificationWithIcon = (type, title, des) => {
 
 const Webcart = () => {
     const [isModalInfo, setIsModalInfo] = useState(false);
+    const [isOpenDrawer, setIsOpenDrawer] = useState(false);
     const cartReducer = useSelector(state => state.cartReducer);
     const [data, setData] = useState([]);
     const auth = useSelector(state => state.auth.auth);
@@ -203,9 +204,9 @@ const Webcart = () => {
 
 
     const dispatch = useDispatch();
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
-    const hanldleCheckout = () => {
+    const hanldleCheckout = (value) => {
         if (data && data.length > 0) {
             let payload = {
                 "users": {
@@ -213,9 +214,10 @@ const Webcart = () => {
                 },
                 "total_price": data.reduce((total, item) => { return total + item.quantity * item.price }, 0) * 1.1,
                 "customers": {
-                    "phone": customerValue.phone,
-                    "address": customerValue.adress,
-                    "customerInfor": "hoang chuong canh ba phu tho",
+                    "phone": value.phone,
+                    "address": value.adress,
+                    "name": value.name,
+                    "note": value.note,
                     "user": {
                         "username": auth.info.username
                     }
@@ -231,13 +233,15 @@ const Webcart = () => {
                     }))
                 ]
             };
-            console.log(payload)
             checkoutAPI.checkout(payload)
                 .then(res => {
                     console.log(res);
                     dispatch(clearCartAction());
                     setIsModalInfo(false);
-                    openNotificationWithIcon('success','Đặt hàng thành công!', 'Đơn đặt hàng  của  bạn đã  được tạo thành công!');
+                    Modal.success({
+                        title:"Thành công",
+                        content: "Đơn đặt hàng của bạn đã được tạo thành công. Tự động chuyển trang đến đơn hàng của tôi!"
+                    })
                     navigate("/my-orders")
                 })
                 .catch(err => {
@@ -245,7 +249,7 @@ const Webcart = () => {
                 });
 
         }
-    };
+    }
 
     const hanldeDeleteCartIem = (item) => {
         const action = {
@@ -317,10 +321,10 @@ const Webcart = () => {
                     setData([...data])
                     openNotificationWithIcon('error', 'Lỗi nhập liệu', 'Vui lòng nhập  số lượng mua hàng là một số tự nhiên lớn hơn  0!')
                 } else {
-                    let  quantity =  Number.parseInt(data[index].quantity)
+                    let quantity = Number.parseInt(data[index].quantity)
                     console.log(quantity)
                     if (quantity > cartReducer.cart[index].size.quantity) {
-                        quantity   = cartReducer.cart[index].size.quantity
+                        quantity = cartReducer.cart[index].size.quantity
                         data[index].quantity = quantity;
                         let payload = {
                             ...item,
@@ -329,7 +333,7 @@ const Webcart = () => {
                         dispatch(changeCartItemQuantityAction(payload));
                         setData([...data])
                         openNotificationWithIcon('warning', 'Thông báo', `Trong kho hiện  còn lại ${cartReducer.cart[index].size.quantity}  sản phẩm!`)
-                    }else{
+                    } else {
                         data[index].quantity = quantity;
                         let payload = {
                             ...item,
@@ -401,7 +405,7 @@ const Webcart = () => {
                                     return (
                                         <Product key={index}>
                                             <ProductDetail>
-                                                <Image src={item.product.images[0].photo || "https://hips.hearstapps.com/vader-prod.s3.amazonaws.com/1614188818-TD1MTHU_SHOE_ANGLE_GLOBAL_MENS_TREE_DASHERS_THUNDER_b01b1013-cd8d-48e7-bed9-52db26515dc4.png?crop=1xw:1.00xh;center,top&resize=480%3A%2A"} />
+                                                <Image src={item.product.images && `http://localhost:8080/api/file/images/${item.product.images[0].photo}`} />
                                                 <Details>
                                                     <ProductName>
                                                         <b>Product:</b> {item.product?.name}
@@ -486,7 +490,8 @@ const Webcart = () => {
                             <Button
                                 onClick={() => {
                                     if (isAuth) {
-                                        setIsModalInfo(true)
+                                        // setIsModalInfo(true)
+                                        setIsOpenDrawer(true)
                                     } else {
                                         navigate('/login')
                                     }
@@ -528,6 +533,15 @@ const Webcart = () => {
                         <Button onClick={() => { hanldleCheckout() }}>Đặt Hàng</Button>
                     </DialogActions>
                 </Dialog>
+                <Drawer
+                    title="Thông  tin  đặt hàng."
+                    placement='right'
+                    open={isOpenDrawer}
+                    onClose={() => { setIsOpenDrawer(false) }}
+                    width={660}
+                >
+                    <CustomerInfoForm onClose={() => { setIsOpenDrawer(false) }} onFinish={(value) => { hanldleCheckout(value) }} />
+                </Drawer>
             </Container>
         </Helmet >
     )

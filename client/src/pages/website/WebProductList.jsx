@@ -9,7 +9,7 @@ import productAPI from "../../api/productsAPI";
 import styled from 'styled-components'
 import Helmet from "../../components/Helmet";
 import DialogHOC from "../../hoc/DialogHOC";
-import {Popconfirm} from 'antd'
+import { Popconfirm } from 'antd'
 
 const Container = styled.div`
   width: 100%;
@@ -200,8 +200,8 @@ const WebProductList = (props) => {
   const [filterInfo, setFilterInfo] = useState({
     categoryId: 0,
     sizes: [],
-    minPrice: undefined,
-    maxPrice: undefined,
+    minPrice: null,
+    maxPrice: null,
     sortname: ""
   })
 
@@ -219,37 +219,6 @@ const WebProductList = (props) => {
   }
 
   const onChangeSizes = (e, id) => {
-    // let index  =  filterInfo.sizes.findIndex(item  =>  item ===  id)
-    // if(index  !==  -1){
-    //   filterInfo.sizes.splice(index,1);
-    //   setFilterInfo({
-    //     ...filterInfo
-    //   }) 
-    // }else{
-    //   setFilterInfo({
-    //     ...filterInfo,
-    //     sizes:  [...filterInfo.sizes, id]
-    //   })  
-    // }
-    // if (e.target.checked) {
-    //   if (!checkSizeCheckbox(filterInfo.sizes, e.target.value)) {
-    //     const newSizes = filterInfo.sizes;
-    //     newSizes.push(e.target.value)
-    //     setFilterInfo({
-    //       ...filterInfo,
-    //       sizes: newSizes
-    //     })
-    //   }
-    // } else {
-    //   if (checkSizeCheckbox(filterInfo.sizes, e.target.value)) {
-    //     const newSizes = filterInfo.sizes.filter(item => item !== e.target.value);
-    //     setFilterInfo({
-    //       ...filterInfo,
-    //       sizes: newSizes
-    //     })
-    //   }
-    // }
-
     if (e.target.checked) {
       if (!checkSizeCheckbox(filterInfo.sizes, id)) {
         setFilterInfo({
@@ -281,50 +250,37 @@ const WebProductList = (props) => {
   }
 
   const handleClearFilterInfo = () => {
-    productAPI.getByFilter({
-      "categoryId": 0,
-      "sizes": [],
-      "minPrice": null,
-      "maxPrice": null,
-      "sortname": ""
-    }, 1, 16)
-      .then(res => {
-        setProducts(res.list)
-        setTotalPage(res.totalItems)
-        console.log('clear filter')
-        setFilterInfo({
-          ...filterInfo,
-          categoryId: -1,
-          minPrice: 0,
-          maxPrice: undefined,
-          sizes: [],
-          sortOptionId: 1
-        })
-      })
-      .catch(err =>
-        console.log(err)
-      )
-
+    setFilterInfo({
+      categoryId: 0,
+      sizes: [],
+      minPrice: null,
+      maxPrice: null,
+      sortname: ""
+    });
+    setCurrPage(1)
   }
 
   const handleFilterProduct = () => {
-    productAPI.getByFilter(filterInfo, currPage, 16)
+    productAPI.getByFilter(filterInfo, 1, 16)
       .then((res) => {
         if (!res.status) {
           setProducts(res.list);
+          setCurrPage(res.currentPage)
           setTotalPage(res.totalItems)
         } else {
           console.log(res)
         }
       })
       .catch(err => console.log(err))
-
   }
 
   useEffect(() => {
+    console.log(filterInfo)
+    console.log(currPage)
     productAPI.getByFilter(filterInfo, currPage, 16)
       .then((res) => {
         if (!res.status) {
+          console.log(res)
           setProducts(res.list);
           setTotalPage(res.totalItems)
         } else {
@@ -332,7 +288,6 @@ const WebProductList = (props) => {
         }
       })
       .catch(err => console.log(err))
-
   }, [currPage])
 
   useEffect(() => {
@@ -358,12 +313,11 @@ const WebProductList = (props) => {
       .then(res => {
         setProducts(res.list)
         setTotalPage(res.totalItems)
-        console.log('clear filter')
         setFilterInfo({
           ...filterInfo,
-          categoryId: -1,
-          minPrice: 0,
-          maxPrice: undefined,
+          categoryId: 0,
+          minPrice: null,
+          maxPrice: null,
           sizes: [],
           sortOptionId: 1
         })
@@ -423,21 +377,6 @@ const WebProductList = (props) => {
                     </SizeOption>
                   ))
                 }
-                {/* <SizeOption>
-                  <Size type="radio" name="size" onChange={() => { setFilterInfo({ ...filterInfo, selectedSizeId: undefined }) }} checked={!filterInfo.selectedSizeId} /> Tất cả
-                </SizeOption>
-                {
-                  sizes.length > 0 && sizes.map((item, index) => (
-                    <SizeOption key={item.id}>
-                      <Size
-                        type="radio"
-                        name="size"
-                        onChange={() => { setFilterInfo({ ...filterInfo, selectedSizeId: item.id }) }}
-                        checked={filterInfo.selectedSizeId === item.id}
-                      /> {item.title}
-                    </SizeOption>
-                  ))
-                } */}
               </SizeContainer>
             </FilterItemContainer>
             <FilterItemContainer>
@@ -452,15 +391,15 @@ const WebProductList = (props) => {
               </PriceContainer>
             </FilterItemContainer>
             <FilterButtonContainer>
-                <Popconfirm
-                  title="Xóa bộ lọc"
-                  onConfirm={handleClearFilterInfo}
-                  onCancel={()  => {console.log('cancle')}}
-                  okText="Xóa"
-                  cancelText="Hủy"
-                >
+              <Popconfirm
+                title="Xóa bộ lọc"
+                onConfirm={handleClearFilterInfo}
+                onCancel={() => { console.log('cancle') }}
+                okText="Xóa"
+                cancelText="Hủy"
+              >
                 <FilterButton>xóa bộ lọc</FilterButton>
-                </Popconfirm>
+              </Popconfirm>
               <FilterButton onClick={handleFilterProduct}>lọc sản phẩm</FilterButton>
             </FilterButtonContainer>
           </FilterContainer>
@@ -472,7 +411,7 @@ const WebProductList = (props) => {
             <PaginationContaier>
               {
                 Array.from(Array(totalPage).keys()).map((item, index) => (
-                  <Page key={index} curr={index + 1 === currPage}
+                  <Page key={index} curr={(index + 1) === currPage}
                     onClick={() => { setCurrPage(index + 1) }}
                   >
                     {item + 1}
