@@ -97,7 +97,7 @@ const WebRegister = () => {
     const onFinish = (value) => {
         console.log(value)
         try {
-            authAPI.register({ ...value, phone: 666666666 })
+            authAPI.register({ ...value })
                 .then(res => {
                     if (!res.status) {
                         openNotificationWithIcon('success', 'Đăng ký thành công!', 'Đăng ký thành công!');

@@ -25,7 +25,7 @@ public class Users {
     @Column(name = "photo")
     private String photo;
     @Column(name = "phone")
-    private int phone;
+    private String phone;
     @Column(name = "activated")
     private Boolean activated;
     @Column(name="adress")

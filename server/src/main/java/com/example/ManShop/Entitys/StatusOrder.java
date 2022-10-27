@@ -19,7 +19,7 @@ public class StatusOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name = "title")
+    @Column(name = "title", columnDefinition = "NVARCHAR(200)")
     private String title;
     @JsonIgnore
     @OneToMany(mappedBy ="statusOrders")

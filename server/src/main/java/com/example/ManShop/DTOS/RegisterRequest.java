@@ -20,7 +20,7 @@ public class RegisterRequest {
      private String fullname;
     @NotNull(message = "khong duoc de trong so dien thoai")
    // @Length(min = 9,max = 11, message = "khong dung dinh dang sdt")
-    private int phone;
+    private String phone;
     @NotBlank(message = "ban chua nhap mat khau")
     private String password;
 

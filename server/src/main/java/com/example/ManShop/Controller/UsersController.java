@@ -9,19 +9,26 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.websocket.server.PathParam;
 import java.util.Optional;
+import com.example.ManShop.Service.FileService;
 
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/api/users")
 public class UsersController {
 
+
+
     private final Logger log = LoggerFactory.getLogger(ProductController.class);
 
     @Autowired
     private UserJPA userJPA;
+
+    @Autowired
+    private FileService fileService;
 
     @GetMapping("/getall")
     public ResponseEntity<?> getUsers() {
@@ -82,6 +89,27 @@ public class UsersController {
         }catch(Exception e){
             return ResponseEntity.badRequest().build();
         }
+    }
 
+
+    @PostMapping ("/update-avatar/{username}")
+    public ResponseEntity<?> updateUserAvatar(@PathVariable(value = "username") String username ,@PathParam("file") MultipartFile[] file){
+
+        if(!userJPA.existsById(username)){
+            return ResponseEntity.notFound().build();
+        }else{
+            Users user = userJPA.findById(username).get();
+            if(user.getPhoto().equals("default-avt.jpg")){
+                String  newPhoto  = fileService.save("images",file).get(0);
+                user.setPhoto(newPhoto);
+                return ResponseEntity.ok(userJPA.save(user));
+            }
+            fileService.delete("images",user.getPhoto());
+            String  newPhoto  = fileService.save("images",file).get(0);
+            user.setPhoto(newPhoto);
+            return ResponseEntity.ok(userJPA.save(user));
+        }
+
+//        return ResponseEntity.ok(username);
     }
 }

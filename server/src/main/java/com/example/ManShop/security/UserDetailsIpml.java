@@ -20,11 +20,11 @@ public class UserDetailsIpml implements UserDetails {
     private Collection<? extends GrantedAuthority> authorities;
     @JsonIgnore
     private  String password;
-    private int phone;
+    private String phone;
     private boolean activated ;
 
 
-    public UserDetailsIpml(String username, String email, Collection<? extends GrantedAuthority> authorities, String password, int phone, boolean activated) {
+    public UserDetailsIpml(String username, String email, Collection<? extends GrantedAuthority> authorities, String password, String phone, boolean activated) {
         this.username = username;
         this.email = email;
         this.authorities = authorities;

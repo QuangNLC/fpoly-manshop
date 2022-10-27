@@ -77,7 +77,7 @@ const CustomerInfoForm = ({onClose,  onFinish, initialValues}) => {
 
     useEffect(()=>  {
         form.setFieldValue('name',auth.info.fullname);
-        form.setFieldValue('phone',JSON.stringify(auth.info.phone));
+        form.setFieldValue('phone',auth.info.phone);
         form.setFieldValue('adress',auth.info.adress ? auth.info.adress :  '');
     },[auth])
 

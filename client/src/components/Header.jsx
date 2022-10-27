@@ -147,7 +147,7 @@ const AvatarContainer = ({ auth }) => {
   
   return (
     <>
-      <AvatarImg src={auth.info.photo} onClick={handleClick} />
+      <AvatarImg src={`http://localhost:8080/api/file/images/${auth.info.photo}`} onClick={handleClick} />
       <Menu
         id="basic-menu"
         open={open}
