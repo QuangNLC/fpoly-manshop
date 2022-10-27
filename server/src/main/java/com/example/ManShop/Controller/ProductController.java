@@ -7,6 +7,7 @@ import com.example.ManShop.Entitys.Categorys;
 import com.example.ManShop.Entitys.Images;
 import com.example.ManShop.Entitys.Product;
 import com.example.ManShop.Entitys.ProductSize;
+import com.example.ManShop.Entitys.Sizes;
 import com.example.ManShop.JPAs.SizeJPA;
 import com.example.ManShop.JPAs.CategoryJPA;
 import com.example.ManShop.JPAs.ImagesJPA;
@@ -172,24 +173,30 @@ public class ProductController {
         return ResponseEntity.ok("Tao thanh cong san pham (id)= "+returnproduct.getId());
     }
     @PutMapping("/update/{id}")
-    public Product updateProduct(@PathVariable("id") Integer id, @RequestBody Product product) {
-        Categorys category = categoryJPA.findById(product.getCategory().getId()).get();
-        System.out.println(product.getImages());
-        List<Images> listimages = imagesJPA.findAllById(product.getImages());
-        System.out.println(listimages);
-//        Product product1 = new Product();
-//        productJPA.save(product);
-//        listimages.forEach(img -> {
-//            img.setProduct(product1);
-//            imagesJPA.save(img);
-//        });
-        //List<ProductSize> Listsize = productsizeJPA.findAllById(product.getProductsizes());
-        product.setCategory(category);
-        product.setImages(product.getImages());
+    public ResponseEntity<?> updateProduct(@PathVariable("id") Integer id, @RequestBody Product product) {
+        if(!productJPA.existsById(id)){
+            return ResponseEntity.status(77).body("khong tim thay (id)");
+        }
         product.setId(id);
-        //
-
-        return product;
+        Categorys category = categoryJPA.findById(product.getCategory().getId()).get();
+        product.setCategory(category);
+        product.setUpdate_create_date(new Date());
+        List<ProductSize> ProSizeList = product.getProductsizes();
+        try{
+            ProSizeList.forEach( Size -> {Size.setProduct(product);productsizeJPA.save(Size);});
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(113).body("Lỗi không xác định khi cập nhập size");
+        }
+        List<Images> imagesList= product.getImages();
+        try {
+            imagesList.forEach(images -> {images.setProduct(product);imagesJPA.save(images);});
+        }catch (Exception e){
+            e.printStackTrace();
+            ResponseEntity.status(113).body("lỗi không xác định khi cập nhập hình ảnh");
+        }
+        productJPA.save(product);
+        return ResponseEntity.ok().body(product);
     }
 
 
@@ -256,6 +263,7 @@ public class ProductController {
     }
 
     public FilterRequestDTO suportFilter(FilterRequestDTO a){
+        log.info("goi vao ham suport");
         FilterRequestDTO up = new FilterRequestDTO();
         Integer id = a.getCategoryId();
         List<Integer> aaaa = a.getSizes();
@@ -266,12 +274,10 @@ public class ProductController {
             max = 1000000000000.0;
         }
         if(aaaa.size()==0){
-            aaaa.add(1);
-            aaaa.add(2);
-            aaaa.add(3);
-            aaaa.add(4);
-            aaaa.add(5);
-            aaaa.add(6);
+            List<Sizes> sizeJPAS=  sizesJPA.findAll();
+            for(int i=0 ; i< sizeJPAS.size() ;i++) {
+                aaaa.add(i+1);
+            }
         }
         up.setCategoryId(id);
         up.setSizes(aaaa);

@@ -10,5 +10,5 @@ import java.util.List;
 public interface SizeJPA  extends JpaRepository<Sizes, Integer> {
 
     Sizes findByTitle(String title);
-
+    Boolean existsByTitle (String title);
 }
