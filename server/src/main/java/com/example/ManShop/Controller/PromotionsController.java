@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,7 +56,7 @@ public class PromotionsController {
         if(promotions.getUsers()== null){
             return  ResponseEntity.status(404).body("dang nhap ho cai");
         }else {
-            Promotions newPromotion =   new Promotions();
+            Promotions newPromotion = new Promotions();
             newPromotion.setUsers(promotions.getUsers());
             newPromotion.setDate_after(promotions.getDate_after());
             newPromotion.setDate_befor(promotions.getDate_befor());
@@ -72,23 +73,20 @@ public class PromotionsController {
                Promotions uppromitons= promotionJPA.save(newPromotion);
             try {
                 List<Product> proList= productJPA.findAllById(promotions.getListpr());
+                List<PromotionProduct> s = new ArrayList<>();
                     for(int i =0; i<proList.size();i++){
                         PromotionProduct newls = new PromotionProduct();
                         newls.setProduct(proList.get(i));
                         newls.setPromition(uppromitons);
                         productPromotionJPA.save(newls);
-                }
-                    Promotions prnew = promotionJPA.findById(uppromitons.getId()).get();
-                System.out.println(prnew.getPromotionProducts());;
-                return ResponseEntity.ok().body("check");
+                        s.add(newls);
+                }Promotions prnew = promotionJPA.findById(uppromitons.getId()).get();
+                    prnew.setPromotionProducts(s);
+                return ResponseEntity.ok().body(prnew);
             }catch (Exception e){
                 System.out.println("có ngoại lệ ");
                 return ResponseEntity.status(115).body("có lỗi xảy ra khi chọn sản phẩm");
             }
-
         }
-
     }
-
-
 }
