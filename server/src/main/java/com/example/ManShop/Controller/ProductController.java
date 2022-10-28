@@ -160,16 +160,28 @@ public class ProductController {
         newproduct.setTitle(product.getTitle());
         newproduct.setCategory(category);
         Product returnproduct = productJPA.save(newproduct);
-        List<ProductSize> ProSizeList = product.getProductsizes();
-        ProSizeList.forEach( Size -> {
-            Size.setProduct(returnproduct);
-            productsizeJPA.save(Size);
-        });
-        List<Images> imagesList= product.getImages();
-        imagesList.forEach(images -> {
-            images.setProduct(returnproduct);
-            imagesJPA.save(images);
-        });
+        try{
+            List<ProductSize> ProSizeList = product.getProductsizes();
+            ProSizeList.forEach( Size -> {
+                Size.setProduct(returnproduct);
+                productsizeJPA.save(Size);
+            });
+        }catch (Exception e){
+            return ResponseEntity.status(113).body("Có lỗ không xác định khi chọn size");
+        }
+        try {
+            List<Images> imagesList= product.getImages();
+            System.out.println(product.getImages());
+            imagesList.forEach(images -> {
+                images.setProduct(returnproduct);
+                imagesJPA.save(images);
+            });
+        }catch (NullPointerException e){
+            return ResponseEntity.status(003).body("anhr truyen vao bi trong");
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(404).body("chu bat duoc ngoai le");
+        }
         return ResponseEntity.ok("Tao thanh cong san pham (id)= "+returnproduct.getId());
     }
     @PutMapping("/update/{id}")

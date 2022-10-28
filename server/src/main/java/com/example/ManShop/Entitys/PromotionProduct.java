@@ -20,9 +20,10 @@ public class PromotionProduct {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @JsonIgnore
     @ManyToOne @JoinColumn(name = "promotion")
     private Promotions promition;
-    @JsonIgnore
+
     @ManyToOne @JoinColumn(name = "product")
     private Product product;
 }
