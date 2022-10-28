@@ -7,6 +7,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
 import usersAPI from '../../api/usersAPI'
 import { setAuthAction } from '../../redux/actions/AuthReducerAction'
+import { useForm } from 'antd/lib/form/Form'
 
 const Container = styled.div`
     width: 100%;
@@ -99,6 +100,10 @@ const WebMyAccount = () => {
     const location = useLocation();
     const [prevAvt, setPrevAvt] = useState(null);
     const [uploadList, setUploadList] = useState([]);
+    const [formInitValue, setFormInitValue] = useState({
+
+    });
+    const [form] = useForm();
     const dispatch = useDispatch();
 
     const handleUploadAvatar = () => {
@@ -129,14 +134,37 @@ const WebMyAccount = () => {
         })
     }
 
-    useEffect(() => {
-        if (auth) {
-            setPrevAvt(`http://localhost:8080/api/file/images/${auth.info.photo}`)
-        } else {
-            navigate("/login")
-        }
+    const onFinish = (value) => {
+        Modal.confirm({
+            title: "Hộp Thoại Xác Nhận",
+            content: "Bạn có muốn cập nhật thông tin tài khoản không?",
+            okText: "Xác Nhận",
+            cancelText: "Hủy Bỏ",
+            onOk: () => {
+                const { username, ...others } = auth.info
+                let reqUser = {
+                    ...others,
+                    ...value
+                }
 
-    }, [auth])
+                usersAPI.updateUserDeatails(username, reqUser)
+                    .then(res => {
+                        if (!res.status) {
+                            console.log('update')
+                            dispatch(setAuthAction({ ...auth, info: res }));
+                            Modal.success({
+                                title: "Hộp Thoại Thông Báo",
+                                content: "Cập nhật thông tin tài khoản thành công!"
+                            })
+                        } else {
+                            console.log(res)
+                        }
+                    })
+                    .catch(err => console.log(err))
+            }
+        })
+    }
+
 
     useEffect(() => {
         if (uploadList.length > 0) {
@@ -144,7 +172,8 @@ const WebMyAccount = () => {
             console.log(url)
             setPrevAvt(url)
         } else {
-            setPrevAvt(`http://localhost:8080/api/file/images/${auth.info.photo}`)
+
+            auth &&  setPrevAvt(`http://localhost:8080/api/file/images/${auth.info.photo}`)
         }
     }, [uploadList])
 
@@ -156,6 +185,18 @@ const WebMyAccount = () => {
         }
     }, [prevAvt])
 
+    useEffect(() => {
+        if (auth) {
+            setPrevAvt(`http://localhost:8080/api/file/images/${auth.info.photo}`)
+            setFormInitValue({ ...auth.info })
+        } else {
+            navigate("/login")
+        }
+    }, [auth])
+
+    useEffect(() => {
+        form.resetFields();
+    },  [formInitValue])
 
     return (
         <Helmet
@@ -207,17 +248,14 @@ const WebMyAccount = () => {
                                                     labelCol={{ span: 4 }}
                                                     wrapperCol={{ span: 20 }}
                                                     layout='horizontal'
+                                                    form={form}
+                                                    initialValues={formInitValue}
+                                                    onFinish={onFinish}
                                                 >
                                                     <Form.Item
                                                         label="Tên Đăng Nhập"
                                                     >
                                                         <Typography.Text>{auth.info.username}</Typography.Text>
-                                                    </Form.Item>
-                                                    <Form.Item
-                                                        label="Họ Tên"
-                                                        name="fullname"
-                                                    >
-                                                        <Input />
                                                     </Form.Item>
                                                     <Form.Item
                                                         label="Email"
@@ -226,8 +264,23 @@ const WebMyAccount = () => {
                                                         <Typography.Text>{auth.info.email}</Typography.Text>
                                                     </Form.Item>
                                                     <Form.Item
+                                                        label="Họ Tên"
+                                                        name="fullname"
+                                                        hasFeedback
+                                                        rules={[
+                                                            { required: true, message: "Vui lòng nhập họ và tên!" },
+                                                            { whitespace: true, message: "Vui lòng không nhập khoảng trống!" }
+                                                        ]}
+                                                    >
+                                                        <Input />
+                                                    </Form.Item>
+                                                    <Form.Item
                                                         label="Số Điện Thoại"
                                                         name="phone"
+                                                        rules={[
+                                                            { required: true, message: "Vui lòng nhập số điện thoại!" },
+                                                            { whitespace: true, message: "Vui lòng không nhập khoảng trống!" }
+                                                        ]}
                                                     >
                                                         <Input />
                                                     </Form.Item>
@@ -239,7 +292,7 @@ const WebMyAccount = () => {
                                                     </Form.Item>
                                                     <Form.Item
                                                     >
-                                                        <Button type='primary'>Lưu</Button>
+                                                        <Button type='primary' htmlType='submit'>Lưu</Button>
                                                     </Form.Item>
                                                 </Form>
                                             </FormContainer>

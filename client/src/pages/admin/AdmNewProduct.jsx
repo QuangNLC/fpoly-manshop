@@ -397,7 +397,7 @@ const AdmNewProduct = () => {
                                             <Button>Choose file</Button>
                                         </Upload.Dragger>
 
-                                        {/* <Button onClick={() => {handleUploadImage()}}>Upload</Button> */}
+                                        <Button onClick={() => {handleUploadImage()}}>Upload</Button>
                                     </Form.Item>
                                     <Form.Item
                                     >

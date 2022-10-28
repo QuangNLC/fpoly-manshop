@@ -32,6 +32,7 @@ import AdmProductList from "./pages/admin/AdmProductList";
 import WebRegister from "./pages/website/WebRegister";
 import AdmEditProductDetails from "./pages/admin/AdmEditProductDetails";
 import WebMyAccount from "./pages/website/WebMyAccount";
+import WebChangePassword from "./pages/website/WebChangePassword";
 function App() {
   const store = createStore(rootReducer);
 
@@ -51,6 +52,7 @@ function App() {
             <Route path="cart" element={<Webcart />} />
             <Route path="my-orders" element={<WebMyOrders />} />
             <Route path="my-account" element={<WebMyAccount />} />
+            <Route path="change-password" element={<WebChangePassword />} />
             <Route path="about-us" element={<WebAboutUs />} />
             <Route path="contact" element={<WebContact />} />
             <Route path="/register" element={<WebRegister />} />

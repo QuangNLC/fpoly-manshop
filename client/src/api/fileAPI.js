@@ -5,7 +5,7 @@ const fileAPI = {
         const url = "/file/" + folder
         return axiosClient.post(url, formData, {
             headers: {
-                "content-type": "multipart/form-data"
+                "Content-Type": "multipart/form-data"
             }
         })
     }

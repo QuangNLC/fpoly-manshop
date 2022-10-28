@@ -22,6 +22,14 @@ const usersAPI = {
                 }
             }
         );
+    },
+    updateUserDeatails: (username, payload) => {
+        const url = '/users?username='  + username;
+        return axiosClient.put(url, payload);
+    },
+    changePassword:(username, payload) => {
+        const url = '/users/change-password/'+username;
+        return  axiosClient.post(url, payload);
     }
 };
 

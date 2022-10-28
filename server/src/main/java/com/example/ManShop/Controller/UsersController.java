@@ -1,5 +1,6 @@
 package com.example.ManShop.Controller;
 
+import com.example.ManShop.DTOS.ChangePasswordDTO;
 import com.example.ManShop.Entitys.Users;
 import com.example.ManShop.JPAs.UserJPA;
 import org.slf4j.Logger;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,6 +31,9 @@ public class UsersController {
 
     @Autowired
     private FileService fileService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @GetMapping("/getall")
     public ResponseEntity<?> getUsers() {
@@ -68,9 +73,11 @@ public class UsersController {
             log.error("không thấy tài khoản" + username);
             return ResponseEntity.notFound().build();
         }
-        users.setUsername(username);
-        users.setEmail(usersOptional.get().getEmail());
-        Users resUser = userJPA.save(users);
+        Users newUser =  usersOptional.get();
+        newUser.setFullname(users.getFullname());
+        newUser.setPhone(users.getPhone());
+        newUser.setAdress(users.getAdress());
+        Users resUser = userJPA.save(newUser);
         log.info("cập nhật tài khoản thành công " +username);
         return ResponseEntity.ok(resUser);
     }
@@ -111,5 +118,24 @@ public class UsersController {
         }
 
 //        return ResponseEntity.ok(username);
+    }
+
+
+    @PostMapping("/change-password/{username}")
+    public ResponseEntity<?> changePassword(@PathVariable(value="username") String  username,@RequestBody ChangePasswordDTO req){
+        if(!userJPA.existsById(username)){
+            return  ResponseEntity.notFound().build();
+        }else{
+            Users user =  userJPA.findById(username).get();
+            if(passwordEncoder.matches(req.getPassword(), user.getPassword())){
+                user.setPassword(passwordEncoder.encode(req.getNewPassword()));
+                userJPA.save(user);
+                return ResponseEntity.ok("Đổi mật khẩu thành công!");
+            }else{
+                return ResponseEntity.badRequest().build();
+            }
+        }
+
+//        return ResponseEntity.ok("Đổi mật khẩu thành công!");
     }
 }

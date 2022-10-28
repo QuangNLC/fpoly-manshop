@@ -84,7 +84,7 @@ public class AuthController {
             users.setFullname(request.getFullname());
             users.setEmail(request.getEmail());
             users.setPhone(request.getPhone());
-            users.setPhoto("https://i.pinimg.com/236x/cc/16/0c/cc160c19dbd165c43046c176223f10fe.jpg");
+            users.setPhoto("default-avt.jpg");
             users.setActivated(true);
             users.setVerificode(RandomString.make(64));
             users.setPassword(passwordEncoder.encode(request.getPassword()));
