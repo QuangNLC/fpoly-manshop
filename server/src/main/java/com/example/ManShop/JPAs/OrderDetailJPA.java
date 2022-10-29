@@ -1,6 +1,7 @@
 package com.example.ManShop.JPAs;
 
 import com.example.ManShop.Entitys.OrderDetail;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -18,5 +19,5 @@ public interface OrderDetailJPA extends JpaRepository<OrderDetail,Integer> {
                 inner join status_order so on o.id = so.orders
                 where o.orderdate between symmetric :#{#startDate} and :#{#endDate}
             """)
-    List<OrderDetail> getOrderDetailByDate(Date startDate, Date endDate);
+    List<OrderDetail> getOrderDetailByDate(Pageable pageable, Date startDate, Date endDate);
 }
