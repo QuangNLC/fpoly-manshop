@@ -6,6 +6,7 @@ import com.example.ManShop.Entitys.*;
 import com.example.ManShop.JPAs.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +34,9 @@ public class OrderContoller {
     OrderJPA orderJPA;
     final ProductsizeJPA productsizeJPA;
     final SizeJPA sizeJPA;
+
+    @Autowired
+    private StatusOrderJPA statusOrderJPA;
 
     public OrderContoller(UserJPA userJPA, CustomerJPA customerJPA, OrderDetailJPA orderDetailJPA, OrderJPA orderJPA, ProductsizeJPA productsizeJPA, SizeJPA sizeJPA) {
         this.userJPA = userJPA;
@@ -90,8 +94,9 @@ public class OrderContoller {
         user.setUsername(orderRequest.getUsers().getUsername());
         if(check.equals("for-someone")){
         Customers customers  = new Customers();
-        customers.setAddress(orderRequest.getCustomers().getAddress());
         customers.setPhone(orderRequest.getCustomers().getPhone());
+        customers.setAddress(orderRequest.getCustomers().getAddress());
+        customers.setName(orderRequest.getCustomers().getName());
         customers.setUser(orderRequest.getUsers());
         customerJPA.save(customers);
         newOrder.setCustomers(customers);
@@ -99,6 +104,7 @@ public class OrderContoller {
             Customers customers  = new Customers();
             customers.setAddress(orderRequest.getCustomers().getAddress());
             customers.setPhone(orderRequest.getCustomers().getPhone());
+            customers.setName(orderRequest.getCustomers().getName());
             customers.setUser(orderRequest.getUsers());
             customerJPA.save(customers);
         newOrder.setCustomers(customers);
@@ -198,5 +204,10 @@ public class OrderContoller {
                 return 0;
 
         }
+    }
+
+    @GetMapping("/status-info")
+    public ResponseEntity<?> getOrderStatusInfo(){
+        return ResponseEntity.ok(statusOrderJPA.findAll());
     }
 }

@@ -2,28 +2,18 @@ import ordersAPI from '../../api/ordersAPI';
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import Helmet from '../../components/Helmet'
-import Box from '@mui/material/Box';
-import Collapse from '@mui/material/Collapse';
-import IconButton from '@mui/material/IconButton';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import {useSelector} from 'react-redux'
-import {formatter} from '../../utils/index'
+import { useSelector } from 'react-redux'
+import { formatter } from '../../utils/index'
+import { Card, Badge, Tabs, Typography, Button, Empty, Modal } from 'antd';
+import { useNavigate } from 'react-router-dom';
+import { South } from '@mui/icons-material';
 
 const Container = styled.div`
     width: 100%;
 `
 const Wrapper = styled.div`
     width: 100%;
-    padding: 50px;
+    background-color: rgba(0,0,0, 0.075);
 `
 const Title = styled.h2`
     width: 100%;
@@ -36,7 +26,6 @@ const Title = styled.h2`
 const ListContainer = styled.div`
     width: 100%;
     padding: 50px;
-    margin-top: 50px;
     -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
     box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
 `
@@ -47,107 +36,336 @@ const ProductImg = styled.img`
 
 `
 
-function createData(name, calories, fat, carbs, protein, price) {
-    return {
-        name,
-        calories,
-        fat,
-        carbs,
-        protein,
-        price,
-        history: [
-            {
-                date: '2020-01-05',
-                customerId: '11091700',
-                amount: 3,
-            },
-            {
-                date: '2020-01-02',
-                customerId: 'Anonymous',
-                amount: 1,
-            },
-        ],
-    };
+const ContentContainer = styled.div`
+    width: 100%;
+    padding: 20px;
+    background-color: white;
+    border-radius:  20px;
+    -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+    box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+`
+const OrderContainer = styled.div`
+    width: 100%;
+    padding: 20px;
+    margin-bottom: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: right;
+    justify-content: flex-start;
+`
+const OrderDetails = styled.div`
+`
+
+const OrderDetailsItem = styled.div`
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+`
+const OrderDetailsItemImage = styled.div`
+    width: 138px;
+    height: 138px;
+    padding: 4px;
+    border: 1px solid lightgray;
+`
+const ItemImage = styled.img`
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: top;
+`
+const OrderDetailsItemTitle = styled.div`
+    flex: 1;
+    display: flex;
+    justify-content: center;
+`
+const OrderDetailsItemPrice = styled.div`
+    width: 200px;
+`
+const OrderDetailsItemQuantity = styled.div`
+    width: 30px;
+`
+const OrderInfo = styled.div`    
+    width: 100%;
+    display: flex;
+    border-top: 1px solid teal;
+`
+const OrderCustomer = styled.div`
+    flex: 1;
+    padding: 10px;
+    margin-right: 10px;
+    border-right: 1px solid lightgray;
+`
+const OrderCustomnerItem = styled.div`
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+`
+const OrderCustomnerItemLabel = styled.div`
+    font-size: 14px;
+    font-weight: 500;
+    margin-right: 10px;
+`
+const OrderCustomnerItemInfo = styled.div`
+    font-size: 16px;
+    font-weight: 300;
+`
+const OrderSummary = styled.div`
+    width: 300px;
+    padding-right: 20px;
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+`
+const OrderSummaryTitle = styled.div`
+`
+const OrderSummaryDetail = styled.div`
+    font-size: 20px;
+    color: darkblue;
+    font-weight: 500;
+    margin-top: 5px;
+`
+const OrderAction = styled.div`
+    width: 100%;
+    padding: 20px;
+    border-top: 1px solid teal;
+    display: flex;
+    justify-content: flex-end;
+`
+
+
+
+const Order = ({ order, onAction }) => {
+
+
+    return (
+        <OrderContainer>
+            <Badge.Ribbon text={order.statusOrders.title}>
+                <Card title={`Đặt hàng lúc : ${order.order_date}     ||     ${order.orderDetail.reduce(((total, item) => (total + item.quantity)), 0)} sản phẩm`} size="small">
+                    <OrderDetails>
+                        {
+                            order.orderDetail.map((item, index) => (
+                                <OrderDetailsItem key={item.id}>
+                                    <OrderDetailsItemImage>
+                                        <ItemImage src={item.product.images && `http://localhost:8080/api/file/images/${item.product.images[0].photo}`} />
+                                    </OrderDetailsItemImage>
+                                    <OrderDetailsItemTitle>
+                                        {item.product.name}
+                                    </OrderDetailsItemTitle>
+                                    <OrderDetailsItemPrice>
+                                        {formatter.format(item.product.export_price)}
+                                    </OrderDetailsItemPrice>
+                                    <OrderDetailsItemQuantity>
+                                        x{item.quantity}
+                                    </OrderDetailsItemQuantity>
+                                </OrderDetailsItem>
+                            ))
+                        }
+                    </OrderDetails>
+                    <OrderInfo>
+                        <OrderCustomer>
+                            <Typography.Text>Thông tin người đặt</Typography.Text>
+                            <OrderCustomnerItem>
+                                <OrderCustomnerItemLabel>Tên đăng nhập: </OrderCustomnerItemLabel>
+                                <OrderCustomnerItemInfo>{order.users.username}</OrderCustomnerItemInfo>
+                            </OrderCustomnerItem>
+                            <OrderCustomnerItem>
+                                <OrderCustomnerItemLabel>Email: </OrderCustomnerItemLabel>
+                                <OrderCustomnerItemInfo>{order.users.email}</OrderCustomnerItemInfo>
+                            </OrderCustomnerItem>
+                            <OrderCustomnerItem>
+                                <OrderCustomnerItemLabel>Số điện thoại: </OrderCustomnerItemLabel>
+                                <OrderCustomnerItemInfo>{order.users.phone}</OrderCustomnerItemInfo>
+                            </OrderCustomnerItem>
+                            <Typography.Text>Thông tin giao hàng</Typography.Text>
+                            <OrderCustomnerItem>
+                                <OrderCustomnerItemLabel>Người nhận: </OrderCustomnerItemLabel>
+                                <OrderCustomnerItemInfo>{order.users.username}</OrderCustomnerItemInfo>
+                            </OrderCustomnerItem>
+                            <OrderCustomnerItem>
+                                <OrderCustomnerItemLabel>Số điện thoại: </OrderCustomnerItemLabel>
+                                <OrderCustomnerItemInfo>{order.customers.phone}</OrderCustomnerItemInfo>
+                            </OrderCustomnerItem>
+                            <OrderCustomnerItem>
+                                <OrderCustomnerItemLabel>Địa chỉ: </OrderCustomnerItemLabel>
+                                <OrderCustomnerItemInfo>{order.customers.address}</OrderCustomnerItemInfo>
+                            </OrderCustomnerItem>
+                        </OrderCustomer>
+                        <OrderSummary>
+                            <OrderSummaryTitle>
+                                Thanh Toán
+                            </OrderSummaryTitle>
+                            <OrderSummaryDetail>
+                                {formatter.format(order.total_price)}
+                            </OrderSummaryDetail>
+                        </OrderSummary>
+                    </OrderInfo>
+                    <OrderAction>
+                        <ButtonUpdateStatus status={order.statusOrders} onAction={onAction} />
+                    </OrderAction>
+                </Card>
+            </Badge.Ribbon>
+        </OrderContainer>
+    )
+
 }
 
-function Row(props) {
-    const { row } = props;
-    const [open, setOpen] = React.useState(false);
+const ButtonUpdateStatus = ({ status, onAction }) => {
+    const statusList = [
+        {
+            "id": 1,
+            "title": "Chờ Xác Nhận"
+        },
+        {
+            "id": 2,
+            "title": "Đã Xác Nhận"
+        },
+        {
+            "id": 3,
+            "title": "Đang Giao"
+        },
+        {
+            "id": 4,
+            "title": "Hoàn Tất"
+        }
+    ]
+
+    const data = statusList.find(item => item.id - 1 === status.id)
+
+    const onClick = () => {
+        Modal.confirm({
+            title: "Hộp Thoại Xác Nhận",
+            content: `${data.title} đon hàng ?`,
+            okText: "Xác Nhận",
+            cancelText: "Hủy Bỏ",
+            onOk: () => { onAction(data) }
+        })
+    }
+
     return (
-        <React.Fragment>
-            <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
-                <TableCell>
-                    <IconButton
-                        aria-label="expand row"
-                        size="small"
-                        onClick={() => setOpen(!open)}
-                    >
-                        {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-                    </IconButton>
-                </TableCell>
-                <TableCell component="th" scope="row">
-                    {row.id}
-                </TableCell>
-                <TableCell align="right">{row.createdDate}</TableCell>
-                <TableCell align="right">{row.total_price}</TableCell>
-                <TableCell align="right">{row.statusOrders ? row.statusOrders.title : ''}</TableCell>
-            </TableRow>
-            <TableRow>
-                <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-                    <Collapse in={open} timeout="auto" unmountOnExit>
-                        <Box sx={{ margin: 1 }}>
-                            <Typography variant="h6" gutterBottom component="div">
-                                Chi Tiết Đơn Hàng
-                            </Typography>
-                            <Table size="small" aria-label="purchases">
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell>Sản Phẩm</TableCell>
-                                        <TableCell align="right">Size</TableCell>
-                                        <TableCell align="right">Giá Bán</TableCell>
-                                        <TableCell align="right">Số Lượng</TableCell>
-                                        <TableCell align="right">Thành Tiền</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {row.orderDetail.map((item, index) => (
-                                        <TableRow key={item.id}>
-                                            <TableCell>
-                                                <ProductImg src={item.product.images[0].photo} />
-                                            </TableCell>
-                                            <TableCell align="right">{item.size}</TableCell>
-                                            <TableCell align="right">{item.product.export_price}</TableCell>
-                                            <TableCell align="right">{item.quantity}</TableCell>
-                                            <TableCell align="right">
-                                                {formatter.format(item.quantity * item.product.export_price)}
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </Box>
-                    </Collapse>
-                </TableCell>
-            </TableRow>
-        </React.Fragment>
-    );
+        data &&
+        <Button onClick={onClick}>
+            {data.title}
+        </Button>
+    )
 }
 
 const AdmOrderList = () => {
+    const auth = useSelector(state => state.auth.auth);
+    const isAuth = useSelector(state => state.auth.isAuth);
     const [data, setData] = useState([]);
+    const [statusList, setStatusList] = useState([{ id: 0, title: "Tất cả" }])
+    const [tabData, setTabData] = useState([]);
+    const { username } = auth ? auth.info : "";
+    const navigate = useNavigate();
+
+    const handleUpdateOrderStatus = (item) => {
+        const newStatus = statusList.find(x => x.id - 1 === item.statusOrders.id)
+        console.log('update stt')
+        console.log({
+            ...item,
+            statusOrders: newStatus
+        })
+        ordersAPI.updateOrderStatus({
+            ...item,
+            statusOrders: newStatus
+        })
+            .then(res => {
+                if (!res.status) {
+                    let index = data.findIndex(x => x.id === item.id)
+                    if (index !== -1) {
+                        data[index] = {
+                            ...item,
+                            statusOrders: newStatus
+                        }
+                        setData([...data])
+                        Modal.success({
+                            title: "Hộp Thoại Thông Báo",
+                            content: "Cập nhật trạng thái đơn hàng thành công!"
+                        })
+                    }
+
+                } else {
+                    console.log(res)
+                }
+            })
+            .catch(err => console.log(err))
+
+    }
+
+
+
+    const filterOrdersByStatus = (arr, id) => {
+        let resArr = [];
+        if (id > 0) {
+            resArr = arr.filter(item => item.statusOrders.id === id)
+            return resArr;
+        } else if (id === 0) {
+            return arr;
+        } else {
+            return [];
+        }
+    };
 
 
     useEffect(() => {
-        ordersAPI.getAll()
-        .then(res => {
-            if(!res.status){
-                setData(res);
-            }else{
-                console.log(res)
-            }
-        })
-        .catch(err => console.log(err));
+        if (auth) {
+            ordersAPI.getMyOrders(username)
+                .then(res => {
+                    if (!res.status) {
+                        setData(res);
+                    } else {
+                        console.log(res)
+                    }
+                })
+                .catch(err => console.log(err));
+        } else {
+            navigate("/login")
+        }
+    }, [auth])
+
+    useEffect(() => {
+        ordersAPI.getAllOrderStatus()
+            .then(res => {
+                if (!res.status) {
+                    setStatusList([
+                        { id: 0, title: "Tất cả" },
+                        ...res
+                    ])
+                } else {
+                    console.log(res)
+                }
+            })
+            .catch(err => console.log(err))
     }, [])
+
+    useEffect(() => {
+        if (data.length && data.length >= 0) {
+            let arr = [];
+            statusList.forEach(item => {
+                arr.push({
+                    label: item.title,
+                    key: item.id,
+                    children: (
+                        filterOrdersByStatus(data, item.id).length > 0 ?
+                            (
+                                filterOrdersByStatus(data, item.id).sort((a, b) => (a.createdDate > b.createdDate ? -1 : 1))
+                                    .map(item => (
+                                        <Order key={item.id} order={item} onAction={() => { handleUpdateOrderStatus(item) }} />
+                                    ))
+                            )
+                            :
+                            (
+                                <><Empty /></>
+                            )
+                    )
+                })
+            })
+            setTabData(arr)
+        }
+    }, [data, statusList])
+
     return (
         <Helmet
             title="Danh Sách Đơn Hàng"
@@ -155,25 +373,15 @@ const AdmOrderList = () => {
             <Container>
                 <Wrapper>
                     <ListContainer>
-                    <Title>danh sách đơn hàng</Title>
-                        <TableContainer component={Paper}>
-                            <Table aria-label="collapsible table">
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell />
-                                        <TableCell>Id</TableCell>
-                                        <TableCell align="right">Ngày Tạo</TableCell>
-                                        <TableCell align="right">Thanh Toán</TableCell>
-                                        <TableCell align="right">Trạng Thái</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {data.length > 0 && data.map((item, index) => (
-                                        <Row key={item.id} row={item} />
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
+                        <Title>danh sách đơn hàng</Title>
+                        <ContentContainer>
+                            {
+                                tabData && tabData.length > 0 &&
+                                (
+                                    <Tabs items={tabData} />
+                                )
+                            }
+                        </ContentContainer>
                     </ListContainer>
                 </Wrapper>
             </Container>

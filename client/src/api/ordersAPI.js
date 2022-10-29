@@ -8,6 +8,14 @@ const ordersAPI = {
     getAll: () => {
         const url='/order/all';
         return axiosClient.get(url);
+    },
+    getAllOrderStatus: () => {
+        const url='/order/status-info';
+        return axiosClient.get(url);
+    },
+    updateOrderStatus: (payload) => {
+        const url='/order/update/'+ payload.id;
+        return axiosClient.put(url, payload);
     }
 };
 

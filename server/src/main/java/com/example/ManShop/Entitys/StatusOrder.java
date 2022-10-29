@@ -18,7 +18,7 @@ import java.util.List;
 public class StatusOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
     @Column(name = "title", columnDefinition = "NVARCHAR(200)")
     private String title;
     @JsonIgnore

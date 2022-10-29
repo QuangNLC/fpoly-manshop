@@ -503,36 +503,6 @@ const Webcart = () => {
                         </Summary>
                     </Bottom>
                 </Wrapper>
-                <Dialog open={isModalInfo} onClose={() => { setIsModalInfo(false) }}>
-                    <DialogTitle>Thông tin nhận hàng</DialogTitle>
-                    <DialogContent>
-                        <DialogContentText>
-                            Vui lòng nhập thông tin nhận hàng
-                        </DialogContentText>
-                        <CustomerInputContainer>
-                            <InputGroup>
-                                <Label>Địa chỉ nhận hàng</Label>
-                                <Input
-                                    value={customerValue.adress}
-                                    onChange={onChangeCustomerValue}
-                                    name="adress"
-                                />
-                            </InputGroup>
-                            <InputGroup>
-                                <Label>Số điện thoại</Label>
-                                <Input
-                                    value={customerValue.phone}
-                                    onChange={onChangeCustomerValue}
-                                    name="phone"
-                                />
-                            </InputGroup>
-                        </CustomerInputContainer>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={() => { setIsModalInfo(false) }}>Hủy Bỏ</Button>
-                        <Button onClick={() => { hanldleCheckout() }}>Đặt Hàng</Button>
-                    </DialogActions>
-                </Dialog>
                 <Drawer
                     title="Thông  tin  đặt hàng."
                     placement='right'
