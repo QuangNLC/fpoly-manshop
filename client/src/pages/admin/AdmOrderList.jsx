@@ -314,6 +314,7 @@ const AdmOrderList = () => {
             ordersAPI.getMyOrders(username)
                 .then(res => {
                     if (!res.status) {
+                        console.log(res)
                         setData(res);
                     } else {
                         console.log(res)
@@ -329,6 +330,7 @@ const AdmOrderList = () => {
         ordersAPI.getAllOrderStatus()
             .then(res => {
                 if (!res.status) {
+                    console.log(res)
                     setStatusList([
                         { id: 0, title: "Tất cả" },
                         ...res
