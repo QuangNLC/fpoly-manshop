@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.Date;
 import java.util.List;
 
@@ -20,18 +21,18 @@ public class Orders {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(name = "createDate")
+    @NotBlank
     private Date createdDate;
-    @ManyToOne @JoinColumn(name = "username")
-    private Users users;
-
     @Column(name = "totalPrice")
+    @NotBlank
     private double total_price;
     @Column(name = "orderdate")
+    @NotBlank
     private Date order_date;
 
-    @ManyToOne @JoinColumn(name = "customer")
+    @ManyToOne
+    @JoinColumn(name = "customer")
     private Customers customers;
-
 
     @OneToMany(mappedBy = "orders")
     private List<OrderDetail> orderDetail;
@@ -40,4 +41,7 @@ public class Orders {
     @JoinColumn(name = "statusOrder")
     private StatusOrder statusOrders;
 
+    @ManyToOne
+    @JoinColumn(name = "username")
+    private Users users;
 }

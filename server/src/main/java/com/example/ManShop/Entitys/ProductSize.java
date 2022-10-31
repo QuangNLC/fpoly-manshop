@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 
 @Entity
 @AllArgsConstructor
@@ -19,11 +20,14 @@ public class ProductSize {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(name = "quantity")
+    @NotBlank
     private int quantity;
     @JsonIgnore
-    @ManyToOne @JoinColumn(name="ProductId")
+    @ManyToOne
+    @JoinColumn(name="ProductId")
     private Product product;
-    @ManyToOne @JoinColumn(name="SizeId")
+    @ManyToOne
+    @JoinColumn(name="SizeId")
     private Sizes size;
 
 

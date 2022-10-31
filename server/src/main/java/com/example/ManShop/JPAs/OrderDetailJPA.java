@@ -1,5 +1,6 @@
 package com.example.ManShop.JPAs;
 
+import com.example.ManShop.DTOS.BillResponse;
 import com.example.ManShop.Entitys.OrderDetail;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,4 +21,30 @@ public interface OrderDetailJPA extends JpaRepository<OrderDetail,Integer> {
                 where o.orderdate between symmetric :#{#startDate} and :#{#endDate}
             """)
     List<OrderDetail> getOrderDetailByDate(Pageable pageable, Date startDate, Date endDate);
+
+    @Query(nativeQuery = true, value = """
+                select * from order_detail od
+                inner join oders o on o.id = od.orders
+                inner join product p on p.id = od.product
+                inner join customer c on c.id = o.customer
+                inner join users u on u.username = c.username
+                inner join role r on u.role = r.id
+                inner join status_order so on o.id = so.orders
+                where (o.orderdate between symmetric :#{#startDate} and :#{#endDate})
+                and o.username = :#{#username}
+            """)
+    List<OrderDetail> getOrderDetailByDateAndUserName(Pageable pageable, String username, Date startDate, Date endDate);
+
+    @Query(nativeQuery = true, value = """
+                select od.quantity, od.total_price, o.orderdate, p.name, u.phone, u.fullname
+                from order_detail od
+                inner join oders o on o.id = od.orders
+                inner join product p on p.id = od.product
+                inner join customer c on c.id = o.customer
+                inner join users u on u.username = c.username
+                inner join role r on u.role = r.id
+                inner join status_order so on o.id = so.orders
+                where od.id = :#{#id}
+""")
+    List<BillResponse> getBillById(Integer id);
 }

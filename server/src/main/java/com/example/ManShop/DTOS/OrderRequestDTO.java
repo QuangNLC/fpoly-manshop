@@ -18,9 +18,8 @@ public class OrderRequestDTO {
     @NotBlank(message = "Không thấy thông tin người dùng")
     private Users users;
     private Customers customers;
+    @NotBlank
     private double total_price;
     private List<OrderDetail> orderDetail;
     private StatusOrder statusOrders;
-
-
 }

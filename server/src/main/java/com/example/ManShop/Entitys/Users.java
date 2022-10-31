@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Entity
@@ -19,25 +20,34 @@ public class Users {
     @Id
     private String username;
     @Column(name = "fullname")
+    @NotBlank
     private String fullname;
     @Column(name = "email")
+    @NotBlank
     private String email;
     @Column(name = "photo")
+    @NotBlank
     private String photo;
     @Column(name = "phone")
+    @NotBlank
     private String phone;
     @Column(name = "activated")
+    @NotBlank
     private Boolean activated;
     @Column(name="adress")
+    @NotBlank
     private String adress;
     @Column(name = "verificode", length = 64)
     @JsonIgnore
+    @NotBlank
     private String verificode;
     @Column(name = "password")
     @JsonIgnore
+    @NotBlank
     private String password;
     @ManyToOne
     @JoinColumn(name = "role")
+
     private Role roles;
     @JsonIgnore
     @OneToMany(mappedBy = "users")
@@ -45,10 +55,10 @@ public class Users {
     @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<Customers> customers;
- @JsonIgnore
+    @JsonIgnore
     @OneToMany(mappedBy = "users")
     private List<Orders> orders;
     @JsonIgnore
-     @OneToMany(mappedBy = "users")
+    @OneToMany(mappedBy = "users")
     private List<Promotions> promotions;
 }
