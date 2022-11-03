@@ -36,6 +36,30 @@ public class MainController {
 
 
     }
+//    @Autowired
+//    OrderDetailJPA orderDetailJPA;
+//    @Autowired
+//    ProductsizeJPA customerJPA;
+//
+//    final  ProductJPA productJPA;
+//    final  ProductsizeJPA productsizeJPA;
+//
+//    public MainController(ProductJPA productJPA, ProductsizeJPA productsizeJPA) {
+//        this.productJPA = productJPA;
+//        this.productsizeJPA = productsizeJPA;
+//    }
+//    @Autowired
+//    OrderDetailJPA orderDetailJPA;
+//    @Autowired
+//    ProductsizeJPA customerJPA;
+//
+//    final  ProductJPA productJPA;
+//    final  ProductsizeJPA productsizeJPA;
+//
+//    public MainController(ProductJPA productJPA, ProductsizeJPA productsizeJPA) {
+//        this.productJPA = productJPA;
+//        this.productsizeJPA = productsizeJPA;
+//    }
 
 
 

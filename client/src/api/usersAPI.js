@@ -18,18 +18,18 @@ const usersAPI = {
         return axiosClient.post(url, formData,
             {
                 headers: {
-                    "content-type": "multipart/form-data"
+                    "Content-Type": "multipart/form-data"
                 }
             }
         );
     },
     updateUserDeatails: (username, payload) => {
-        const url = '/users?username='  + username;
+        const url = '/users?username=' + username;
         return axiosClient.put(url, payload);
     },
-    changePassword:(username, payload) => {
-        const url = '/users/change-password/'+username;
-        return  axiosClient.post(url, payload);
+    changePassword: (username, payload) => {
+        const url = '/users/change-password/' + username;
+        return axiosClient.post(url, payload);
     }
 };
 
