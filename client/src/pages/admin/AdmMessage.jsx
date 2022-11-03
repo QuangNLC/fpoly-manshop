@@ -12,13 +12,38 @@ import { useRef } from 'react';
 const Container = styled.div`
     width: 100%;
     padding: 50px;
+    display: flex;
+    -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+    box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+`
+const ListContainer = styled.div`
+    width: 20%;-webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+    box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+`
+const ListTitle = styled.div`
+    height: 80px;
+    background-color: #d0f5ee;
+    font-size: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`
+
+const ListWrapper = styled.div`
+    width :100%;
+    height: 60vh;
+    overflow-Y: scroll;
+    padding: 30px;
+`
+const List = styled.div`
+   
 `
 const ChatContainer = styled.div`
     background-color: rgba(0, 0, 0, 0.15);
-    border-radius: 20px;
     overflow: hidden;
     -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
     box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+    width: 80%;
 `
 const ChatTitle = styled.div`
     width : 100%;
@@ -27,6 +52,7 @@ const ChatTitle = styled.div`
     padding :20px;
     color: white;
     background-color: teal;
+    height: 80px;
 `
 const ChatMessagesContainer = styled.div`
     padding: 30px 120px;
@@ -89,7 +115,7 @@ const ChatAction = styled.div`
 
 
 var stompClient = null;
-const WebMessage = () => {
+const AdmMessage = () => {
     const isAuth = useSelector(state => state.auth.isAuth);
     const auth = useSelector(state => state.auth.auth);
     const [checking, setChecking] = useState(true);
@@ -191,19 +217,19 @@ const WebMessage = () => {
             // stompClient.send('/app/private-message', {}, JSON.stringify(chatMessage));
             // setUserData({ ...userData, message: "" });
             console.log()
-            messagesAPI.sendPrivateMessagesToAdm(auth.info.username, {content: sendContent})
-            .then(res => {
-                console.log(res)
-                setSendContent('')
-            })
-            .catch(err => console.log(err))
+            messagesAPI.sendPrivateMessagesToAdm(auth.info.username, { content: sendContent })
+                .then(res => {
+                    console.log(res)
+                    setSendContent('')
+                })
+                .catch(err => console.log(err))
         }
     }
 
 
     useEffect(() => {
-        setMyMessages(myMessages.sort((a,b) => a.createdat - b.createdat));
-        messageElementRef && messageElementRef.current && (  messageElementRef.current.scrollTop = messageElementRef.current.scrollHeight)
+        setMyMessages(myMessages.sort((a, b) => a.createdat - b.createdat));
+        messageElementRef && messageElementRef.current && (messageElementRef.current.scrollTop = messageElementRef.current.scrollHeight)
     }, [myMessages])
 
     useEffect(() => {
@@ -242,8 +268,7 @@ const WebMessage = () => {
                     :
                     (
                         <>
-                            <div className='container'>
-                                {/* {
+                            {/* {
                                     <div className='chat-box'>
                                         <div className="member-list">
                                             <ul>
@@ -297,33 +322,39 @@ const WebMessage = () => {
                                         }
                                     </div>
                                 } */}
-                                <Container>
-                                    <ChatContainer>
-                                        <ChatTitle>Trò chuyện với quản trị viên.</ChatTitle>
-                                        <ChatMessagesContainer>
-                                            <Messages ref={messageElementRef}>
-                                                {
-                                                    myMessages.length > 0 && myMessages.map((item, index) => (
-                                                        <Message key={index} messageType={item.sendedby.username === 'admchat' ? 'receive' : 'send'}>
-                                                            <SendTime messageType={item.sendedby.username === 'admchat' ? 'receive' : 'send'}>{item.createdat}</SendTime>
-                                                            <Content messageType={item.sendedby.username === 'admchat' ? 'receive' : 'send'}>
-                                                                {item.content}
-                                                            </Content>
-                                                        </Message>
-                                                    ))
-                                                }
-                                            </Messages>
-                                        </ChatMessagesContainer>
-                                        <InputContainer>
-                                            <ChatInput onChange={e => setSendContent(e.target.value)} value={sendContent} />
-                                            <ChatAction onClick={sendPrivateMessage}>
-                                                <SendOutlinedIcon style={{fontSize: '30px'}}/>
-                                            </ChatAction>
-                                        </InputContainer>
-                                    </ChatContainer>
-                                </Container>
+                            <Container>
+                                <ListContainer>
+                                    <ListTitle>Danh Sách</ListTitle>
+                                    <ListWrapper>
+                                        <List>
 
-                            </div>
+                                        </List>
+                                    </ListWrapper>
+                                </ListContainer>
+                                <ChatContainer>
+                                    <ChatTitle>Trò chuyện với quản trị viên.</ChatTitle>
+                                    <ChatMessagesContainer>
+                                        <Messages ref={messageElementRef}>
+                                            {
+                                                myMessages.length > 0 && myMessages.map((item, index) => (
+                                                    <Message key={index} messageType={item.sendedby.username === 'admchat' ? 'receive' : 'send'}>
+                                                        <SendTime messageType={item.sendedby.username === 'admchat' ? 'receive' : 'send'}>{item.createdat}</SendTime>
+                                                        <Content messageType={item.sendedby.username === 'admchat' ? 'receive' : 'send'}>
+                                                            {item.content}
+                                                        </Content>
+                                                    </Message>
+                                                ))
+                                            }
+                                        </Messages>
+                                    </ChatMessagesContainer>
+                                    <InputContainer>
+                                        <ChatInput onChange={e => setSendContent(e.target.value)} value={sendContent} />
+                                        <ChatAction onClick={sendPrivateMessage}>
+                                            <SendOutlinedIcon style={{ fontSize: '30px' }} />
+                                        </ChatAction>
+                                    </InputContainer>
+                                </ChatContainer>
+                            </Container>
                         </>
                     )
             }
@@ -331,4 +362,4 @@ const WebMessage = () => {
     )
 }
 
-export default WebMessage   
+export default AdmMessage   

@@ -23,7 +23,7 @@ public class ChatController {
 
     @MessageMapping("/private-message")
     public MessageRequestDTO reiceiverPrivateMessage(@Payload MessageRequestDTO message){
-        simpMessagingTemplate.convertAndSendToUser(message.getReceiverName(),"/private", message); //user/David/private
+        simpMessagingTemplate.convertAndSendToUser(message.getReceivedby(),"/private", message); //user/David/private
         return message;
     }
 }

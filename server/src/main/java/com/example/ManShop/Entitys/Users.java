@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.aspectj.bridge.Message;
 
 import javax.persistence.*;
 import java.util.List;
@@ -45,10 +46,23 @@ public class Users {
     @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<Customers> customers;
- @JsonIgnore
+    @JsonIgnore
     @OneToMany(mappedBy = "users")
     private List<Orders> orders;
     @JsonIgnore
-     @OneToMany(mappedBy = "users")
+    @OneToMany(mappedBy = "users")
     private List<Promotions> promotions;
+
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "createdby")
+    private List<Messages> createdMessages;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "sendedby")
+    private List<Messages> sendedMessages;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "receivedby")
+    private List<Messages> receivedMessages;
 }

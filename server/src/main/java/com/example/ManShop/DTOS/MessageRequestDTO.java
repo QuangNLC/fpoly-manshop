@@ -3,15 +3,18 @@ package com.example.ManShop.DTOS;
 import com.example.ManShop.Entitys.MessageStatus;
 import lombok.*;
 
+import java.util.Date;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
 public class MessageRequestDTO {
-    private String senderName;
-    private String receiverName;
-    private String message;
-    private String date;
-    private MessageStatus status;
+    private String createdby;
+    private String sendedby;
+    private String receivedby;
+    private String content;
+    private Date createdat;
+    private Boolean status;
 }

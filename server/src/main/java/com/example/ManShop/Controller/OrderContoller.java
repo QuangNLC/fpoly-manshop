@@ -188,21 +188,26 @@ public class OrderContoller {
 
     private int check(String b) {
         switch (b){
-            case "X":
+            case "XS":
                 int i;
                 return  i=1;
-            case "L":
+            case "S":
                 int i1;
-                return  i1=1;
-            case "XL":
+                return  i1=2;
+            case "M":
                 int i2;
-                return  i2=1;
-            case "XXL":
+                return  i2=3;
+            case "L":
                 int i3;
-                return  i3=1;
+                return  i3=4;
+            case "XL":
+                int i4;
+                return  i4=5;
+            case "XXL":
+                int i5;
+                return  i5=6;
             default:
                 return 0;
-
         }
     }
 
