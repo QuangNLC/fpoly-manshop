@@ -191,19 +191,19 @@ const WebMessage = () => {
             // stompClient.send('/app/private-message', {}, JSON.stringify(chatMessage));
             // setUserData({ ...userData, message: "" });
             console.log()
-            messagesAPI.sendPrivateMessagesToAdm(auth.info.username, {content: sendContent})
-            .then(res => {
-                console.log(res)
-                setSendContent('')
-            })
-            .catch(err => console.log(err))
+            messagesAPI.sendPrivateMessagesToAdm(auth.info.username, { content: sendContent })
+                .then(res => {
+                    console.log(res)
+                    setSendContent('')
+                })
+                .catch(err => console.log(err))
         }
     }
 
 
     useEffect(() => {
-        setMyMessages(myMessages.sort((a,b) => a.createdat - b.createdat));
-        messageElementRef && messageElementRef.current && (  messageElementRef.current.scrollTop = messageElementRef.current.scrollHeight)
+        setMyMessages(myMessages.sort((a, b) => a.createdat - b.createdat));
+        messageElementRef && messageElementRef.current && (messageElementRef.current.scrollTop = messageElementRef.current.scrollHeight)
     }, [myMessages])
 
     useEffect(() => {
@@ -241,90 +241,31 @@ const WebMessage = () => {
                     )
                     :
                     (
-                        <>
-                            <div className='container'>
-                                {/* {
-                                    <div className='chat-box'>
-                                        <div className="member-list">
-                                            <ul>
-                                                <li onClick={() => { setTab("CHATROOM") }} className={`member ${tab === "CHATROOM" && "active"}`}>
-                                                    Tin nhắn
-                                                </li>
-                                                {[...privateChats.keys()].map((item, index) => (
-                                                    <li onClick={() => { setTab(item) }} className={`member ${tab === item && "active"}`} key={index}>
-                                                        {item}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
+                        <Container>
+                            <ChatContainer>
+                                <ChatTitle>Trò chuyện với quản trị viên.</ChatTitle>
+                                <ChatMessagesContainer>
+                                    <Messages ref={messageElementRef}>
                                         {
-                                            tab === "CHATROOM" &&
-                                            <div className="chat-content">
-                                                <ul className='chat-messages'>
-                                                    {publicChats.map((chat, index) => (
-                                                        <li ky={index} className='message'>
-                                                            {chat.senderName !== userData.username && <div className='avatar'>{chat.senderName}</div>}
-                                                            <div className="message-date">{chat.message}</div>
-                                                            {chat.senderName === userData.username && <div className='avatar self'>{chat.senderName}</div>}
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                                <div className="send-message">
-                                                    <input type="text" className='input-message' placeholder='enter public message' value={userData.message} name="message" onChange={handleChangeMessage} />
-                                                    <button type='button' className='send-button' onClick={sendPublicMessage}>send</button>
-                                                </div>
-                                            </div>
+                                            myMessages.length > 0 && myMessages.map((item, index) => (
+                                                <Message key={index} messageType={item.sendedby.username === 'admchat' ? 'receive' : 'send'}>
+                                                    <SendTime messageType={item.sendedby.username === 'admchat' ? 'receive' : 'send'}>{item.createdat}</SendTime>
+                                                    <Content messageType={item.sendedby.username === 'admchat' ? 'receive' : 'send'}>
+                                                        {item.content}
+                                                    </Content>
+                                                </Message>
+                                            ))
                                         }
-                                        {
-                                            tab !== "CHATROOM" &&
-                                            <div className="chat-content">
-                                                <ul className='chat-messages'>
-                                                    {
-                                                        [...privateChats.get(tab)].map((chat, index) => (
-                                                            <li className='message' key={index}>
-                                                                {chat.senderName !== userData.username && <div className='avatar'>{chat.senderName}</div>}
-                                                                <div className="message-date">{chat.message}</div>
-                                                                {chat.senderName === userData.username && <div className='avatar self'>{chat.senderName}</div>}
-                                                            </li>
-                                                        ))
-                                                    }
-                                                </ul>
-                                                <div className="send-message">
-                                                    <input type="text" className='input-message' placeholder={`enter private message for ${tab} `} value={userData.message} name="message" onChange={handleChangeMessage} />
-                                                    <button type='button' className='send-button' onClick={sendPrivateMessage}>send</button>
-                                                </div>
-                                            </div>
-                                        }
-                                    </div>
-                                } */}
-                                <Container>
-                                    <ChatContainer>
-                                        <ChatTitle>Trò chuyện với quản trị viên.</ChatTitle>
-                                        <ChatMessagesContainer>
-                                            <Messages ref={messageElementRef}>
-                                                {
-                                                    myMessages.length > 0 && myMessages.map((item, index) => (
-                                                        <Message key={index} messageType={item.sendedby.username === 'admchat' ? 'receive' : 'send'}>
-                                                            <SendTime messageType={item.sendedby.username === 'admchat' ? 'receive' : 'send'}>{item.createdat}</SendTime>
-                                                            <Content messageType={item.sendedby.username === 'admchat' ? 'receive' : 'send'}>
-                                                                {item.content}
-                                                            </Content>
-                                                        </Message>
-                                                    ))
-                                                }
-                                            </Messages>
-                                        </ChatMessagesContainer>
-                                        <InputContainer>
-                                            <ChatInput onChange={e => setSendContent(e.target.value)} value={sendContent} />
-                                            <ChatAction onClick={sendPrivateMessage}>
-                                                <SendOutlinedIcon style={{fontSize: '30px'}}/>
-                                            </ChatAction>
-                                        </InputContainer>
-                                    </ChatContainer>
-                                </Container>
-
-                            </div>
-                        </>
+                                    </Messages>
+                                </ChatMessagesContainer>
+                                <InputContainer>
+                                    <ChatInput onChange={e => setSendContent(e.target.value)} value={sendContent} />
+                                    <ChatAction onClick={sendPrivateMessage}>
+                                        <SendOutlinedIcon style={{ fontSize: '30px' }} />
+                                    </ChatAction>
+                                </InputContainer>
+                            </ChatContainer>
+                        </Container>
                     )
             }
         </>

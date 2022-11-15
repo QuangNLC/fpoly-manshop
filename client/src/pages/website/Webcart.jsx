@@ -8,14 +8,14 @@ import checkoutAPI from '../../api/checkoutAPI';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import DialogHOC from '../../hoc/DialogHOC';
 import { Link, useNavigate } from 'react-router-dom'
-import { changeCartItemQuantity, changeCartItemQuantityAction, clearCartAction } from '../../redux/actions/CartReducerAtion'
+import { changeCartItemQuantity, changeCartItemQuantityAction, changeCartItemSizeAction, clearCartAction } from '../../redux/actions/CartReducerAtion'
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { notification, Drawer, Typography, Modal } from 'antd';
+import { notification, Drawer, Typography, Modal, Select, message } from 'antd';
 import { CHANGE_CART_ITEM_QUANTITY } from '../../redux/types'
 import CustomerInfoForm from '../../components/CustomerInfoForm'
 
@@ -60,6 +60,7 @@ const Info = styled.div`
 const Product = styled.div`
     display: flex;
     justify-content: space-between;
+    margin-bottom: 10px;
 `
 const ProductDetail = styled.div`
     flex: 2;
@@ -75,7 +76,10 @@ const Details = styled.div`
     flex-direction: column;
     justify-content: space-around;
 `
-const ProductName = styled.span``
+const ProductName = styled.span`
+    cursor: pointer;
+    text-decoration: underline;
+`   
 const ProductId = styled.span``
 const ProductColor = styled.div`
     width: 20px;
@@ -227,7 +231,7 @@ const Webcart = () => {
                         product: {
                             id: item.product.id
                         },
-                        size: item.size.size.title,
+                        size: item.selectedSize.size.title,
                         quantity: item.quantity,
                         total_price: item.price * item.quantity
                     }))
@@ -347,6 +351,17 @@ const Webcart = () => {
         }
     }
 
+    const handleChangeCartItemSize = (item, newSizeId, index) => {
+        const newItem = {
+            ...item,
+            selectedSize: item.size.find(s => s.id === newSizeId),
+            currentIndex: index 
+        }
+        console.log(newItem)
+        dispatch(changeCartItemSizeAction(newItem))
+        message.success("Thay đổi size thành công!")
+    }
+
     useEffect(() => {
         setCustomerValue(
             {
@@ -407,14 +422,22 @@ const Webcart = () => {
                                             <ProductDetail>
                                                 <Image src={item.product.images && `http://localhost:8080/api/file/images/${item.product.images[0].photo}`} />
                                                 <Details>
-                                                    <ProductName>
+                                                    <ProductName onClick={() => {navigate(`/product/${item.product.id}`)}}>
                                                         <b>Product:</b> {item.product?.name}
                                                     </ProductName>
                                                     <ProductId>
                                                         <b>ID:</b> {item.product.id}
                                                     </ProductId>
                                                     <ProductSize>
-                                                        <b>Size:</b> {item.size.size.title}
+                                                        <b>Size:</b> {item.selectedSize.size.title}
+                                                        <br />
+                                                        <Select value={item.selectedSize.size.title} onChange={(e) => {handleChangeCartItemSize(item, e, index)}}>
+                                                            {
+                                                                item.size.map((size) => (
+                                                                    <Select.Option value={size.id} key={size.id}>{size.size.title}</Select.Option>
+                                                                ))
+                                                            }
+                                                        </Select>
                                                     </ProductSize>
                                                 </Details>
                                             </ProductDetail>

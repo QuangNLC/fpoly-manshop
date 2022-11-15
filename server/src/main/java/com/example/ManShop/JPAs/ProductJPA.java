@@ -41,7 +41,11 @@ public interface ProductJPA extends JpaRepository<Product,Integer> {
     List<Product> findByCategory_IdAndSizeListAndDecccPrice(int idcate, List<Integer> idsize,double minPrice, double maxPrice,Pageable pageable);
 
 
-
+    @Query(
+            nativeQuery = true,
+            value = "SELECT  * from Product order by created_date desc"
+    )
+    List<Product> findNewProducts(Pageable pageable);
 
 
 

@@ -1,6 +1,7 @@
 package com.example.ManShop.Controller;
 
 
+import com.example.ManShop.DTOS.AdmMessageNotiDTO;
 import com.example.ManShop.DTOS.MemberAdmChatResponseDTO;
 import com.example.ManShop.DTOS.MessageRequestDTO;
 import com.example.ManShop.Entitys.Messages;
@@ -10,12 +11,12 @@ import com.example.ManShop.JPAs.UserJPA;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @CrossOrigin("*")
@@ -36,7 +37,18 @@ public class MessagesController {
         if(!userJPA.existsById(username)){
             return ResponseEntity.notFound().build();
         }
-        System.out.println("get private messages of: " + username);
+        System.out.println("User get private messages of: " + username);
+        return ResponseEntity.ok(messagesJPA.getUserPrivateMessages(username));
+    }
+
+    @GetMapping("/adm/my-private/{username}")
+    public ResponseEntity<?> getMyPrivateMessagesForAdm(@PathVariable String username){
+        if(!userJPA.existsById(username)){
+            return ResponseEntity.notFound().build();
+        }
+        System.out.println("Adm get private messages of: " + username);
+        messagesJPA.seenMessageByAdm(username);
+        System.out.println("Adm seen messages of: " + username);
         return ResponseEntity.ok(messagesJPA.getUserPrivateMessages(username));
     }
 
@@ -100,6 +112,12 @@ public class MessagesController {
             m.setCreatedat(reqMessage.getCreatedat());
             Messages resM = messagesJPA.save(m);
             System.out.println("save message to dtb");
+            AdmMessageNotiDTO resNoti = new AdmMessageNotiDTO();
+            resNoti.setUsername(username);
+            resNoti.setLatestmessage(new Date());
+            resNoti.setNewmessage(messagesJPA.getTotalNewMessage(username));
+            System.out.println(resNoti);
+            simpMessagingTemplate.convertAndSend("/noti/adm-message",resNoti);
             simpMessagingTemplate.convertAndSendToUser(reqMessage.getReceivedby(),"/private", resM);   //user/{username}/private
             return ResponseEntity.ok(resM);
         }catch(Exception e){
@@ -113,9 +131,19 @@ public class MessagesController {
 
     @GetMapping("/adm/get-member-list")
     public ResponseEntity<?> getChatMemberList(){
-        List<MemberAdmChatResponseDTO> list = userJPA.getListMemberChatByAdm();
+        List<Users> listU = userJPA.getListMemberChatByAdm();
 
-        return ResponseEntity.ok(userJPA.getListMemberChatByAdm());
+        List<MemberAdmChatResponseDTO> resList = new ArrayList<>();
+
+        for (int i = 0; i < listU.size(); i++) {
+            MemberAdmChatResponseDTO r = messagesJPA.getTest(listU.get(i).getUsername());
+            r.setNewmessage(messagesJPA.getTotalNewMessage(listU.get(i).getUsername()));
+            resList.add(r);
+        }
+
+
+
+        return ResponseEntity.ok(resList);
     }
 
 

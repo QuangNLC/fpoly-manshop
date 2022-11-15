@@ -62,6 +62,11 @@ const productAPI = {
     updateCategoryDetails: (payload) => {
         const url = 'category/update?categoryId='+payload.id;
         return axiosClient.put(url, payload);
+    },
+
+    getNewProducts: () => {
+        const url ='/product/getNewProducts'
+        return axiosClient.get(url);
     }
 };
 

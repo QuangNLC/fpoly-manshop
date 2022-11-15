@@ -14,7 +14,7 @@ public class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.setApplicationDestinationPrefixes("/app");
-        registry.enableSimpleBroker("/chatroom","/user");
+        registry.enableSimpleBroker("/chatroom","/user","/noti");
         registry.setUserDestinationPrefix("/user");
     }
 
@@ -22,5 +22,6 @@ public class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws").setAllowedOriginPatterns("*").withSockJS();
         registry.addEndpoint("/private").setAllowedOriginPatterns("*").withSockJS();
+        registry.addEndpoint("/adm-message").setAllowedOriginPatterns("*").withSockJS();
     }
 }

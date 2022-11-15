@@ -1,0 +1,726 @@
+{
+	"info": {
+		"_postman_id": "2d8535c8-5eca-4064-9896-cf181ef64cb5",
+		"name": "Mánhop",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23761841"
+	},
+	"item": [
+		{
+			"name": "getall product",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/product/1/5",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"product",
+						"1",
+						"5"
+					],
+					"query": [
+						{
+							"key": "categoryid",
+							"value": "1",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create product",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n        \"export_price\": 200000.0,\r\n        \"import_price\": 300000.0,\r\n        \"name\": \"T-SHIRT WHITE\",\r\n        \"title\": \"ao dep mau dep mac vao sieu dep\",\r\n        \"cover\": \"acc\",\r\n        \"category\": {\r\n            \"id\": 1,\r\n            \"title\": \"Áo thun\"\r\n        },\r\n        \"productsizes\": [\r\n            {\r\n            \r\n                \"quantity\": 10,\r\n                \"size\": {\r\n                    \"id\": 1\r\n                }\r\n            },\r\n            {\r\n      \r\n                \"quantity\": 20,\r\n                \"size\": {\r\n                    \"id\": 2\r\n                }\r\n            },\r\n            {\r\n                \"quantity\": 30,\r\n                \"size\": {\r\n                    \"id\": 3\r\n                }\r\n            }\r\n        ],\r\n        \"images\": [\r\n            {\r\n  \r\n                \"photo\": \"abcdc.jsp\",\r\n                \"isdefault\": true\r\n            },\r\n                {\r\n  \r\n                \"photo\": \"jqka.jsp\",\r\n                \"isdefault\": false\r\n            }\r\n        ]\r\n        }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/product/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"product",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update product by Id (chua update code)",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": " {\r\n        \"export_price\": 100.0,\r\n        \"import_price\": 110.0,\r\n        \"create_date\": \"2022-10-02\",\r\n        \"update_create_date\": \"2022-11-02\",\r\n        \"name\": \"abcdsdsa\",\r\n        \"title\": \"tesddddt\",\r\n        \"cover\": \"1\",\r\n        \"category\": {\r\n            \"id\": 2,\r\n            \"title\": \"quan\"\r\n        },\r\n        \"productsizes\": [],\r\n        \"promotions\": [],\r\n        \"cartItems\": [],\r\n        \"images\": [\r\n            {\r\n                \"id\": 3,\r\n                \"photo\": \"rsfasdsadddd\",\r\n                \"isdefault\": false\r\n            },\r\n            {\r\n                \"id\": 4,\r\n                \"photo\": \"dsadada\",\r\n                \"isdefault\": true\r\n            }\r\n        ],\r\n        \"orderDetail\": []\r\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/product/update/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"product",
+						"update",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete product by Id",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/product/delete/126",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"product",
+						"delete",
+						"126"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create order for-me or for-someone",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"users\": {\r\n        \"username\": \"yasuo\"\r\n    },\r\n    \"total_price\": 100000.0,\r\n    \"customers\": {\r\n        \"phone\": 947034933,\r\n        \"address\": \"Thái Bình\",\r\n        \"name\":  \"\",\r\n        \"note\":\"\",\r\n        \"user\": {\r\n            \"username\": \"yasuo\"\r\n        }\r\n    },\r\n    \"orderDetail\": [\r\n        {\r\n            \"total_price\": 10000.0,\r\n            \"quantity\": 3,\r\n            \"size\": \"X\",\r\n            \"product\": {\r\n                \"id\": 2\r\n            }\r\n        },\r\n        {\r\n            \"total_price\": 10000.0,\r\n            \"quantity\": 1,\r\n            \"size\": \"L\",\r\n            \"product\": {\r\n                \"id\": 3\r\n            }\r\n        },\r\n        {\r\n            \"total_price\": 10000.0,\r\n            \"quantity\": 2,\r\n            \"size\": \"XL\",\r\n            \"product\": {\r\n                \"id\": 6\r\n                \r\n            }\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/order/checkout/for-someone",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"order",
+						"checkout",
+						"for-someone"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getby_orderId",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/order/16",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"order",
+						"16"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "test",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/main/test",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"main",
+						"test"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "my order  page 1/5",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/order/my-order/vanteo/1/5",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"order",
+						"my-order",
+						"vanteo",
+						"1",
+						"5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\":\"quangnitest\",\r\n    \"password\": \"112\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/auth/signin",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"signin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\":\"testpm\",\r\n    \"email\":\"testpm@gmail.com\",\r\n    \"fullname\":\"Test  Post Man\",\r\n    \"phone\":\"098764321\",\r\n    \"password\":\"1\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/auth/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getorder buy id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/order/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"order",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update ỏder",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"createdDate\": \"2022-10-19T13:48:01.827+00:00\",\r\n    \"users\": {\r\n        \"username\": \"yasuo\",\r\n        \"fullname\": \"B? d?i c? h?\",\r\n        \"email\": \"VuavuaHaNoi@gmail.com\",\r\n        \"photo\": \"https://i.pinimg.com/236x/cc/16/0c/cc160c19dbd165c43046c176223f10fe.jpg\",\r\n        \"phone\": 999999999,\r\n        \"activated\": true,\r\n        \"adress\": \"122: Trinh Van Bo, Ha Noi\",\r\n        \"roles\": {\r\n            \"id\": 3,\r\n            \"rolename\": \"ROLE_USER\"\r\n        }\r\n    },\r\n    \"total_price\": 100000.0,\r\n    \"order_date\": \"2022-10-19T13:48:01.827+00:00\",\r\n    \"customers\": {\r\n        \"id\": 1018,\r\n        \"phone\": 947034933,\r\n        \"address\": \"Thái Bình\",\r\n        \"customerInfor\": \"hoang chuong canh ba phu tho\",\r\n        \"user\": {\r\n            \"username\": \"yasuo\",\r\n            \"fullname\": \"B? d?i c? h?\",\r\n            \"email\": \"VuavuaHaNoi@gmail.com\",\r\n            \"photo\": \"https://i.pinimg.com/236x/cc/16/0c/cc160c19dbd165c43046c176223f10fe.jpg\",\r\n            \"phone\": 999999999,\r\n            \"activated\": true,\r\n            \"adress\": \"122: Trinh Van Bo, Ha Noi\",\r\n            \"roles\": {\r\n                \"id\": 3,\r\n                \"rolename\": \"ROLE_USER\"\r\n            }\r\n        }\r\n    },\r\n    \"orderDetail\": [\r\n        {\r\n            \"id\": 1050,\r\n            \"total_price\": 10000.0,\r\n            \"quantity\": 3,\r\n            \"size\": \"X\",\r\n            \"product\": {\r\n                \"id\": 2,\r\n                \"export_price\": 300000.0,\r\n                \"import_price\": 595000.0,\r\n                \"create_date\": \"2022-10-03T17:00:00.000+00:00\",\r\n                \"update_create_date\": \"2022-10-03T17:00:00.000+00:00\",\r\n                \"name\": \"ÁO KHOÁC LOOSE BE A DREAMER\",\r\n                \"title\": \"This is prodcuct and i dont know yo, but you have to buy it.This is prodcuct and i dont know yo, but you have to buy it.This is prodcuct and i dont know yo, but you have to buy it\",\r\n                \"cover\": \"a\",\r\n                \"category\": {\r\n                    \"id\": 4,\r\n                    \"title\": \"Áo khoác\"\r\n                },\r\n                \"productsizes\": [\r\n                    {\r\n                        \"id\": 5,\r\n                        \"quantity\": 30,\r\n                        \"size\": {\r\n                            \"id\": 1,\r\n                            \"title\": \"X\"\r\n                        }\r\n                    },\r\n                    {\r\n                        \"id\": 6,\r\n                        \"quantity\": 30,\r\n                        \"size\": {\r\n                            \"id\": 2,\r\n                            \"title\": \"L\"\r\n                        }\r\n                    },\r\n                    {\r\n                        \"id\": 7,\r\n                        \"quantity\": 18,\r\n                        \"size\": {\r\n                            \"id\": 3,\r\n                            \"title\": \"XL\"\r\n                        }\r\n                    },\r\n                    {\r\n                        \"id\": 8,\r\n                        \"quantity\": 30,\r\n                        \"size\": {\r\n                            \"id\": 4,\r\n                            \"title\": \"XXL\"\r\n                        }\r\n                    }\r\n                ],\r\n                \"images\": [\r\n                    {\r\n                        \"id\": 5,\r\n                        \"photo\": \"https://4menshop.com/images/thumbs/2022/09/-17351-slide-products-63341cf1f2598.JPG\",\r\n                        \"isdefault\": true\r\n                    },\r\n                    {\r\n                        \"id\": 6,\r\n                        \"photo\": \"https://4menshop.com/images/thumbs/2022/09/-17351-slide-products-63341cf36c35b.JPG\",\r\n                        \"isdefault\": false\r\n                    },\r\n                    {\r\n                        \"id\": 7,\r\n                        \"photo\": \"https://4menshop.com/images/thumbs/2022/09/-17351-slide-products-63341cf3a8e20.JPG\",\r\n                        \"isdefault\": false\r\n                    },\r\n                    {\r\n                        \"id\": 8,\r\n                        \"photo\": \"https://4menshop.com/images/thumbs/2022/09/-17351-slide-products-63341cf3db337.JPG\",\r\n                        \"isdefault\": false\r\n                    }\r\n                ]\r\n            }\r\n        },\r\n        {\r\n            \"id\": 1051,\r\n            \"total_price\": 10000.0,\r\n            \"quantity\": 1,\r\n            \"size\": \"L\",\r\n            \"product\": {\r\n                \"id\": 3,\r\n                \"export_price\": 300000.0,\r\n                \"import_price\": 595000.0,\r\n                \"create_date\": \"2022-10-03T17:00:00.000+00:00\",\r\n                \"update_create_date\": \"2022-10-03T17:00:00.000+00:00\",\r\n                \"name\": \"ÁO KHOÁC LOOSEREAMER\",\r\n                \"title\": \"This is prodcuct and i dont know yo, but you have to buy it.This is prodcuct and i dont know yo, but you have to buy it.This is prodcuct and i dont know yo, but you have to buy it\",\r\n                \"cover\": \"a\",\r\n                \"category\": {\r\n                    \"id\": 4,\r\n                    \"title\": \"Áo khoác\"\r\n                },\r\n                \"productsizes\": [\r\n                    {\r\n                        \"id\": 9,\r\n                        \"quantity\": 30,\r\n                        \"size\": {\r\n                            \"id\": 1,\r\n                            \"title\": \"X\"\r\n                        }\r\n                    },\r\n                    {\r\n                        \"id\": 10,\r\n                        \"quantity\": 22,\r\n                        \"size\": {\r\n                            \"id\": 2,\r\n                            \"title\": \"L\"\r\n                        }\r\n                    },\r\n                    {\r\n                        \"id\": 11,\r\n                        \"quantity\": 30,\r\n                        \"size\": {\r\n                            \"id\": 3,\r\n                            \"title\": \"XL\"\r\n                        }\r\n                    },\r\n                    {\r\n                        \"id\": 12,\r\n                        \"quantity\": 22,\r\n                        \"size\": {\r\n                            \"id\": 4,\r\n                            \"title\": \"XXL\"\r\n                        }\r\n                    }\r\n                ],\r\n                \"images\": [\r\n                    {\r\n                        \"id\": 9,\r\n                        \"photo\": \"https://4menshop.com/images/thumbs/2022/05/-16766-slide-products-627b5631aa6fe.JPG\",\r\n                        \"isdefault\": true\r\n                    },\r\n                    {\r\n                        \"id\": 10,\r\n                        \"photo\": \"https://4menshop.com/images/thumbs/2022/05/-16766-slide-products-627b5631cea56.JPG\",\r\n                        \"isdefault\": false\r\n                    },\r\n                    {\r\n                        \"id\": 11,\r\n                        \"photo\": \"https://4menshop.com/images/thumbs/2022/05/-16766-slide-products-627b563206f6d.JPG\",\r\n                        \"isdefault\": false\r\n                    },\r\n                    {\r\n                        \"id\": 12,\r\n                        \"photo\": \"https://4menshop.com/images/thumbs/2022/05/-16766-slide-products-627b5632372bb.JPG\",\r\n                        \"isdefault\": false\r\n                    }\r\n                ]\r\n            }\r\n        },\r\n        {\r\n            \"id\": 1052,\r\n            \"total_price\": 10000.0,\r\n            \"quantity\": 2,\r\n            \"size\": \"XL\",\r\n            \"product\": {\r\n                \"id\": 6,\r\n                \"export_price\": 300000.0,\r\n                \"import_price\": 595000.0,\r\n                \"create_date\": \"2022-10-03T17:00:00.000+00:00\",\r\n                \"update_create_date\": \"2022-10-03T17:00:00.000+00:00\",\r\n                \"name\": \"ÁO KHOÁC REGULAR \",\r\n                \"title\": \"This is prodcuct and i dont know yo, but you have to buy it.This is prodcuct and i dont know yo, but you have to buy it.This is prodcuct and i dont know yo, but you have to buy it\",\r\n                \"cover\": \"a\",\r\n                \"category\": {\r\n                    \"id\": 4,\r\n                    \"title\": \"Áo khoác\"\r\n                },\r\n                \"productsizes\": [\r\n                    {\r\n                        \"id\": 21,\r\n                        \"quantity\": 30,\r\n                        \"size\": {\r\n                            \"id\": 1,\r\n                            \"title\": \"X\"\r\n                        }\r\n                    },\r\n                    {\r\n                        \"id\": 22,\r\n                        \"quantity\": 30,\r\n                        \"size\": {\r\n                            \"id\": 2,\r\n                            \"title\": \"L\"\r\n                        }\r\n                    },\r\n                    {\r\n                        \"id\": 23,\r\n                        \"quantity\": 30,\r\n                        \"size\": {\r\n                            \"id\": 3,\r\n                            \"title\": \"XL\"\r\n                        }\r\n                    },\r\n                    {\r\n                        \"id\": 24,\r\n                        \"quantity\": 30,\r\n                        \"size\": {\r\n                            \"id\": 4,\r\n                            \"title\": \"XXL\"\r\n                        }\r\n                    }\r\n                ],\r\n                \"images\": [\r\n                    {\r\n                        \"id\": 21,\r\n                        \"photo\": \"https://4menshop.com/images/thumbs/2022/04/ao-khoac-du-ra-ngang-ak027-mau-den-16682-slide-products-624fbd3c510b3.JPG\",\r\n                        \"isdefault\": true\r\n                    },\r\n                    {\r\n                        \"id\": 22,\r\n                        \"photo\": \"https://4menshop.com/images/thumbs/2022/04/ao-khoac-du-ra-ngang-ak027-mau-den-16682-slide-products-624fbd3aa4efa.JPG\",\r\n                        \"isdefault\": false\r\n                    },\r\n                    {\r\n                        \"id\": 23,\r\n                        \"photo\": \"https://4menshop.com/images/thumbs/2022/04/ao-khoac-du-ra-ngang-ak027-mau-den-16682-slide-products-624fbd3ae8a44.JPG\",\r\n                        \"isdefault\": false\r\n                    },\r\n                    {\r\n                        \"id\": 24,\r\n                        \"photo\": \"https://4menshop.com/images/thumbs/2022/04/ao-khoac-du-ra-ngang-ak027-mau-den-16682-slide-products-624fbd3b7c666.JPG\",\r\n                        \"isdefault\": false\r\n                    }\r\n                ]\r\n            }\r\n        }\r\n    ],\r\n    \"statusOrders\": {\r\n        \"id\": 4,\r\n        \"title\": \"Cho Xác Nhan\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/order/update/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"order",
+						"update",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET CATEGORY DETAILS",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/category/details?categoryId=1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"category",
+						"details"
+					],
+					"query": [
+						{
+							"key": "categoryId",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CREATE CATEGORY",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\": \"thử nvarchar xem có được hay không\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/category/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"category",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UPDATE CATEGORY DETAILS",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\": \"được tiếng Việt xin luôn đấy\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/category/update?categoryId=11",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"category",
+						"update"
+					],
+					"query": [
+						{
+							"key": "categoryId",
+							"value": "11"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE CATEGORY",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/category?categoryId=11",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"category"
+					],
+					"query": [
+						{
+							"key": "categoryId",
+							"value": "11"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UPLOAD  FILE",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": [
+								"/C:/Users/workq/Downloads/img-2.jpg",
+								"/C:/Users/workq/Downloads/img-1.jpg"
+							]
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/file/images",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"file",
+						"images"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DOWNLOAD  FILE BY FILE NAME",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/file/images/default-avt.jpg",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"file",
+						"images",
+						"default-avt.jpg"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UPDATE  USER  AVATAR",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/C:/Users/workq/Downloads/pexels-antony-trivet-12863131.jpg"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/users/update-avatar/test",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"users",
+						"update-avatar",
+						"test"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET PRODUCT DETAILS",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/product/126",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"product",
+						"126"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET LIST PRODUCT BY  FILTER",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"categoryId\":0,\r\n    \"sizes\":[],\r\n    \"minPrice\": null,\r\n    \"maxPrice\": null,\r\n    \"sortname\": \"\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/product/byFilter?page=2&limit=16",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"product",
+						"byFilter"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "2"
+						},
+						{
+							"key": "limit",
+							"value": "16"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UPDATE USER DETAILS",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"fullname\": \"Thu xem con loi hay khong\",\r\n    \"email\": \"testpm@gmail.com\",\r\n    \"photo\": \"default-avt.jpg\",\r\n    \"phone\": \"098764321\",\r\n    \"activated\": true,\r\n    \"adress\": \"default adress\",\r\n    \"roles\": {\r\n        \"id\": 3,\r\n        \"rolename\": \"ROLE_USER\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/users?username=testpm",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"users"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "testpm"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET USER PRVATE MESSAGES",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/messages/my-private/test",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"messages",
+						"my-private",
+						"test"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ADM REP PRIVATE MESSAGE",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"createdby\" : \"admchat\",\r\n    \"sendedby\" : \"admchat\",\r\n    \"content\" : \"add send time\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/messages/adm-private/reply/test",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"messages",
+						"adm-private",
+						"reply",
+						"test"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "USER SEND PRIVATE MESSAGE TO ADMIN",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"content\" : \"on top hay khong \"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/messages/user/send-private/test",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"messages",
+						"user",
+						"send-private",
+						"test"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

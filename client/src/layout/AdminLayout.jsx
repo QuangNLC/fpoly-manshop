@@ -4,12 +4,16 @@ import styled from 'styled-components'
 import AdmTopbar from '../components/AdmTopbar'
 import AdmSidebar from '../components/AdmSidebar'
 
-const Container = styled.div``
+const Container = styled.div`
+    width: 100%;
+`
 const Wrapper = styled.div`
     display: flex;
+    width: 100%;
 `
 const ContentContainer = styled.div`
-    flex: 4;
+    width:80%;
+    max-width: 80%;
 `
 
 const AdminLayout = () => {

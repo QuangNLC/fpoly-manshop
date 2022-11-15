@@ -26,5 +26,11 @@ public class RegisterRequest {
 
     private Role role;
 
+    private Integer cityId;
+
+    private Integer districtId;
+    private Long wardId;
+    private String location;
+
 
 }

@@ -6,13 +6,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setAuthAction } from '../../redux/actions/AuthReducerAction'
 import { Link, useNavigate } from 'react-router-dom';
 import loginImg from '../../assets/imgs/login-img.jpg'
-import { Form, Input, notification } from 'antd';
+import { Form, Input, notification, Select } from 'antd';
 import { useForm } from 'antd/es/form/Form';
-
+import vietnamData from '../../assets/data/vietnamData.json';
+import addressAPI from '../../api/addressAPI';
 
 const Container = styled.div`
     width: 100vw;
-    height: 100vh;
+    min-height: 100vh;
     padding: 50px;
 `
 const Wrapper = styled.div`
@@ -48,7 +49,7 @@ const FormContainer = styled.div`
     padding: 30px;
     background-color: white;
     border-radius: 20px;
-    width: 500px;
+    width: 80%;
     z-index: 2;
     -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
     box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
@@ -90,8 +91,46 @@ const WebRegister = () => {
 
     const [form] = useForm();
     const navigate = useNavigate();
-
+    const [data, setData] = useState([])
+    const [selectedData, setSelectedData] = useState({
+        cityId: null,
+        districtId: null,
+        wardId: null,
+        name: "",
+        phone: "",
+        adress: "",
+        note: "",
+        payId: null
+    })
     const dispatch = useDispatch();
+
+
+    const onChangeCity = (value) => {
+        console.log(value)
+        form.setFieldValue('districtId', null)
+        form.setFieldValue('wardId', null)
+        setSelectedData({
+            cityId: value,
+            districtId: null,
+            wardId: null
+        })
+    }
+
+    const onChangeDistrict = (value) => {
+        form.setFieldValue('wardId', null)
+        setSelectedData({
+            ...selectedData,
+            districtId: value,
+            wardId: null
+        })
+    }
+
+    const onChangeWard = (value) => {
+        setSelectedData({
+            ...selectedData,
+            wardId: value
+        })
+    }
 
 
     const onFinish = (value) => {
@@ -121,6 +160,16 @@ const WebRegister = () => {
             navigate("/")
         } else {
             setCheckingAuth(false);
+            addressAPI.getCityData()
+            .then(res =>{
+                if(!res.status){
+                    console.log(res)
+                    setData(res)
+                }else{
+                    console.log(res)
+                }
+            })
+            .catch(err => console.log(err))
         }
     }, [])
     return (
@@ -147,6 +196,7 @@ const WebRegister = () => {
                                     autoComplete='off'
                                     form={form}
                                 >
+                                    <FormTitle>Thông tin tài khoản</FormTitle>
                                     <Form.Item
                                         label="Tên đăng nhập"
                                         name="username"
@@ -195,7 +245,7 @@ const WebRegister = () => {
                                             { required: true },
                                         ]}
                                     >
-                                        <Input.Password placeholder='Mật khẩu'/>
+                                        <Input.Password placeholder='Mật khẩu' />
                                     </Form.Item>
                                     <Form.Item
                                         label="Xác nhận mật khẩu"
@@ -212,11 +262,105 @@ const WebRegister = () => {
                                             })
                                         ]}
                                     >
-                                        <Input.Password placeholder='Nhập lại mật khẩu'/>
+                                        <Input.Password placeholder='Nhập lại mật khẩu' />
+                                    </Form.Item>
+                                    <FormTitle>Địa chỉ giao hàng</FormTitle>
+                                    <Form.Item
+                                        label="Tỉnh/Thành Phố"
+                                        name="cityId"
+                                        hasFeedback
+                                        rules={[
+                                            { required: true, message: 'Vui lòng chọn Tỉnh/Thành Phố!' }
+                                        ]}
+                                    >
+                                        <Select
+                                            onChange={onChangeCity}
+                                            placeholder="Tỉnh/Thành"
+                                        >
+                                            {
+                                                data.map((item, index) => (
+                                                    <Select.Option key={item.id} value={item.id}>{item.title}</Select.Option>
+                                                ))
+                                            }
+                                        </Select>
+                                    </Form.Item>
+                                    <Form.Item
+                                        label="Quận/Huyện"
+                                        name="districtId"
+                                        hasFeedback
+                                        rules={[
+                                            { required: true, message: 'Vui lòng chọn Quận/Huyện' }
+                                        ]}
+                                    >
+                                        <Select placeholder="Quận/Huyện" disabled={!selectedData.cityId}
+                                            onChange={onChangeDistrict}
+                                        >
+                                            {
+                                                selectedData.cityId ?
+                                                    (
+                                                        <>
+                                                            {
+                                                                (data.find(item => item.id === selectedData.cityId)).districts.map(item => (
+                                                                    <Select.Option value={item.id} key={item.id} >{item.title}</Select.Option>
+                                                                ))
+                                                            }
+                                                        </>
+                                                    )
+                                                    :
+                                                    (
+                                                        <>
+
+                                                        </>
+                                                    )
+                                            }
+                                        </Select>
+                                    </Form.Item>
+                                    <Form.Item
+                                        label="Phường/Xã"
+                                        name="wardId"
+                                        hasFeedback
+                                        rules={[
+                                            { required: true, message: 'Vui lòng chọn Phường/Xã!' }
+                                        ]}
+                                    >
+                                        <Select disabled={!selectedData.districtId}
+                                            onChange={onChangeWard}
+                                            placeholder="Phường/Xã"
+                                        >
+                                            {
+                                                selectedData.cityId && selectedData.districtId ?
+                                                    (
+                                                        <>
+                                                            {
+                                                                ((data.find(item => item.id === selectedData.cityId)).districts.find(item => item.id === selectedData.districtId)).wards.map(item => (
+                                                                    <Select.Option value={item.id} key={item.id} >{item.title}</Select.Option>
+                                                                ))
+                                                            }
+                                                        </>
+                                                    )
+                                                    :
+                                                    (
+                                                        <>
+
+                                                        </>
+                                                    )
+                                            }
+                                        </Select>
+                                    </Form.Item>
+                                    <Form.Item
+                                        label="Địa chỉ"
+                                        name="location"
+                                        hasFeedback
+                                        rules={[
+                                            { required: true, message: 'Vui lòng nhập địa chỉ nhận hàng!' },
+                                            { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' }
+                                        ]}
+                                    >
+                                        <Input />
                                     </Form.Item>
                                     <Form.Item
                                     >
-                                        <Button type='submit'>Đăng Nhập</Button>
+                                        <Button type='submit'>Đăng Ký</Button>
                                     </Form.Item>
                                     <Form.Item>
                                         Đã có tài khoản <Link to="/login">Đăng nhập ngay</Link>

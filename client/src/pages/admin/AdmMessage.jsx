@@ -8,6 +8,7 @@ import styled from 'styled-components'
 import { Avatar } from '@mui/material';
 import SendOutlinedIcon from '@mui/icons-material/SendOutlined';
 import { useRef } from 'react';
+import { Badge, Empty } from 'antd';
 
 const Container = styled.div`
     width: 100%;
@@ -17,7 +18,8 @@ const Container = styled.div`
     box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
 `
 const ListContainer = styled.div`
-    width: 20%;-webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+    width: 20%;
+    -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
     box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
 `
 const ListTitle = styled.div`
@@ -33,11 +35,30 @@ const ListWrapper = styled.div`
     width :100%;
     height: 60vh;
     overflow-Y: scroll;
-    padding: 30px;
+    padding: 30px 0;
 `
-const List = styled.div`
-   
+
+const MemberList = styled.ul`
+    width: 100%;
 `
+const MemberWrapper = styled.li`
+    width: 100%;
+    padding: 10px 20px;
+    margin-bottom: 10px;
+
+    background-color: ${props => props.activeMember ? "teal" : "transparent"};
+    color: ${props => props.activeMember ? "white" : "black"};
+    font-size: 18px;
+    transition: all 0.25s ease-in;
+    cursor: pointer;
+    &:hover{
+        background-color: #d0f5ee;
+        color: black;
+    }
+`
+const MemberName = styled.span``
+const MemberNewMessageCount = styled.div``
+
 const ChatContainer = styled.div`
     background-color: rgba(0, 0, 0, 0.15);
     overflow: hidden;
@@ -56,33 +77,37 @@ const ChatTitle = styled.div`
 `
 const ChatMessagesContainer = styled.div`
     padding: 30px 120px;
-    width:100%;
+    width: 100%;
     background-color: white;
 `
 const Messages = styled.div`
     width: 100%;
-    height: 60vh;
+    border: 1px solid teal;
+    height: 70vh;
     overflow-Y: scroll;
+    overflow-X: hidden;
+
 `
 const Message = styled.div`
     width: 100%;
     padding: 10px 15px;
     margin-top: 20px;
-    diplay: flex;
+    display: flex;
     flex-direction: column;
+    align-items: ${props => (props.send ? 'flex-end' : 'flex-start')};
 `
-const SendTime = styled.div`
-    width: 100%;
-    text-align: ${props => props.messageType === 'send' ? 'right' : 'left'};
+const Time = styled.div`
+    font-size: 12px;
+    color: #999;
+
 `
-const Content = styled.div`
-    width: 60%;
-    max-width: 750px;
-    background-color: ${props => props.messageType === 'send' ? '#a8c3f0' : 'lightgray'};
-    padding: 15px 20px;
-    border-radius: 10px 10px 10px 0;
-    margin-left: ${props => props.messageType === 'send' ? 'auto' : '0'};
+const Chat = styled.div`
+    max-width: 60%;
+    padding: 10px;
+    background-color: ${props => (props.send ? 'teal' : 'rgba(0, 0, 0, 0.15)')};
+    border-radius: ${props => (props.send ? '10px 10px 0 10px' : '10px 10px 10px 0')};
 `
+const Name = styled.div``
 const InputContainer = styled.div`
     padding: 30px 120px;
     display: flex;
@@ -115,6 +140,49 @@ const ChatAction = styled.div`
 
 
 var stompClient = null;
+
+const ChatMemberList = ({ list, hanldeClickMember, matchingUser }) => {
+
+    return (
+        <MemberList>
+            {list &&
+                (
+                    list?.length > 0 ?
+                        (
+                            list.sort((a, b) => (a.latestmessage > b.latestmessage ? -1 : 1)).map(item => (
+                                <Member member={item} key={item.username} hanldeClickMember={hanldeClickMember} isActive={matchingUser === item.username} />
+                            ))
+                        )
+                        :
+                        (
+                            <>
+                                <Empty />
+                            </>
+                        )
+                )}
+        </MemberList>
+    )
+}
+
+const Member = ({ member, hanldeClickMember, isActive }) => {
+
+    return (
+        member &&
+        <MemberWrapper onClick={() => hanldeClickMember(member.username)} activeMember={isActive}>
+            {member?.newmessage > 0 ?
+                <Badge count={member?.newmessage}>
+                    <MemberName>{member?.username}</MemberName>
+                </Badge>
+                :
+                <MemberName>{member?.username}</MemberName>
+            }
+            {/* <MemberNewMessageCount>{member?.newmessage}</MemberNewMessageCount> */}
+        </MemberWrapper>
+    )
+}
+
+
+
 const AdmMessage = () => {
     const isAuth = useSelector(state => state.auth.isAuth);
     const auth = useSelector(state => state.auth.auth);
@@ -122,61 +190,38 @@ const AdmMessage = () => {
     const navigate = useNavigate();
     const messageElementRef = useRef();
     const [myMessages, setMyMessages] = useState([]);
-    const [publicChats, setPublicChats] = useState([]);
-    const [privateChats, setPrivateChats] = useState(new Map());
-    const [tab, setTab] = useState("CHATROOM");
-    const [userData, setUserData] = useState({
-        username: "",
-        receiverName: "",
-        connected: false,
-        message: ""
-    });
+    const [chatMemberList, setChatmemberList] = useState([]);
+    const [matchingUser, setMatchingUser] = useState(undefined);
     const [sendContent, setSendContent] = useState("")
 
-    const handleChangeMessage = (e) => {
-        const { value } = e.target;
-        setUserData({ ...userData, message: value });
-    }
 
-    const connectWithUser = () => {
+    const connectWithUser = (username) => {
         let Sock = new SockJS("http://localhost:8080/ws");
         stompClient = over(Sock);
-        stompClient.connect({}, onConnected, onError);
+        stompClient.connect({}, () => onConnected(username), onError);
     }
 
-    const onConnected = () => {
-        if (auth && auth.info) {
-            stompClient.subscribe('/user/' + auth.info.username + '/private', onPrivateMessageReceived);
-            console.log('connect with user: ' + auth.info.username)
+    const connectListChatNoti = () => {
+        let Sock = new SockJS("http://localhost:8080/ws");
+        stompClient = over(Sock);
+        stompClient.connect({}, () => {
+            stompClient.subscribe('/noti/adm-message', onListNotiReceived)
+            console.log('connect to received notification!')
+        }, onError);
+    }
+
+    const onConnected = (username) => {
+        if (username) {
+            stompClient.subscribe('/user/' + username + '/private', onPrivateMessageReceived, { id: username });
+            console.log('connect with user: ' + username)
             userJoin();
         }
     }
 
+
     const userJoin = () => {
-        // let chatMessage = {
-        //     senderName: userData.username,
-        //     status: "JOIN"
-        // };
-        // stompClient.send('/app/message', {}, JSON.stringify(chatMessage));
     }
 
-    const onPublicMessageReceived = (payload) => {
-        let payloadData = JSON.parse(payload.body);
-        switch (payloadData.status) {
-            case ("JOIN"): {
-                if (!privateChats.get(payloadData.senderName)) {
-                    privateChats.set(payloadData.senderName, []);
-                    setPrivateChats(new Map(privateChats));
-                }
-                break;
-            }
-            case ("MESSAGE"): {
-                publicChats.push(payloadData);
-                setPublicChats([...publicChats])
-                break;
-            }
-        }
-    }
 
     const onPrivateMessageReceived = (payload) => {
         let payloadData = JSON.parse(payload.body);
@@ -190,42 +235,88 @@ const AdmMessage = () => {
     const onError = (err) => {
         console.log(err);
     }
-
-    const sendPublicMessage = () => {
-        if (stompClient) {
-            let chatMessage = {
-                senderName: userData.username,
-                message: userData.message,
-                status: "MESSAGE"
-            };
-            stompClient.send('/app/message', {}, JSON.stringify(chatMessage));
-            setUserData({ ...userData, message: "" });
-        }
-    }
     const sendPrivateMessage = () => {
         if (stompClient) {
-            // let chatMessage = {
-            //     senderName: userData.username,
-            //     receiverName: tab,
-            //     message: userData.message,
-            //     status: "MESSAGE"
-            // };
-            // if (userData.username !== tab) {
-            //     privateChats.get(tab).push(chatMessage);
-            //     setPrivateChats(new Map(privateChats));
-            // }
-            // stompClient.send('/app/private-message', {}, JSON.stringify(chatMessage));
-            // setUserData({ ...userData, message: "" });
-            console.log()
-            messagesAPI.sendPrivateMessagesToAdm(auth.info.username, { content: sendContent })
+            if (matchingUser) {
+                messagesAPI.replyPrivateMessageFromAdm(matchingUser, {
+                    "createdby": "admchat",
+                    "sendedby": "admchat",
+                    "content": sendContent
+                })
+                    .then(res => {
+                        console.log(res)
+                        setSendContent('')
+                    })
+                    .catch(err => console.log(err))
+            }
+        }
+    }
+
+
+    const hanldeMatchingUser = (username) => {
+        setMatchingUser(username)
+    }
+
+    const hanldeSeenMessage = (username) => {
+        let index = chatMemberList.findIndex((item) => item.username === username)
+        console.log('seened message')
+        console.log(index)
+        if (index !== -1) {
+            chatMemberList[index].newmessage = 0
+            setChatmemberList([...chatMemberList])
+        }
+    }
+
+    const onListNotiReceived = (payload) => {
+        let payloadData = JSON.parse(payload.body);
+        console.log(payloadData)
+        setChatmemberList(current => {
+            let index = current.findIndex(item => item.username === payloadData.username)
+
+            if (index === -1) {
+                return [{ ...payloadData}, ...current]
+            } else {
+                let newList = [...current]
+                newList[index] = {
+                    ...newList[index],
+                    ...payloadData
+                }
+
+                return [...newList]
+            }
+        })
+    }
+
+
+    useEffect(() => {
+        if (matchingUser) {
+            messagesAPI.getPrivateMessagesForAdm(matchingUser)
                 .then(res => {
-                    console.log(res)
-                    setSendContent('')
+                    if (!res.status) {
+                        hanldeSeenMessage(matchingUser)
+                        setMyMessages(res)
+                    } else {
+                        console.log(res)
+                    }
+                })
+                .then(() => {
+                    connectWithUser(matchingUser)
                 })
                 .catch(err => console.log(err))
         }
-    }
 
+        return (() => {
+            if (matchingUser && stompClient) {
+                console.log('unsub ' + matchingUser)
+                stompClient.unsubscribe(matchingUser)
+            }
+        })
+    }, [matchingUser])
+
+    useEffect(() => {
+        if (chatMemberList && chatMemberList.length > 0) {
+        }
+    }, [chatMemberList])
 
     useEffect(() => {
         setMyMessages(myMessages.sort((a, b) => a.createdat - b.createdat));
@@ -234,16 +325,16 @@ const AdmMessage = () => {
 
     useEffect(() => {
         auth && auth.info &&
-            messagesAPI.getPrivateMessages(auth.info.username)
+            messagesAPI.getListMemberForAdm()
                 .then(res => {
                     if (!res.status) {
-                        setMyMessages(res)
-                        connectWithUser()
+                        setChatmemberList(res)
+                        connectListChatNoti()
                     } else {
                         console.log(res)
                     }
                 })
-                .catch(err => console.log(err));
+                .catch(err => console.log(err))
     }, [auth])
 
     useEffect(() => {
@@ -267,81 +358,33 @@ const AdmMessage = () => {
                     )
                     :
                     (
-                        <>
-                            {/* {
-                                    <div className='chat-box'>
-                                        <div className="member-list">
-                                            <ul>
-                                                <li onClick={() => { setTab("CHATROOM") }} className={`member ${tab === "CHATROOM" && "active"}`}>
-                                                    Tin nhắn
-                                                </li>
-                                                {[...privateChats.keys()].map((item, index) => (
-                                                    <li onClick={() => { setTab(item) }} className={`member ${tab === item && "active"}`} key={index}>
-                                                        {item}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                        {
-                                            tab === "CHATROOM" &&
-                                            <div className="chat-content">
-                                                <ul className='chat-messages'>
-                                                    {publicChats.map((chat, index) => (
-                                                        <li ky={index} className='message'>
-                                                            {chat.senderName !== userData.username && <div className='avatar'>{chat.senderName}</div>}
-                                                            <div className="message-date">{chat.message}</div>
-                                                            {chat.senderName === userData.username && <div className='avatar self'>{chat.senderName}</div>}
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                                <div className="send-message">
-                                                    <input type="text" className='input-message' placeholder='enter public message' value={userData.message} name="message" onChange={handleChangeMessage} />
-                                                    <button type='button' className='send-button' onClick={sendPublicMessage}>send</button>
-                                                </div>
-                                            </div>
-                                        }
-                                        {
-                                            tab !== "CHATROOM" &&
-                                            <div className="chat-content">
-                                                <ul className='chat-messages'>
-                                                    {
-                                                        [...privateChats.get(tab)].map((chat, index) => (
-                                                            <li className='message' key={index}>
-                                                                {chat.senderName !== userData.username && <div className='avatar'>{chat.senderName}</div>}
-                                                                <div className="message-date">{chat.message}</div>
-                                                                {chat.senderName === userData.username && <div className='avatar self'>{chat.senderName}</div>}
-                                                            </li>
-                                                        ))
-                                                    }
-                                                </ul>
-                                                <div className="send-message">
-                                                    <input type="text" className='input-message' placeholder={`enter private message for ${tab} `} value={userData.message} name="message" onChange={handleChangeMessage} />
-                                                    <button type='button' className='send-button' onClick={sendPrivateMessage}>send</button>
-                                                </div>
-                                            </div>
-                                        }
-                                    </div>
-                                } */}
+                        <React.StrictMode>
+
                             <Container>
                                 <ListContainer>
                                     <ListTitle>Danh Sách</ListTitle>
                                     <ListWrapper>
-                                        <List>
-
-                                        </List>
+                                        <ChatMemberList list={chatMemberList} hanldeClickMember={hanldeMatchingUser} matchingUser={matchingUser} />
                                     </ListWrapper>
                                 </ListContainer>
                                 <ChatContainer>
-                                    <ChatTitle>Trò chuyện với quản trị viên.</ChatTitle>
+                                    <ChatTitle>{matchingUser ? matchingUser : 'Trò chuyện với khách hàng'}</ChatTitle>
                                     <ChatMessagesContainer>
                                         <Messages ref={messageElementRef}>
                                             {
                                                 myMessages.length > 0 && myMessages.map((item, index) => (
-                                                    <Message key={index} messageType={item.sendedby.username === 'admchat' ? 'receive' : 'send'}>
-                                                        <SendTime messageType={item.sendedby.username === 'admchat' ? 'receive' : 'send'}>{item.createdat}</SendTime>
-                                                        <Content messageType={item.sendedby.username === 'admchat' ? 'receive' : 'send'}>
-                                                            {item.content}
-                                                        </Content>
+                                                    <Message key={index} send={item.sendedby.username === 'admchat'}>
+                                                        <Time>
+                                                            {item.createdat}
+                                                        </Time>
+                                                        <Chat send={item.sendedby.username === 'admchat'}>
+                                                            <p>
+                                                                {item.content}
+                                                            </p>
+                                                        </Chat>
+                                                        {/* <Name>
+                                                            {item.createdby.username}
+                                                        </Name> */}
                                                     </Message>
                                                 ))
                                             }
@@ -355,7 +398,7 @@ const AdmMessage = () => {
                                     </InputContainer>
                                 </ChatContainer>
                             </Container>
-                        </>
+                        </React.StrictMode>
                     )
             }
         </>

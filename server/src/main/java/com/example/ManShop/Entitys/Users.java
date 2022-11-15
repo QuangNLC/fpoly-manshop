@@ -29,8 +29,6 @@ public class Users {
     private String phone;
     @Column(name = "activated")
     private Boolean activated;
-    @Column(name="adress")
-    private String adress;
     @Column(name = "verificode", length = 64)
     @JsonIgnore
     private String verificode;
@@ -65,4 +63,9 @@ public class Users {
     @JsonIgnore
     @OneToMany(mappedBy = "receivedby")
     private List<Messages> receivedMessages;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "address", referencedColumnName = "id")
+    private Address address;
+
 }

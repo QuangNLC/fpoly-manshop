@@ -16,6 +16,7 @@ import com.example.ManShop.JPAs.ProductsizeJPA;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -267,11 +268,11 @@ public class ProductController {
         }
     }
 
-    @PostMapping("testFilter")
-    public ResponseEntity<?>  testFilter(@RequestBody FilterRequestDTO a,@RequestParam("page") Integer page,@RequestParam("limit")Integer limit){
-        log.info("test" +  page.toString()  +  "/"  + limit.toString());
-
-        return  ResponseEntity.ok(a);
+    @GetMapping("getNewProducts")
+    public ResponseEntity<?>  testFilter(){
+        Pageable setpage;
+        Pageable pagedefalut = PageRequest.of(0, 10);
+        return  ResponseEntity.ok(productJPA.findNewProducts(pagedefalut));
     }
 
     public FilterRequestDTO suportFilter(FilterRequestDTO a){

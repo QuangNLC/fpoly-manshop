@@ -1,7 +1,8 @@
 package com.example.ManShop.Controller;
 
 import com.example.ManShop.DTOS.ChangePasswordDTO;
-import com.example.ManShop.Entitys.Users;
+import com.example.ManShop.DTOS.RegisterRequest;
+import com.example.ManShop.Entitys.*;
 import com.example.ManShop.JPAs.UserJPA;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,7 +77,9 @@ public class UsersController {
         Users newUser =  usersOptional.get();
         newUser.setFullname(users.getFullname());
         newUser.setPhone(users.getPhone());
-        newUser.setAdress(users.getAdress());
+        Address newAddress = users.getAddress();
+        System.out.println(newAddress);
+        newUser.setAddress(newAddress);
         Users resUser = userJPA.save(newUser);
         log.info("cập nhật tài khoản thành công " +username);
         return ResponseEntity.ok(resUser);

@@ -1,4 +1,4 @@
-import { Button, Form, Input, Spin, Typography, Upload, Modal } from 'antd'
+import { Button, Form, Input, Spin, Typography, Upload, Modal, Select } from 'antd'
 import React, { useEffect, useState } from 'react'
 import Helmet from '../../components/Helmet'
 import styled from 'styled-components'
@@ -8,6 +8,7 @@ import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined
 import usersAPI from '../../api/usersAPI'
 import { setAuthAction } from '../../redux/actions/AuthReducerAction'
 import { useForm } from 'antd/lib/form/Form'
+import addressAPI from '../../api/addressAPI'
 
 const Container = styled.div`
     width: 100%;
@@ -105,6 +106,39 @@ const WebMyAccount = () => {
     });
     const [form] = useForm();
     const dispatch = useDispatch();
+    const [data, setData] = useState([])
+    const [selectedData, setSelectedData] = useState({
+        cityId: null,
+        districtId: null,
+        wardId: null
+    })
+
+    const onChangeCity = (value) => {
+        console.log(value)
+        form.setFieldValue('districtId', null)
+        form.setFieldValue('wardId', null)
+        setSelectedData({
+            cityId: value,
+            districtId: null,
+            wardId: null
+        })
+    }
+
+    const onChangeDistrict = (value) => {
+        form.setFieldValue('wardId', null)
+        setSelectedData({
+            ...selectedData,
+            districtId: value,
+            wardId: null
+        })
+    }
+
+    const onChangeWard = (value) => {
+        setSelectedData({
+            ...selectedData,
+            wardId: value
+        })
+    }
 
     const handleUploadAvatar = () => {
         Modal.confirm({
@@ -141,12 +175,25 @@ const WebMyAccount = () => {
             okText: "Xác Nhận",
             cancelText: "Hủy Bỏ",
             onOk: () => {
-                const { username, ...others } = auth.info
+                const { username, address, ...others } = auth.info
                 let reqUser = {
                     ...others,
-                    ...value
+                    ...value,
+                    address: {
+                        ...address,
+                        city: {
+                            id: value.cityId
+                        },
+                        district: {
+                            id: value.districtId
+                        },
+                        ward: {
+                            id: value.wardId
+                        },
+                        location: value.location
+                    }
                 }
-
+                console.log(reqUser)
                 usersAPI.updateUserDeatails(username, reqUser)
                     .then(res => {
                         if (!res.status) {
@@ -173,7 +220,7 @@ const WebMyAccount = () => {
             setPrevAvt(url)
         } else {
 
-            auth &&  setPrevAvt(`http://localhost:8080/api/file/images/${auth.info.photo}`)
+            auth && setPrevAvt(`http://localhost:8080/api/file/images/${auth.info.photo}`)
         }
     }, [uploadList])
 
@@ -186,9 +233,37 @@ const WebMyAccount = () => {
     }, [prevAvt])
 
     useEffect(() => {
+        console.log(auth)
         if (auth) {
             setPrevAvt(`http://localhost:8080/api/file/images/${auth.info.photo}`)
-            setFormInitValue({ ...auth.info })
+            addressAPI.getCityData()
+                .then(res => {
+                    if (!res.status) {
+                        console.log(res)
+                        setData(res)
+                    } else {
+                        console.log(res)
+                    }
+                }).then((res) => {
+                    setFormInitValue({
+                        email: auth.info.email,
+                        fullname: auth.info.fullname,
+                        username: auth.info.username,
+                        phone: auth.info.phone,
+                        cityId: auth.info.address.city.id,
+                        districtId: auth.info.address.district.id,
+                        wardId: auth.info.address.ward.id,
+                        location: auth.info.address.location
+                    })
+                    setSelectedData({
+                        cityId: auth.info.address.city.id,
+                        districtId: auth.info.address.district.id,
+                        wardId: auth.info.address.ward.id
+                    })
+                }
+                )
+                .catch(err => console.log(err))
+
         } else {
             navigate("/login")
         }
@@ -196,7 +271,7 @@ const WebMyAccount = () => {
 
     useEffect(() => {
         form.resetFields();
-    },  [formInitValue])
+    }, [formInitValue])
 
     return (
         <Helmet
@@ -285,8 +360,95 @@ const WebMyAccount = () => {
                                                         <Input />
                                                     </Form.Item>
                                                     <Form.Item
-                                                        label="Địa Chỉ"
-                                                        name="adress"
+                                                        label="Tỉnh/Thành Phố"
+                                                        name="cityId"
+                                                        hasFeedback
+                                                        rules={[
+                                                            { required: true, message: 'Vui lòng chọn Tỉnh/Thành Phố!' }
+                                                        ]}
+                                                    >
+                                                        <Select
+                                                            onChange={onChangeCity}
+                                                            placeholder="Tỉnh/Thành"
+                                                        >
+                                                            {
+                                                                data.map((item, index) => (
+                                                                    <Select.Option key={item.id} value={item.id}>{item.title}</Select.Option>
+                                                                ))
+                                                            }
+                                                        </Select>
+                                                    </Form.Item>
+                                                    <Form.Item
+                                                        label="Quận/Huyện"
+                                                        name="districtId"
+                                                        hasFeedback
+                                                        rules={[
+                                                            { required: true, message: 'Vui lòng chọn Quận/Huyện' }
+                                                        ]}
+                                                    >
+                                                        <Select placeholder="Quận/Huyện" disabled={!selectedData.cityId}
+                                                            onChange={onChangeDistrict}
+                                                        >
+                                                            {
+                                                                selectedData.cityId ?
+                                                                    (
+                                                                        <>
+                                                                            {
+                                                                                (data.find(item => item.id === selectedData.cityId)).districts.map(item => (
+                                                                                    <Select.Option value={item.id} key={item.id} >{item.title}</Select.Option>
+                                                                                ))
+                                                                            }
+                                                                        </>
+                                                                    )
+                                                                    :
+                                                                    (
+                                                                        <>
+
+                                                                        </>
+                                                                    )
+                                                            }
+                                                        </Select>
+                                                    </Form.Item>
+                                                    <Form.Item
+                                                        label="Phường/Xã"
+                                                        name="wardId"
+                                                        hasFeedback
+                                                        rules={[
+                                                            { required: true, message: 'Vui lòng chọn Phường/Xã!' }
+                                                        ]}
+                                                    >
+                                                        <Select disabled={!selectedData.districtId}
+                                                            onChange={onChangeWard}
+                                                            placeholder="Phường/Xã"
+                                                        >
+                                                            {
+                                                                selectedData.cityId && selectedData.districtId ?
+                                                                    (
+                                                                        <>
+                                                                            {
+                                                                                ((data.find(item => item.id === selectedData.cityId)).districts.find(item => item.id === selectedData.districtId)).wards.map(item => (
+                                                                                    <Select.Option value={item.id} key={item.id} >{item.title}</Select.Option>
+                                                                                ))
+                                                                            }
+                                                                        </>
+                                                                    )
+                                                                    :
+                                                                    (
+                                                                        <>
+
+                                                                        </>
+                                                                    )
+                                                            }
+                                                        </Select>
+                                                    </Form.Item>
+                                                    <Form.Item
+                                                        label="Địa chỉ"
+                                                        name="location"
+                                                        hasFeedback
+                                                        rules={[
+                                                            { required: true, message: 'Vui lòng nhập địa chỉ nhận hàng!' },
+                                                            { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' }
+                                                        ]}
                                                     >
                                                         <Input />
                                                     </Form.Item>

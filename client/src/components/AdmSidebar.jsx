@@ -11,7 +11,7 @@ import { Link, useLocation } from 'react-router-dom';
 
 
 const Container = styled.div`
-    flex: 1;
+    width: 20%;
     height: calc( 100vh - 50px );
     background-color: rgb(251, 251, 255);
     position: sticky;
@@ -57,38 +57,26 @@ const AdmSidebar = () => {
         <Container>
             <Wrapper>
                 <Menu>
-                    <Title>Dashboard</Title>
+                    <Title>Bảng Điều Khiển</Title>
                     <List>
                         <Link to="/admin" style={{ textDecoration: "none", color: "unset" }}>
                             <Item active={location.pathname === "/admin"}>
                                 <LineStyleIcon style={{ fontSize: "20px", marginRight: "10px" }} />
                                 <ItemText>
-                                    Home
+                                    Trang Chủ
                                 </ItemText>
                             </Item>
                         </Link>
-                        <Item>
-                            <StackedLineChartIcon style={{ fontSize: "20px" }} />
-                            <ItemText>
-                                Analystics
-                            </ItemText>
-                        </Item>
-                        <Item>
-                            <TrendingUpIcon style={{ fontSize: "20px" }} />
-                            <ItemText>
-                                Sales
-                            </ItemText>
-                        </Item>
                     </List>
                 </Menu>
                 <Menu>
-                    <Title>Quicl Mune</Title>
+                    <Title>Quản Lý</Title>
                     <List>
                         <Link to="/admin/user-list" style={{ textDecoration: "none", color: "unset" }}>
                             <Item active={location.pathname === "/admin/user-list"}>
                                 <PermIdentityIcon style={{ fontSize: "20px" }} />
                                 <ItemText>
-                                    Users
+                                    Tài Khoản Người Dùng
                                 </ItemText>
                             </Item>
                         </Link>
@@ -96,7 +84,7 @@ const AdmSidebar = () => {
                             <Item>
                                 <StorefrontIcon style={{ fontSize: "20px" }} />
                                 <ItemText>
-                                    Categories
+                                    Thể Loại Sản Phẩm
                                 </ItemText>
                             </Item>
                         </Link>
@@ -104,7 +92,7 @@ const AdmSidebar = () => {
                             <Item>
                                 <StorefrontIcon style={{ fontSize: "20px" }} />
                                 <ItemText>
-                                    Products
+                                    Sản Phẩm
                                 </ItemText>
                             </Item>
                         </Link>
@@ -112,7 +100,7 @@ const AdmSidebar = () => {
                             <Item>
                                 <EventNoteIcon style={{ fontSize: "20px" }} />
                                 <ItemText>
-                                    Orders
+                                    Đơn Đặt Hàng
                                 </ItemText>
                             </Item>
                         </Link>
@@ -120,7 +108,7 @@ const AdmSidebar = () => {
                         <Item>
                             <BarChartIcon style={{ fontSize: "20px" }} />
                             <ItemText>
-                                Reports
+                                Báo Cáo Thống kê
                             </ItemText>
                         </Item>
                     </List>

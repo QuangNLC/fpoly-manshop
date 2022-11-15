@@ -4,8 +4,7 @@ import com.example.ManShop.DTOS.JwtRespone;
 import com.example.ManShop.DTOS.LoginRequest;
 import com.example.ManShop.DTOS.OrderStatusRequest;
 import com.example.ManShop.DTOS.RegisterRequest;
-import com.example.ManShop.Entitys.Role;
-import com.example.ManShop.Entitys.Users;
+import com.example.ManShop.Entitys.*;
 import com.example.ManShop.JPAs.OrderJPA;
 import com.example.ManShop.JPAs.RolesJPA;
 import com.example.ManShop.JPAs.UserJPA;
@@ -90,6 +89,18 @@ public class AuthController {
             users.setPassword(passwordEncoder.encode(request.getPassword()));
              Role roles = rolesJPA.findById(3).get();
               users.setRoles(roles);
+            Address address = new Address();
+            Citys city = new Citys();
+        Districts district = new Districts();
+        Wards ward = new Wards();
+        city.setId(request.getCityId());
+        district.setId(request.getDistrictId());
+        ward.setId(request.getWardId());
+        address.setCity(city);
+        address.setDistrict(district);
+        address.setWard(ward);
+        address.setLocation(request.getLocation());
+        users.setAddress(address);
             userJPA.save(users);
 
 

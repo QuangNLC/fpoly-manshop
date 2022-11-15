@@ -17,10 +17,8 @@ public interface UserJPA extends JpaRepository<Users,String> {
 //    @Query("SELECT  u from Users u join Messages m on u.username = m.sendedby.username where m.receivedby.username = 'admchat'" +
 //            "GROUP BY u.username")
     @Query(nativeQuery = true,
-        value = "select u.username, MAX(m.createdat) as latedmessage from users u join messages m on u.username = m.sendeduser where m.receiveduser = 'admchat' group by username"
+        value = "select users.* from users join messages on users.username = messages.sendeduser where messages.receiveduser = 'admchat' group by username, activated, adress, email, fullname,password, photo,phone,verificode,role"
     )
-    List<MemberAdmChatResponseDTO> getListMemberChatByAdm();
+    List<Users> getListMemberChatByAdm();
 }
-//@EnableJpaRepositories
-//public interface UserJPA extends JpaRepository<Users,String> {
-//}
+

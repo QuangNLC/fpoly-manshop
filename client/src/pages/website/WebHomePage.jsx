@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Helmet from "../../components/Helmet";
 import { sliderData, productData } from "../../assets/data/data";
 import Slider from "../../components/Slider";
@@ -13,6 +13,10 @@ import PaymentOutlinedIcon from '@mui/icons-material/PaymentOutlined';
 import CurrencyExchangeOutlinedIcon from '@mui/icons-material/CurrencyExchangeOutlined';
 import MarkChatReadOutlinedIcon from '@mui/icons-material/MarkChatReadOutlined';
 import DiamondOutlinedIcon from '@mui/icons-material/DiamondOutlined';
+import productAPI from "../../api/productsAPI";
+import vietnamData from '../../assets/data/vietnamData.json';
+import addressAPI from "../../api/addressAPI";
+
 
 const CategoriesContainer = styled.div`
   width: 100%;
@@ -130,10 +134,64 @@ const ServiceDesc = styled.div`
 
 
 const WebHomePage = () => {
+
+  const [newProducts, setNewProducts] = useState([])
+
+
+  const fillData = () => {
+    console.log('fillData')
+    const cityData = vietnamData.map((item) => ({ title: item.Name }))
+    console.log(vietnamData)
+
+    addressAPI.fillCitysData(cityData)
+      .then(res => {
+        if (!res.status) {
+          console.log(res)
+        } else {
+          console.log(res)
+        }
+      })
+      .then(res => {
+        vietnamData.forEach((city, index) => {
+          const districtData = city.Districts.map((item) => {
+            return {
+              title: item.Name,
+              wards: item.Wards.map(ward => ({ title: ward.Name }))
+            }
+          })
+          addressAPI.fillDistrictsData(districtData, (index + 1))
+          .then(res => {
+            console.log(res)
+          })
+          .catch(err => console.log(err))
+        })
+      })
+      .catch(err => console.log(err))
+
+  }
+
+
+  useEffect(() => {
+    productAPI.getNewProducts()
+      .then(res => {
+        if (!res.status) {
+          setNewProducts(res)
+        } else {
+          console.log(res)
+        }
+      })
+      .catch(err => console.log(err))
+  }, [])
+
   return (
     <Helmet title={"Trang Chủ"}>
       <Announcement />
       <Slider items={sliderData} />
+
+      {/* Fill data from .json file to sql server data */}
+      {/* <div>
+        <button onClick={fillData}> fill</button>
+      </div> */}
       <CategoriesContainer>
         <CategoryWrapper>
           <CategoryImageContainer>
@@ -158,19 +216,11 @@ const WebHomePage = () => {
         </CategoryWrapper>
       </CategoriesContainer>
       <ProductSection>
-        <ProductSectionTitle>Hot Trong Tuần</ProductSectionTitle>
-        <Products items={productData} />
-        <ProductSectionNavigate>
-          <Link to="/products">
-            <NavButton>
-              Xem Tất Cả
-            </NavButton>
-          </Link>
-        </ProductSectionNavigate>
-      </ProductSection>
-      <ProductSection>
         <ProductSectionTitle>Sản Phẩm Mới Nhất</ProductSectionTitle>
-        <Products items={productData} />
+        {
+          newProducts && newProducts.length > 0 &&
+          <Products items={newProducts} />
+        }
         <ProductSectionNavigate>
           <Link to="/products">
             <NavButton>
@@ -180,30 +230,33 @@ const WebHomePage = () => {
         </ProductSectionNavigate>
       </ProductSection>
       <ServiceContainer>
-          <Service>
-            <ServiceIcon><PaymentOutlinedIcon style={{fontSize: "40px"}} /></ServiceIcon>
-            <ServiceTitle>Thanh Toán An Toàn</ServiceTitle>
-            <ServiceDesc>Hỗ trợ nhiều hình thức thanh toán.</ServiceDesc>
-          </Service>
-          <Service>
-            <ServiceIcon><CurrencyExchangeOutlinedIcon style={{fontSize: "40px"}} /></ServiceIcon>
-            <ServiceTitle>Hoàn Tiền Với Sản Phẩm Lỗi</ServiceTitle>
-            <ServiceDesc>Hỗ trợ hoàn tiền hoặc đổi trả trong 15 ngày đầu nếu có lỗi từ nhà sản xuất.</ServiceDesc>
-          </Service>
-          <Service>
-            <ServiceIcon><MarkChatReadOutlinedIcon style={{fontSize: "40px"}} /></ServiceIcon>
-            <ServiceTitle>Hỗ Trợ Trực Tuyến</ServiceTitle>
-            <ServiceDesc>Hỗ trợ trực tuyến 24/7 vào các ngày thường, ngày trong tuần.</ServiceDesc>
-          </Service>
-          <Service>
-            <ServiceIcon><DiamondOutlinedIcon style={{fontSize: "40px"}} /></ServiceIcon>
-            <ServiceTitle>Nhiều Ưu Đãi Hấp Dẫn</ServiceTitle>
-            <ServiceDesc>Đăng ký hội viên ngay để nhận nhiều ưu đãi hấp dẫn sớm nhất.</ServiceDesc>
-          </Service>
+        <Service>
+          <ServiceIcon><PaymentOutlinedIcon style={{ fontSize: "40px" }} /></ServiceIcon>
+          <ServiceTitle>Thanh Toán An Toàn</ServiceTitle>
+          <ServiceDesc>Hỗ trợ nhiều hình thức thanh toán.</ServiceDesc>
+        </Service>
+        <Service>
+          <ServiceIcon><CurrencyExchangeOutlinedIcon style={{ fontSize: "40px" }} /></ServiceIcon>
+          <ServiceTitle>Hoàn Tiền Với Sản Phẩm Lỗi</ServiceTitle>
+          <ServiceDesc>Hỗ trợ hoàn tiền hoặc đổi trả trong 15 ngày đầu nếu có lỗi từ nhà sản xuất.</ServiceDesc>
+        </Service>
+        <Service>
+          <ServiceIcon><MarkChatReadOutlinedIcon style={{ fontSize: "40px" }} /></ServiceIcon>
+          <ServiceTitle>Hỗ Trợ Trực Tuyến</ServiceTitle>
+          <ServiceDesc>Hỗ trợ trực tuyến 24/7 vào các ngày thường, ngày trong tuần.</ServiceDesc>
+        </Service>
+        <Service>
+          <ServiceIcon><DiamondOutlinedIcon style={{ fontSize: "40px" }} /></ServiceIcon>
+          <ServiceTitle>Nhiều Ưu Đãi Hấp Dẫn</ServiceTitle>
+          <ServiceDesc>Đăng ký hội viên ngay để nhận nhiều ưu đãi hấp dẫn sớm nhất.</ServiceDesc>
+        </Service>
       </ServiceContainer>
       <ProductSection>
         <ProductSectionTitle>Có Thể Bạn Sẽ Thích</ProductSectionTitle>
-        <Products items={productData} />
+        {
+          newProducts && newProducts.length > 0 &&
+          <Products items={newProducts} />
+        }
         <ProductSectionNavigate>
           <Link to="/products">
             <NavButton>

@@ -15,7 +15,6 @@ const Container = styled.div`
 
 const Content = styled.div`
     margin: 80px auto 0 auto;
-    padding: 20px 0;
     max-width: 100%;
     min-height: 100vh;
 `

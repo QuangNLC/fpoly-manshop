@@ -155,6 +155,7 @@ const WebLogin = () => {
                         usersAPI.getUser(res.username)
                             .then(res => {
                                 if (!res.status) {
+                                    console.log(res)
                                     auth = { ...auth, info: res };
                                     dispatch(setAuthAction(auth));
                                     openNotificationWithIcon('success','Đăng nhập thành công!','Đăng nhập thành công!');

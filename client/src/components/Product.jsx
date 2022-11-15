@@ -7,6 +7,8 @@ import { formatter } from "../utils";
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '../redux/actions/CartReducerAtion';
+import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
+import { message } from 'antd';
 
 const HoverOptionsContainer = styled.div`
     position:absolute;
@@ -25,7 +27,7 @@ const Image = styled.img`
     object-position: top;
 `
 const Container = styled.div`
-    width: 340px;
+    width: 20%;
     height: 520px;
     padding: 20px;
     display:flex;
@@ -41,7 +43,7 @@ const Container = styled.div`
     }
 `
 const Wrapper = styled.div`
-    width: 320px;
+    width: 100%;
     height: 100%;
 `
 const ImgContainer = styled.div`
@@ -100,7 +102,26 @@ const Product = ({ item }) => {
     const handleClickAddToCart = (item) => {
         if (isAuth) {
             const payload = {
-                size: item.productsizes[0],
+                size: item.productsizes,
+                selectedSize: item.productsizes[0],
+                quantity: 1,
+                price: item.export_price,
+                product: {
+                    ...item
+                }
+            }
+            message.success("Thêm sản phẩm vào giỏ hàng thành công!")
+            dispatch(addToCart(payload))
+        } else {
+            navigate("/login")
+        }
+    };
+
+    const handleBuyNow = (item) => {
+        if (isAuth) {
+            const payload = {
+                size: item.productsizes,
+                selectedSize: item.productsizes[0],
                 quantity: 1,
                 price: item.export_price,
                 product: {
@@ -108,12 +129,12 @@ const Product = ({ item }) => {
                 }
             }
             dispatch(addToCart(payload))
-            navigate("/cart")
+            message.success("Thêm sản phẩm vào giỏ hàng thành công!")
+            navigate('/cart')
         } else {
             navigate("/login")
         }
-
-    };
+    }
 
     return (
         <Container>
@@ -122,7 +143,7 @@ const Product = ({ item }) => {
                     <Image src={item.images && `http://localhost:8080/api/file/images/${item.images[0].photo}`} />
                     <HoverOptionsContainer>
                         <HoverOption onClick={() => handleClickAddToCart(item)}><AddShoppingCartOutlinedIcon /></HoverOption>
-                        <HoverOption><FavoriteBorderOutlinedIcon /></HoverOption>
+                        <HoverOption onClick={() => handleBuyNow(item)}><ShoppingCartCheckoutIcon /></HoverOption>
                         <Link to={`/product/${item.id}`} style={{ color: 'black' }}>
                             <HoverOption><SearchOutlinedIcon /></HoverOption>
                         </Link>
