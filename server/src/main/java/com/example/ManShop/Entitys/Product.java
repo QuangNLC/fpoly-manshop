@@ -37,7 +37,6 @@ public class Product {
 
     @OneToMany(mappedBy = "product")
     private List<ProductSize> productsizes;
-    @JsonIgnore
     @OneToMany(mappedBy = "product")
     private List<PromotionProduct> promotions;
     @JsonIgnore

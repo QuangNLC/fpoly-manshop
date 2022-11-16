@@ -1,6 +1,9 @@
 package com.example.ManShop.Controller;
 
+import com.example.ManShop.DTOS.ProductResponeDTO;
+import com.example.ManShop.DTOS.PromotionProductDTO;
 import com.example.ManShop.DTOS.PromotionRequestDTO;
+import com.example.ManShop.DTOS.PromotionResponeDTO;
 import com.example.ManShop.Entitys.Product;
 import com.example.ManShop.Entitys.PromotionProduct;
 import com.example.ManShop.Entitys.Promotions;
@@ -42,13 +45,53 @@ public class PromotionsController {
     public List<Promotions> getall(){
         return  promotionJPA.findAll();
     }
+
     @GetMapping("/{id}")
-    public Optional<Promotions> findbyID(@PathVariable("id") Integer id){
-        return promotionJPA.findById(id);
+    public ResponseEntity<?> findbyID(@PathVariable("id") Integer id) {
+        if (!promotionJPA.existsById(id)) {
+            return ResponseEntity.status(404).body("Không tìm thấy chương trình khuyến mãi mới (id)=" + id);
+        } else {
+            Promotions newpr = promotionJPA.findById(id).get();
+            PromotionResponeDTO prDTO = new PromotionResponeDTO();
+            prDTO.setId(newpr.getId());
+            prDTO.setBy_persent(newpr.getBy_persent());
+            prDTO.setBy_price(newpr.getBy_price());
+            prDTO.setIsactive(newpr.isIsactive());
+            prDTO.setDate_after(newpr.getDate_after());
+            prDTO.setDate_befor(newpr.getDate_befor());
+            prDTO.setUsers(newpr.getUsers());
+            prDTO.setTitle(newpr.getTitle());
+            List<PromotionProduct> lstProProduct = productPromotionJPA.findPromotionPro(newpr.getId());
+            List<PromotionProductDTO> s = new ArrayList<>();
+            for (int i = 0; i < lstProProduct.size(); i++) {
+                PromotionProduct ps = lstProProduct.get(i);
+                PromotionProductDTO pdtp = new PromotionProductDTO();
+                Product prod = productJPA.findById(ps.getProduct().getId()).get();
+
+                pdtp.setId(ps.getId());
+                pdtp.setPromotionPrice(ps.getPromotionPrice());
+                ProductResponeDTO a = new ProductResponeDTO();
+                a.setId(prod.getId());
+                a.setCategory(prod.getCategory());
+                a.setImages(prod.getImages());
+                a.setCreate_date(prod.getCreate_date());
+                a.setImport_price(prod.getImport_price());
+                a.setUpdate_create_date(prod.getUpdate_create_date());
+                a.setProductsizes(prod.getProductsizes());
+                a.setTitle(prod.getTitle());
+                a.setName(prod.getName());
+
+                pdtp.setProduct(a);
+                s.add(pdtp);
+
+            }
+            prDTO.setPromotionProductDTOList(s);
+            return ResponseEntity.ok(prDTO);
+        }
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<?> createPromotion(@RequestBody PromotionRequestDTO promotions){
+        @PostMapping("/create")
+         public ResponseEntity<?> createPromotion(@RequestBody PromotionRequestDTO promotions){
         if(promotions.getUsers().getUsername() == null){
             System.out.println("không thấy thông tin user");
             return  ResponseEntity.status(111).body("chưa đăng nhập");
