@@ -21,8 +21,6 @@ public class Customers {
     private int id;
     @Column(name = "phone")
     private int phone;
-    @Column(name = "address", columnDefinition = "NVARCHAR(1000)")
-    private String address;
     @Column(name = "name", columnDefinition = "NVARCHAR(200)")
     private String name;
     @Column(name = "note", columnDefinition = "NVARCHAR(2500)")
@@ -35,6 +33,10 @@ public class Customers {
     @JsonIgnore
     @OneToMany(mappedBy = "customers")
     private List<CartItem> cartItems;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "address", referencedColumnName = "id")
+    private Address address;
 
 
 }

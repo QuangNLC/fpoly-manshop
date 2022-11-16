@@ -38,4 +38,8 @@ public class Address {
     @OneToOne(mappedBy = "address")
     @JsonIgnore
     private Users user;
+
+    @OneToOne(mappedBy = "address")
+    @JsonIgnore
+    private Customers customer;
 }

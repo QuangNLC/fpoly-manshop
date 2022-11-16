@@ -314,7 +314,7 @@ const ProductDetail = () => {
                                                         }}
                                                     />
                                                 </Amount>
-                                                <Add onClick={() => { setSelectedQuantity(selectedQuantity + 1) }} />
+                                                <Add onClick={() => { setSelectedQuantity((selectedQuantity + 1)) }} />
                                             </AmountContainer>
                                         </AddContainer>
                                         <ButtonContainer>

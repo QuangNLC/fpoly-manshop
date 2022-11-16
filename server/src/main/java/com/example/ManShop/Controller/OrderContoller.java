@@ -38,6 +38,9 @@ public class OrderContoller {
     @Autowired
     private StatusOrderJPA statusOrderJPA;
 
+    @Autowired
+    private AddressJPA addressJPA;
+
     public OrderContoller(UserJPA userJPA, CustomerJPA customerJPA, OrderDetailJPA orderDetailJPA, OrderJPA orderJPA, ProductsizeJPA productsizeJPA, SizeJPA sizeJPA) {
         this.userJPA = userJPA;
         this.customerJPA = customerJPA;
@@ -89,6 +92,7 @@ public class OrderContoller {
     @PostMapping("/checkout/{check}")
     public ResponseEntity<?> checkOUT(@RequestBody OrderRequestDTO orderRequest,@PathVariable("check") String check){
         log.info("Gọi vào quá trình CHECK OUT ");
+        System.out.println(orderRequest);
         Orders newOrder = new Orders();
         Users user = new Users();
         user.setUsername(orderRequest.getUsers().getUsername());
@@ -102,7 +106,20 @@ public class OrderContoller {
         newOrder.setCustomers(customers);
         }if(check.equals("for-me")){
             Customers customers  = new Customers();
-            customers.setAddress(orderRequest.getCustomers().getAddress());
+            Address address = new Address();
+            Citys city = new Citys();
+            Districts district = new Districts();
+            Wards ward = new Wards();
+            city.setId(orderRequest.getCityId());
+            district.setId(orderRequest.getDistrictId());
+            ward.setId(orderRequest.getWardId());
+            address.setCity(city);
+            address.setDistrict(district);
+            address.setWard(ward);
+            address.setLocation(orderRequest.getLocation());
+            System.out.println(address);
+            Address savedAddress = addressJPA.save(address);
+            customers.setAddress(savedAddress);
             customers.setPhone(orderRequest.getCustomers().getPhone());
             customers.setName(orderRequest.getCustomers().getName());
             customers.setUser(orderRequest.getUsers());

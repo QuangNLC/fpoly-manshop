@@ -21,6 +21,10 @@ public class OrderRequestDTO {
     private double total_price;
     private List<OrderDetail> orderDetail;
     private StatusOrder statusOrders;
+    private Integer cityId;
+    private Integer districtId;
+    private Long wardId;
+    private String location;
 
 
 }
