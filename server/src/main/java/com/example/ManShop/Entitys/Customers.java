@@ -26,6 +26,7 @@ public class Customers {
     @Column(name = "note", columnDefinition = "NVARCHAR(2500)")
     private String note;
     @ManyToOne @JoinColumn(name = "username")
+    @JsonIgnore
     private Users user;
     @JsonIgnore
     @OneToMany(mappedBy = "customers")

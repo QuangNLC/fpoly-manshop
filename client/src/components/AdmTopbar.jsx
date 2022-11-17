@@ -42,6 +42,7 @@ const IconContainer = styled.div`
     width: 30px;
     height: 30px;
     margin: 0px 10px;
+    margin-right: 20px;
     display:flex;
     justify-content: center;
     align-items: center;
@@ -77,16 +78,13 @@ const AdmTopbar = () => {
                             <NotificationsIcon color="action" />
                         </Badge>
                     </IconContainer>
-                    <IconContainer>
+                    {/* <IconContainer>
                         <Badge badgeContent={1} color="primary">
                             <Link to="/admin/message">
                                 <ChatBubbleIcon color="action" />
                             </Link>
                         </Badge>
-                    </IconContainer>
-                    <IconContainer>
-                        <SettingsIcon color="action" />
-                    </IconContainer>
+                    </IconContainer> */}
                     <Avatar>
                         <AvatarImage src={avt} />
                     </Avatar>
