@@ -77,33 +77,33 @@ const WebChangePassword = () => {
     const [form] = useForm();
     const dispatch = useDispatch();
 
-    const onFinish  =  (value) => {
-        const  {confirmPassword, ...req}  = value;
+    const onFinish = (value) => {
+        const { confirmPassword, ...req } = value;
 
         console.log(req)
         Modal.confirm({
             title: 'Hộp Thoại Xác Nhận',
             content: 'Bạn có muốn đổi mật khẩu không ?',
-            okText:  "Xác Nhận",
+            okText: "Xác Nhận",
             cancelText: 'Hủy Bỏ',
             onOk: () => {
-                usersAPI.changePassword(auth.info.username,req)
-                .then(res => {
-                    if(!res.status){
-                        Modal.success({
-                            title: 'Hộp Thoại  Thông Báo',
-                            content: "Đổi mật khẩu thành công. Vui lòng đăng nhập lại."
-                        });
-                        dispatch(logOutAction());
-                        navigate('/login');
-                    }else{
-                        Modal.error({
-                            title: 'Hộp Thoại  Thông Báo',
-                            content: "Sai mật khẩu. Vui lòng thử lại."
-                        })
-                    }
-                })
-                .catch(err => console.log(err))
+                usersAPI.changePassword(auth.info.username, req)
+                    .then(res => {
+                        if (!res.status) {
+                            Modal.success({
+                                title: 'Hộp Thoại  Thông Báo',
+                                content: "Đổi mật khẩu thành công. Vui lòng đăng nhập lại."
+                            });
+                            dispatch(logOutAction());
+                            navigate('/login');
+                        } else {
+                            Modal.error({
+                                title: 'Hộp Thoại  Thông Báo',
+                                content: "Sai mật khẩu. Vui lòng thử lại."
+                            })
+                        }
+                    })
+                    .catch(err => console.log(err))
             }
         });
     }
@@ -155,7 +155,7 @@ const WebChangePassword = () => {
                                     <ContentContainer>
                                         <Top>
                                             <Typography.Title>Đổi Mật Khẩu</Typography.Title>
-                                            <Typography.Text>Để bảo mật tài khoản, vui lòng không chia  sẻ mật khẩu cho người khác.</Typography.Text>
+                                            <Typography.Text>Để bảo mật tài khoản, vui lòng không chia sẻ mật khẩu cho người khác.</Typography.Text>
                                         </Top>
                                         <Bottom>
                                             <FormContainer>
@@ -171,7 +171,7 @@ const WebChangePassword = () => {
                                                         name="password"
                                                         hasFeedback
                                                         rules={[
-                                                            {required: true, message:  'Vui lòng nhập mật khẩu hiện tại!'}
+                                                            { required: true, message: 'Vui lòng nhập mật khẩu hiện tại!' }
                                                         ]}
                                                     >
                                                         <Input.Password />
@@ -181,7 +181,7 @@ const WebChangePassword = () => {
                                                         name="newPassword"
                                                         hasFeedback
                                                         rules={[
-                                                            {required: true, message:  'Vui lòng nhập mật khẩu mới!'}
+                                                            { required: true, message: 'Vui lòng nhập mật khẩu mới!' }
                                                         ]}
                                                     >
                                                         <Input.Password />
@@ -191,7 +191,7 @@ const WebChangePassword = () => {
                                                         name="confirmPassword"
                                                         hasFeedback
                                                         rules={[
-                                                            {required: true, message:  'Vui lòng nhập lại mật khẩu mới!'},
+                                                            { required: true, message: 'Vui lòng nhập lại mật khẩu mới!' },
                                                             ({ getFieldValue }) => ({
                                                                 validator(_, value) {
                                                                     if (!value || getFieldValue('newPassword') === value) {
