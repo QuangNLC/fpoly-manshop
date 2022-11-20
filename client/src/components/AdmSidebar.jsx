@@ -62,7 +62,7 @@ const AdmSidebar = () => {
                         <Link to="/admin" style={{ textDecoration: "none", color: "unset" }}>
                             <Item active={location.pathname === "/admin"}>
                                 <LineStyleIcon style={{ fontSize: "20px", marginRight: "10px" }} />
-                                <ItemText>
+                                <ItemText style={{ marginBottom: "0px" }}>
                                     Trang Chủ
                                 </ItemText>
                             </Item>
@@ -74,40 +74,40 @@ const AdmSidebar = () => {
                     <List>
                         <Link to="/admin/user-list" style={{ textDecoration: "none", color: "unset" }}>
                             <Item active={location.pathname === "/admin/user-list"}>
-                                <PermIdentityIcon style={{ fontSize: "20px" }} />
-                                <ItemText>
+                                <PermIdentityIcon style={{ fontSize: "20px", marginRight: "10px" }} />
+                                <ItemText style={{ marginBottom: "0px" }}>
                                     Tài Khoản Người Dùng
                                 </ItemText>
                             </Item>
                         </Link>
                         <Link to="/admin/category-list" style={{ textDecoration: "none", color: "unset" }}>
                             <Item>
-                                <StorefrontIcon style={{ fontSize: "20px" }} />
-                                <ItemText>
+                                <StorefrontIcon style={{ fontSize: "20px", marginRight: "10px" }} />
+                                <ItemText style={{ marginBottom: "0px" }}>
                                     Thể Loại Sản Phẩm
                                 </ItemText>
                             </Item>
                         </Link>
                         <Link to="/admin/product-list" style={{ textDecoration: "none", color: "unset" }}>
                             <Item>
-                                <StorefrontIcon style={{ fontSize: "20px" }} />
-                                <ItemText>
+                                <StorefrontIcon style={{ fontSize: "20px", marginRight: "10px" }} />
+                                <ItemText style={{ marginBottom: "0px" }}>
                                     Sản Phẩm
                                 </ItemText>
                             </Item>
                         </Link>
                         <Link to="/admin/order-list" style={{ textDecoration: "none", color: "unset" }}>
                             <Item>
-                                <EventNoteIcon style={{ fontSize: "20px" }} />
-                                <ItemText>
+                                <EventNoteIcon style={{ fontSize: "20px", marginRight: "10px" }} />
+                                <ItemText style={{ marginBottom: "0px" }}>
                                     Đơn Đặt Hàng
                                 </ItemText>
                             </Item>
                         </Link>
 
                         <Item>
-                            <BarChartIcon style={{ fontSize: "20px" }} />
-                            <ItemText>
+                            <BarChartIcon style={{ fontSize: "20px", marginRight: "10px" }} />
+                            <ItemText style={{ marginBottom: "0px" }}>
                                 Báo Cáo Thống kê
                             </ItemText>
                         </Item>

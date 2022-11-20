@@ -73,53 +73,54 @@ const AdmNewUser = () => {
     return (
         <Container>
             <Wrapper>
-                <Title>New User</Title>
+                <Title>Thêm tài khoản mới</Title>
                 <Form>
                     <Item>
-                        <ItemLabel>Username</ItemLabel>
-                        <ItemInput type="text" placeholder='john' />
+                        <ItemLabel>Tên tài khoản</ItemLabel>
+                        <ItemInput type="text" placeholder='Ví dụ: nguoidung... ' />
                     </Item>
                     <Item>
-                        <ItemLabel>Fullname</ItemLabel>
-                        <ItemInput type="text" placeholder='John Smith' />
+                        <ItemLabel>Họ và Tên</ItemLabel>
+                        <ItemInput type="text" placeholder='Ví dụ: Phạm Văn A' />
                     </Item>
                     <Item>
                         <ItemLabel>Email</ItemLabel>
-                        <ItemInput type="email" placeholder='john@gmail.com' />
+                        <ItemInput type="email" placeholder='Ví dụ: a@gmail.com' />
                     </Item>
                     <Item>
-                        <ItemLabel>Password</ItemLabel>
-                        <ItemInput type="password" placeholder='password' />
+                        <ItemLabel>Mật khẩu</ItemLabel>
+                        <ItemInput type="password" placeholder='********' />
                     </Item>
                     <Item>
-                        <ItemLabel>Phone</ItemLabel>
-                        <ItemInput type="text" placeholder='+1 123 456 78' />
+                        <ItemLabel>Số điện thoại</ItemLabel>
+                        <ItemInput type="text" placeholder='Ví dụ: 0123456789' />
                     </Item>
                     <Item>
-                        <ItemLabel>Adress</ItemLabel>
-                        <ItemInput type="text" placeholder='New York | USA' />
+                        <ItemLabel>Địa chỉ</ItemLabel>
+                        <ItemInput type="text" placeholder='Ví dụ: Ấp 36, Thị trấn A, Tỉnh A, Thành phố A' />
                     </Item>
                     <Genders>
-                        <ItemLabel>Gender</ItemLabel>
-                        <GenderOptions>
+                        <ItemLabel>Giới tính</ItemLabel>
+                        <GenderOptions style={{ paddingBottom: "5px" }}>
                             <Item>
-                                <ItemInput type="radio" name="gender" id="male" value="male" />
-                                <ItemLabel htmlFor='male'>Male</ItemLabel>
+                                <ItemInput type="radio" name="gender" id="male" value="male" style={{ marginBottom: "5px" }} />
+                                <ItemLabel htmlFor='male' style={{ textAlign: "Center" }}>Nam</ItemLabel>
                             </Item>
                             <Item>
-                                <ItemInput type="radio" name="gender" id="female" value="male" />
-                                <ItemLabel htmlFor='female'>Female</ItemLabel>
+                                <ItemInput type="radio" name="gender" id="female" value="male" style={{ marginBottom: "5px" }} />
+                                <ItemLabel htmlFor='female' style={{ textAlign: "Center" }}>Nữ</ItemLabel>
                             </Item>
                         </GenderOptions>
                     </Genders>
-                    <Item style={{width: "100%"}}>
-                        <ItemLabel>Active</ItemLabel>
+                    <Item style={{ width: "100%" }}>
+                        <ItemLabel>Trạng thái tài khoản</ItemLabel>
                         <Select name="active" id="active">
-                            <SelectOption value="yes">Yes</SelectOption>
-                            <SelectOption value="no">No</SelectOption>
+                            <SelectOption value="yes">Kích hoạt</SelectOption>
+                            <SelectOption value="no">Không kích hoạt</SelectOption>
                         </Select>
                     </Item>
-                    <Button>Create</Button>
+                    <Button>Thêm mới</Button>
+                    <Button style={{ marginLeft: "50px" }}>Làm mới</Button>
                 </Form>
             </Wrapper>
         </Container>
