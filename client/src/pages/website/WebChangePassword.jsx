@@ -171,7 +171,8 @@ const WebChangePassword = () => {
                                                         name="password"
                                                         hasFeedback
                                                         rules={[
-                                                            { required: true, message: 'Vui lòng nhập mật khẩu hiện tại!' }
+                                                            { required: true, message: 'Vui lòng nhập mật khẩu hiện tại!' },
+                                                            { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' }
                                                         ]}
                                                     >
                                                         <Input.Password />
@@ -181,7 +182,8 @@ const WebChangePassword = () => {
                                                         name="newPassword"
                                                         hasFeedback
                                                         rules={[
-                                                            { required: true, message: 'Vui lòng nhập mật khẩu mới!' }
+                                                            { required: true, message: 'Vui lòng nhập mật khẩu mới!' },
+                                                            { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' }
                                                         ]}
                                                     >
                                                         <Input.Password />
@@ -192,12 +194,13 @@ const WebChangePassword = () => {
                                                         hasFeedback
                                                         rules={[
                                                             { required: true, message: 'Vui lòng nhập lại mật khẩu mới!' },
+                                                            { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' },
                                                             ({ getFieldValue }) => ({
                                                                 validator(_, value) {
                                                                     if (!value || getFieldValue('newPassword') === value) {
                                                                         return Promise.resolve()
                                                                     }
-                                                                    return Promise.reject('Confirm password does not match!')
+                                                                    return Promise.reject('Xác nhận mật khẩu không trùng khớp!')
                                                                 }
                                                             })
                                                         ]}

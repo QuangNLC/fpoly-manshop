@@ -21,7 +21,7 @@ const Content = styled.p`
 
 const WebContact = () => {
     return (
-        <div>
+        <div style={{ paddingLeft: "100px", paddingRight: "100px", paddingTop: "50px" }}>
             <div className="main-content">
                 <div className="page-title">
                     <h1>Liên hệ</h1>

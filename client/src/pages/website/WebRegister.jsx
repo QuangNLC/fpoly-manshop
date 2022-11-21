@@ -161,15 +161,15 @@ const WebRegister = () => {
         } else {
             setCheckingAuth(false);
             addressAPI.getCityData()
-            .then(res =>{
-                if(!res.status){
-                    console.log(res)
-                    setData(res)
-                }else{
-                    console.log(res)
-                }
-            })
-            .catch(err => console.log(err))
+                .then(res => {
+                    if (!res.status) {
+                        console.log(res)
+                        setData(res)
+                    } else {
+                        console.log(res)
+                    }
+                })
+                .catch(err => console.log(err))
         }
     }, [])
     return (
@@ -201,8 +201,8 @@ const WebRegister = () => {
                                         label="Tên đăng nhập"
                                         name="username"
                                         rules={[
-                                            { required: true },
-                                            { whitespace: true }
+                                            { required: true, message: 'Vui lòng nhập tên tài khoản!' },
+                                            { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' }
                                         ]}
                                     >
                                         <Input placeholder='Tên đăng nhập' />
@@ -211,8 +211,8 @@ const WebRegister = () => {
                                         label="Họ và tên"
                                         name="fullname"
                                         rules={[
-                                            { required: true },
-                                            { whitespace: true }
+                                            { required: true, message: 'Vui lòng nhập Họ và tên!' },
+                                            { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' }
                                         ]}
                                     >
                                         <Input placeholder='Họ và tên' />
@@ -221,19 +221,19 @@ const WebRegister = () => {
                                         label="Email"
                                         name="email"
                                         rules={[
-                                            { required: true },
-                                            { whitespace: true },
+                                            { required: true, message: 'Vui lòng nhập Email!' },
+                                            { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' },
                                             { type: 'email' }
                                         ]}
                                     >
-                                        <Input placeholder='email' type='email' />
+                                        <Input placeholder='Email' type='email' />
                                     </Form.Item>
                                     <Form.Item
                                         label="Số điện thoại"
                                         name="phone"
                                         rules={[
-                                            { required: true },
-                                            { whitespace: true }
+                                            { required: true, message: 'Vui lòng nhập Số điện thoại!' },
+                                            { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' }
                                         ]}
                                     >
                                         <Input placeholder='Số điện thoại' />
@@ -242,7 +242,8 @@ const WebRegister = () => {
                                         label="Mật khẩu"
                                         name="password"
                                         rules={[
-                                            { required: true },
+                                            { required: true, message: 'Vui lòng nhập Mật khẩu!' },
+                                            { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' }
                                         ]}
                                     >
                                         <Input.Password placeholder='Mật khẩu' />
@@ -251,13 +252,14 @@ const WebRegister = () => {
                                         label="Xác nhận mật khẩu"
                                         name="confirmPasswrod"
                                         rules={[
-                                            { required: true },
+                                            { required: true, message: 'Vui lòng nhập Xác nhận mật khẩu!' },
+                                            { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' },
                                             ({ getFieldValue }) => ({
                                                 validator(_, value) {
                                                     if (!value || getFieldValue('password') === value) {
                                                         return Promise.resolve()
                                                     }
-                                                    return Promise.reject('Confirm password does not match!')
+                                                    return Promise.reject('Xác nhận mật khẩu không trùng khớp!')
                                                 }
                                             })
                                         ]}
@@ -352,7 +354,7 @@ const WebRegister = () => {
                                         name="location"
                                         hasFeedback
                                         rules={[
-                                            { required: true, message: 'Vui lòng nhập địa chỉ nhận hàng!' },
+                                            { required: true, message: 'Vui lòng nhập địa chỉ!' },
                                             { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' }
                                         ]}
                                     >
@@ -363,7 +365,7 @@ const WebRegister = () => {
                                         <Button type='submit'>Đăng Ký</Button>
                                     </Form.Item>
                                     <Form.Item>
-                                        Đã có tài khoản <Link to="/login">Đăng nhập ngay</Link>
+                                        Đã có tài khoản. <Link to="/login">Đăng nhập ngay</Link>
                                     </Form.Item>
                                 </Form>
                             </FormContainer>

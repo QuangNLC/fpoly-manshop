@@ -366,7 +366,7 @@ const WebProductList = (props) => {
                 }
               </CategorySelect>
             </FilterItemContainer>
-            <FilterItemContainer>
+            <FilterItemContainer style={{ paddingTop: "0px" }}>
               <FilterItemTitle>Size</FilterItemTitle>
               <SizeContainer>
                 {
@@ -379,8 +379,8 @@ const WebProductList = (props) => {
                 }
               </SizeContainer>
             </FilterItemContainer>
-            <FilterItemContainer>
-              <FilterItemTitle>Giá</FilterItemTitle>
+            <FilterItemContainer style={{ paddingTop: "0px" }}>
+              <FilterItemTitle style={{ marginBottom: "0px", paddingTop: "0px" }}>Giá</FilterItemTitle>
               <PriceContainer>
                 <MinPrice>
                   Từ <MinPriceInPut />
@@ -398,9 +398,9 @@ const WebProductList = (props) => {
                 okText="Xóa"
                 cancelText="Hủy"
               >
-                <FilterButton>xóa bộ lọc</FilterButton>
+                <FilterButton>Xóa bộ lọc</FilterButton>
               </Popconfirm>
-              <FilterButton onClick={handleFilterProduct}>lọc sản phẩm</FilterButton>
+              <FilterButton onClick={handleFilterProduct}>Lọc sản phẩm</FilterButton>
             </FilterButtonContainer>
           </FilterContainer>
           <ProductListContainer>
