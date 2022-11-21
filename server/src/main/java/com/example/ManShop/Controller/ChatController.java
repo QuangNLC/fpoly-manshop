@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 @Controller
 @CrossOrigin("*")
+
 public class ChatController {
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;

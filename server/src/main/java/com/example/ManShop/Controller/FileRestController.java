@@ -6,6 +6,7 @@ import com.example.ManShop.Service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,7 +42,7 @@ public class FileRestController {
         return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(image);
     }
 
-
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("{folder}")
     public ResponseEntity<List<String>> upload(@PathVariable("folder") String folder, @PathParam("file")MultipartFile[] file){
         System.out.println(file);
@@ -54,7 +55,7 @@ public class FileRestController {
     }
 
 
-
+    @PreAuthorize("isAuthenticated()")
     @DeleteMapping("{folder}/{file}")
     public void delete(@PathVariable("folder") String folder, @PathVariable("file") String file){
         fileService.delete(folder, file);

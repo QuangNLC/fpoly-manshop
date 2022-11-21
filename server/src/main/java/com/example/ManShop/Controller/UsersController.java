@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -54,7 +55,7 @@ public class UsersController {
 
     @GetMapping("/{page}/{limit}")
     public ResponseEntity<?> GetByPage(@PathVariable("page") Integer page,
-                                      @PathVariable("limit")Integer limit) {
+                                       @PathVariable("limit")Integer limit) {
         System.out.println("goi vao ham phan trang");
         System.out.println("page");
         if (page > 0) {
@@ -65,10 +66,10 @@ public class UsersController {
             return ResponseEntity.ok(userJPA.findAll(setpage).stream());
         }
     }
-
+    @PreAuthorize("isAuthenticated()")
     @PutMapping()
     public ResponseEntity<Users> insert(@PathParam("username") String username,
-                                    @RequestBody Users users) {
+                                        @RequestBody Users users) {
         Optional<Users> usersOptional = userJPA.findById(username);
         if (usersOptional.isEmpty()) {
             log.error("không thấy tài khoản" + username);
@@ -84,7 +85,7 @@ public class UsersController {
         log.info("cập nhật tài khoản thành công " +username);
         return ResponseEntity.ok(resUser);
     }
-
+    @PreAuthorize("isAuthenticated()")
     @DeleteMapping()
     public ResponseEntity<Void> delete(@PathParam("username") String username){
         Optional<Users> usersOptional = userJPA.findById(username);
@@ -101,7 +102,7 @@ public class UsersController {
         }
     }
 
-
+    @PreAuthorize("isAuthenticated()")
     @PostMapping ("/update-avatar/{username}")
     public ResponseEntity<?> updateUserAvatar(@PathVariable(value = "username") String username ,@PathParam("file") MultipartFile[] file){
 

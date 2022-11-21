@@ -20,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -149,6 +150,7 @@ public class ProductController {
 
         return ResponseEntity.ok(response);
     }
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/create")
     public ResponseEntity<?> createProduct(@RequestBody productcreateDTO product) {
         log.info("tạo sản phẩm");
@@ -185,6 +187,7 @@ public class ProductController {
         }
         return ResponseEntity.ok("Tao thanh cong san pham (id)= "+returnproduct.getId());
     }
+    @PreAuthorize("isAuthenticated()")
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateProduct(@PathVariable("id") Integer id, @RequestBody Product product) {
         if(!productJPA.existsById(id)){
@@ -212,7 +215,7 @@ public class ProductController {
         return ResponseEntity.ok().body(product);
     }
 
-
+    @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/delete/{id}")
     public Object deleteProduct(@PathVariable("id") Integer id) {
         log.info("gọi vào hàm xóa sản phẩm với (id)= "+id);
@@ -228,7 +231,6 @@ public class ProductController {
         }
 
     }
-
     @PostMapping("/byFilter")
     public ResponseEntity<?> Test(@RequestBody FilterRequestDTO a,@RequestParam("page") Integer page,@RequestParam("limit")Integer limit) {
         Pageable setpage;

@@ -1,5 +1,6 @@
 package com.example.ManShop.Controller;
 
+import com.example.ManShop.DTOS.OrderListResquestDTO;
 import com.example.ManShop.DTOS.OrderRequestDTO;
 import com.example.ManShop.DTOS.PageOrderRespone;
 import com.example.ManShop.Entitys.*;
@@ -10,37 +11,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.websocket.server.PathParam;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin("*")
+
 @RequestMapping("/api/order")
 public class OrderContoller {
-
-
     private final Logger log = LoggerFactory.getLogger(OrderContoller.class);
-    final
-    UserJPA userJPA;
-    final
-    CustomerJPA customerJPA;
-    final
-    OrderDetailJPA orderDetailJPA;
-    final
-    OrderJPA orderJPA;
+    final UserJPA userJPA;
+    final CustomerJPA customerJPA;
+    final OrderDetailJPA orderDetailJPA;
+    final OrderJPA orderJPA;
     final ProductsizeJPA productsizeJPA;
     final SizeJPA sizeJPA;
-
     @Autowired
     private StatusOrderJPA statusOrderJPA;
-
     @Autowired
     private AddressJPA addressJPA;
-
     public OrderContoller(UserJPA userJPA, CustomerJPA customerJPA, OrderDetailJPA orderDetailJPA, OrderJPA orderJPA, ProductsizeJPA productsizeJPA, SizeJPA sizeJPA) {
         this.userJPA = userJPA;
         this.customerJPA = customerJPA;
@@ -49,16 +44,13 @@ public class OrderContoller {
         this.productsizeJPA = productsizeJPA;
         this.sizeJPA = sizeJPA;
     }
-
-
-//    @GetMapping("/all")
+    //    @GetMapping("/all")
 //    public ResponseEntity
     @GetMapping("/all")
     public ResponseEntity<?> getall(){
         log.info("gọi vào hàm tìm kiếm tất cả các order");
         return ResponseEntity.ok(orderJPA.findAll());
     }
-
     @GetMapping("/all/{page}/{limit}")
     public ResponseEntity<?> GetByPage(@PathVariable("page") Integer page,@PathVariable("limit")Integer limit){
         Pageable setpage;
@@ -79,6 +71,7 @@ public class OrderContoller {
 
 
 
+
     @GetMapping("/{id}")
     public ResponseEntity<?> findbyid(@PathVariable("id") Integer id){
         log.info(" goi vao ham tìm kiếm order với (id)= "+id);
@@ -96,20 +89,22 @@ public class OrderContoller {
         Orders newOrder = new Orders();
         Users user = new Users();
         user.setUsername(orderRequest.getUsers().getUsername());
-        if(check.equals("for-someone")){
-        Customers customers  = new Customers();
-        customers.setPhone(orderRequest.getCustomers().getPhone());
-        customers.setAddress(orderRequest.getCustomers().getAddress());
-        customers.setName(orderRequest.getCustomers().getName());
-        customers.setUser(orderRequest.getUsers());
-        customerJPA.save(customers);
-        newOrder.setCustomers(customers);
-        }if(check.equals("for-me")){
+//        if(check.equals("for-someone")){
+//        Customers customers  = new Customers();
+//        customers.setPhone(orderRequest.getCustomers().getPhone());
+//        customers.setAddress(orderRequest.getCustomers().getAddress());
+//        customers.setName(orderRequest.getCustomers().getName());
+//        customers.setUser(orderRequest.getUsers());
+//        customerJPA.save(customers);
+//        newOrder.setCustomers(customers);
+//        }
+        if(check.equals("for-me")){
             Customers customers  = new Customers();
             Address address = new Address();
             Citys city = new Citys();
             Districts district = new Districts();
             Wards ward = new Wards();
+            System.out.println("check");
             city.setId(orderRequest.getCityId());
             district.setId(orderRequest.getDistrictId());
             ward.setId(orderRequest.getWardId());
@@ -124,7 +119,10 @@ public class OrderContoller {
             customers.setName(orderRequest.getCustomers().getName());
             customers.setUser(orderRequest.getUsers());
             customerJPA.save(customers);
-        newOrder.setCustomers(customers);
+            newOrder.setCustomers(customers);
+        }else
+        {
+            return ResponseEntity.status(404).body("khong tim thay gi b oi!!");
         }
         StatusOrder sttOrder = new StatusOrder();
         sttOrder.setId(1);
@@ -162,7 +160,7 @@ public class OrderContoller {
         return ResponseEntity.ok(response);
     }
     @GetMapping("/my-orders")
-    public ResponseEntity<List<Orders>> getMyOrders(@PathParam("username") String username){
+    public ResponseEntity<List<Orders>> getMyOrders(@RequestParam("username") String username){
         Pageable pagedefault = PageRequest.of(0,1000000);
         List<Orders> resList = orderJPA.findByUsers_Username(pagedefault,username).stream().collect(Collectors.toList());
         return ResponseEntity.ok(resList);
@@ -173,17 +171,17 @@ public class OrderContoller {
         if(!orderJPA.existsById(id)){
             return ResponseEntity.badRequest().body("Không tìm thấy đơn hàng với id()"+id);
         }else {
-            orders.setId(id);
-            orderJPA.save(orders);
-            System.out.println(orders);
-            int checkorder =orders.getStatusOrders().getId();
-            if(checkorder == 4){
-                log.info("Đơn hàng với (id)= "+ id +" đã được kết thúc!");
-                List<OrderDetail> orderDetaillist = orders.getOrderDetail();
-                System.out.println("chua check");
-
-                for(int i=0; i< orderDetaillist.size();i++){
-                    OrderDetail element= orderDetaillist.get(i);
+            try {
+                orders.setId(id);
+                orderJPA.save(orders);
+                System.out.println(orders);
+                int checkorder =orders.getStatusOrders().getId();
+                if(checkorder == 4){
+                    log.info("Đơn hàng với (id)= "+ id +" đã được kết thúc!");
+                    List<OrderDetail> orderDetaillist = orders.getOrderDetail();
+                    System.out.println("chua check");
+                    for(int i=0; i< orderDetaillist.size();i++){
+                        OrderDetail element= orderDetaillist.get(i);
                         int a= element.getQuantity();
                         int b = element.getProduct().getId();
                         String c = element.getSize();
@@ -192,17 +190,22 @@ public class OrderContoller {
                             update.setId(update.getId());
                             update.setQuantity(update.getQuantity()-a);
                             productsizeJPA.save(update);
-
                         }catch (Exception e){
                             e.printStackTrace();
                             return ResponseEntity.status(420).body("lỗi khi trừ số lượng sản phẩm");
                         }
-                }
+                    }
 
+                }
+            }catch (Exception e){
+                System.out.println("loi tai ham cap nhap danh sach Order!!!");
+                e.printStackTrace();
+                return ResponseEntity.notFound().build();
             }
+
         }        return ResponseEntity.ok("cập nhập thành công order với (id)= " +id);
     }
-
+    @PutMapping()
     private int check(String b) {
         switch (b){
             case "XS":
@@ -228,6 +231,35 @@ public class OrderContoller {
         }
     }
 
+
+    @GetMapping("/info-list-order-update")
+    public ResponseEntity<?> getlistOrderToUpdate(){
+        return ResponseEntity.ok(orderJPA.findlistOrderId());
+    }
+
+
+    @PutMapping("/update/list-order")
+    public ResponseEntity<?> updateOrderList(@RequestBody OrderListResquestDTO listOrder){
+        log.info("gọi vào hàm update trạng thái 1 danh sách order");
+        if(listOrder.getIntegerList().size() <0  ){
+            return ResponseEntity.notFound().build();
+        }else {
+            // List<Orders> ordersListbystatus = orderJPA.findlistOrderId(listOrder.getIntegerList());
+            //System.out.println(listOrder.getIntegerList().size());
+            try {
+                for (int i =0; i< listOrder.getIntegerList().size();i++){
+                    Orders ordersUpdte = orderJPA.findById(listOrder.getIntegerList().get(i)).get();
+                    ordersUpdte.setStatusOrders(statusOrderJPA.findById(listOrder.getStstusOrder()).get());
+                    orderJPA.save(ordersUpdte);
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+                return ResponseEntity.notFound().build();
+            }
+
+        }
+        return ResponseEntity.ok("cập nhập thành công");
+    }
     @GetMapping("/status-info")
     public ResponseEntity<?> getOrderStatusInfo(){
         return ResponseEntity.ok(statusOrderJPA.findAll());
