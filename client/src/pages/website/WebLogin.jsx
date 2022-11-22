@@ -158,7 +158,7 @@ const WebLogin = () => {
                                     console.log(res)
                                     auth = { ...auth, info: res };
                                     dispatch(setAuthAction(auth));
-                                    openNotificationWithIcon('success','Đăng nhập thành công!','Đăng nhập thành công!');
+                                    openNotificationWithIcon('success', 'Đăng nhập thành công!', 'Đăng nhập thành công!');
                                     navigate('/')
                                 } else {
                                     console.log(res)
@@ -167,8 +167,8 @@ const WebLogin = () => {
                             .catch(err => console.log(err));
                     } else {
                         console.log(res)
-                        if(res.status == 401){
-                            openNotificationWithIcon('error','Đăng nhập thất bại!','Thông tin đăng nhập không chính xác!');
+                        if (res.status == 401) {
+                            openNotificationWithIcon('error', 'Đăng nhập thất bại!', 'Thông tin đăng nhập không chính xác!');
                             inputPasswordRefElement.current.focus();
                         }
                     }
@@ -216,8 +216,8 @@ const WebLogin = () => {
                                         label="Tên đăng nhập"
                                         name="username"
                                         rules={[
-                                            {required: true},
-                                            {whitespace: true}
+                                            { required: true, message: 'Vui lòng nhập tên tài khoản!' },
+                                            { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' }
                                         ]}
                                     >
                                         <Input placeholder='Tên đăng nhập' />
@@ -226,18 +226,25 @@ const WebLogin = () => {
                                         label="Mật khẩu"
                                         name="password"
                                         rules={[
-                                            {required: true},
-                                            {whitespace: true}
+                                            { required: true, message: 'Vui lòng nhập mật khẩu!' },
+                                            { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' }
                                         ]}
                                     >
-                                        <Input.Password placeholder='Mật khẩu' ref={inputPasswordRefElement}/>
+                                        <Input.Password placeholder='Mật khẩu' ref={inputPasswordRefElement} />
                                     </Form.Item>
                                     <Form.Item
                                     >
                                         <Button type='submit'>Đăng Nhập</Button>
                                     </Form.Item>
                                     <Form.Item>
-                                        Chưa có tài khoản <Link to="/register">Đăng ký ngay</Link>
+                                        Chưa có tài khoản. <Link to="/register">Đăng ký ngay</Link>
+                                    </Form.Item>
+                                    <Form.Item>
+                                        <p className="text-noti" style={{ paddingTop: "0px" }}>
+                                            Nếu Quý khách có vấn đề gì thắc mắc hoặc cần hỗ trợ gì thêm có thể
+                                            liên hệ : <br /> Hotline: 0346.410.666 để được hỗ trợ một cách
+                                            nhanh nhất.{" "}
+                                        </p>
                                     </Form.Item>
                                 </Form>
                             </FormContainer>

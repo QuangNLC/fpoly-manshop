@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Add, Remove } from '@mui/icons-material'
 import Helmet from '../../components/Helmet'
 import styled from '@emotion/styled'
-import {  useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import productAPI from '../../api/productsAPI'
 import Skeleton from '@mui/material/Skeleton';
 import Avatar from '@mui/material/Avatar';
@@ -169,7 +169,7 @@ const ProductDetail = () => {
     const dispatch = useDispatch();
 
     const handleAddToCart = (product) => {
-        if(isAuth){
+        if (isAuth) {
             const payload = {
                 size: product.productsizes,
                 selectedSize: product.productsizes[selectedSizeIndex],
@@ -182,14 +182,14 @@ const ProductDetail = () => {
             console.log(payload)
             message.success("Thêm sản phẩm vào giỏ hàng thành công!")
             dispatch(addToCart(payload))
-        }else{
+        } else {
             navigate("/login")
         }
-        
+
     };
 
     const handleBuyNow = (product) => {
-        if(isAuth){
+        if (isAuth) {
             const payload = {
                 size: product.productsizes,
                 selectedSize: product.productsizes[selectedSizeIndex],
@@ -203,10 +203,10 @@ const ProductDetail = () => {
             message.success("Thêm sản phẩm vào giỏ hàng thành công!")
             dispatch(addToCart(payload))
             navigate("/cart")
-        }else{
+        } else {
             navigate("/login")
         }
-        
+
     };
 
     const hanleChangeSize = (value) => {
@@ -263,7 +263,7 @@ const ProductDetail = () => {
                                                 {
                                                     product.images && product.images.map((item, index) => {
                                                         return (
-                                                            <ImageListItem key={index} onClick={() => {setPreviewImg(`http://localhost:8080/api/file/images/${item.photo}`)}}>
+                                                            <ImageListItem key={index} onClick={() => { setPreviewImg(`http://localhost:8080/api/file/images/${item.photo}`) }}>
                                                                 <ImageListDetail src={`http://localhost:8080/api/file/images/${item.photo}`} />
                                                             </ImageListItem>
                                                         )
@@ -308,7 +308,7 @@ const ProductDetail = () => {
                                                                 setSelectedQuantity(1)
                                                             } else if (e.target.value > product.productsizes[selectedSizeIndex].quantity) {
                                                                 setSelectedQuantity(product.productsizes[selectedSizeIndex].quantity)
-                                                            }else{
+                                                            } else {
                                                                 setSelectedQuantity(e.target.value % 1 === 0 ? e.target.value : Math.floor(e.target.value))
                                                             }
                                                         }}
@@ -319,7 +319,7 @@ const ProductDetail = () => {
                                         </AddContainer>
                                         <ButtonContainer>
                                             <Button onClick={() => { handleAddToCart(product) }}>Thêm Vào Giỏ Hàng</Button>
-                                            <Button onClick={() => { handleBuyNow(product)}}> Mua Ngay</Button>               
+                                            <Button onClick={() => { handleBuyNow(product) }}> Mua Ngay</Button>
                                         </ButtonContainer>
                                     </InfoContainer></>
                             )

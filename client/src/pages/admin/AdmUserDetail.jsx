@@ -217,13 +217,14 @@ const AdmUserDetail = () => {
     return (
         <Container>
             <UserTitleContainer>
-                <UserTitle>Edit User</UserTitle>
+                <UserTitle>Chỉnh sửa tài khoản</UserTitle>
                 <UserTitleButtonContainer>
-                    <Link to="/admin/user-list" style={{ marginRight: "20px" }}>
-                        <UserTitleButton>List User</UserTitleButton>
+                    <Link to="/admin/user-list" style={{ marginRight: "20px", width: "0px" }}>
+                        <UserTitleButton style={{ width: "100px" }}>Danh sách
+                        </UserTitleButton>
                     </Link>
                     <Link to="/admin/new-user">
-                        <UserTitleButton>Create</UserTitleButton>
+                        <UserTitleButton>Tạo mới</UserTitleButton>
                     </Link>
                 </UserTitleButtonContainer>
             </UserTitleContainer>
@@ -247,7 +248,7 @@ const AdmUserDetail = () => {
                                             </UserShowTopTitle>
                                         </UserShowTop>
                                         <UserShowBottom>
-                                            <UserShowTitle>Account Details</UserShowTitle>
+                                            <UserShowTitle>Thông tin tài khoản</UserShowTitle>
                                             <UserShowInfo>
                                                 <UserShowInfoIcon><PermIdentityOutlinedIcon /></UserShowInfoIcon>
                                                 <UserShowInfoTitle>{user.username}</UserShowInfoTitle>
@@ -256,7 +257,7 @@ const AdmUserDetail = () => {
                                                 <UserShowInfoIcon><CalendarTodayOutlinedIcon /></UserShowInfoIcon>
                                                 <UserShowInfoTitle>10.12.1999</UserShowInfoTitle>
                                             </UserShowInfo>
-                                            <UserShowTitle>Contact Details</UserShowTitle>
+                                            <UserShowTitle>Thông tin liên lạc</UserShowTitle>
                                             <UserShowInfo>
                                                 <UserShowInfoIcon><PhoneAndroidOutlinedIcon /></UserShowInfoIcon>
                                                 <UserShowInfoTitle>{user.phone}</UserShowInfoTitle>
@@ -268,11 +269,11 @@ const AdmUserDetail = () => {
                                         </UserShowBottom>
                                     </UserShow>
                                     <UserUpdate>
-                                        <UserUpdateTitle>Edit</UserUpdateTitle>
+                                        <UserUpdateTitle>Chỉnh sửa tài khoản</UserUpdateTitle>
                                         <UserUpdateForm>
                                             <UserUpdateLeft>
                                                 <UserUpdateItem>
-                                                    <ItemLabel>Username</ItemLabel>
+                                                    <ItemLabel>Tên tài khoản</ItemLabel>
                                                     <ItemInput placeholder='annabeck99' type="text" name="username" value={updateValue.username} disabled />
                                                 </UserUpdateItem>
                                                 <UserUpdateItem>
@@ -280,7 +281,7 @@ const AdmUserDetail = () => {
                                                     <ItemInput placeholder={updateValue.email} type="email" name="email" value={updateValue.email} disabled />
                                                 </UserUpdateItem>
                                                 <UserUpdateItem>
-                                                    <ItemLabel>Full Name</ItemLabel>
+                                                    <ItemLabel>Họ và Tên</ItemLabel>
                                                     <ItemInput
                                                         placeholder={updateValue.fullname}
                                                         type="text"
@@ -288,10 +289,10 @@ const AdmUserDetail = () => {
                                                         name="fullname"
                                                         onChange={onChangeUpdateValue}
                                                     />
-                                                    <ItemError>Fullname should be 3-100 characters and shounld't any special character!</ItemError>
+                                                    <ItemError>Tên đầy đủ tối thiểu 3 ký tự trở lên!</ItemError>
                                                 </UserUpdateItem>
                                                 <UserUpdateItem>
-                                                    <ItemLabel>Phone</ItemLabel>
+                                                    <ItemLabel>Số điện thoại</ItemLabel>
                                                     <ItemInput
                                                         placeholder={updateValue.phone}
                                                         value={updateValue.phone}
@@ -299,7 +300,7 @@ const AdmUserDetail = () => {
                                                         name="phone"
                                                         onChange={onChangeUpdateValue}
                                                     />
-                                                    <ItemError>Phonenumber is invalid!</ItemError>
+                                                    <ItemError>Số điện thọai đang để trống!</ItemError>
                                                 </UserUpdateItem>
                                                 {/* <UserUpdateItem>
                                                     <ItemLabel>Adress</ItemLabel>
@@ -317,7 +318,7 @@ const AdmUserDetail = () => {
                                                     content="Do you want to update this user?"
                                                     onYes={() => { handleUpdateUser(updateValue) }}
                                                 >
-                                                    <UpdateButton>Update</UpdateButton>
+                                                    <UpdateButton>Cập nhật</UpdateButton>
                                                 </DialogHOC>
                                             </UserUpdateRight>
                                         </UserUpdateForm>

@@ -115,7 +115,7 @@ const AdmUserList = () => {
 
     const columns = [
         {
-            field: 'username', headerName: 'Username', width: 200,
+            field: 'username', headerName: 'Tên tài khoản', width: 200,
             renderCell: (params) => (
                 <UserContainer>
                     <UserImg src={params.row.photo ? params.row.photo : defaultAvt} alt="" />
@@ -124,14 +124,14 @@ const AdmUserList = () => {
             )
         },
         { field: 'email', headerName: 'Email', width: 200 },
-        { field: 'activated', headerName: 'Activated', width: 120, },
-        { field: 'phone', headerName: 'Phone', width: 120, },
+        { field: 'activated', headerName: 'Trạng thái', width: 120, },
+        { field: 'phone', headerName: 'Số điện thoại', width: 120, },
         {
-            field: 'action', headerName: "Action", width: 250,
+            field: 'action', headerName: "Thao tác", width: 250,
             renderCell: (params) => (
-                <ActionContainer>
+                <ActionContainer >
                     <Link to={"/admin/user/" + params.row.username}>
-                        <EditButton>Edit</EditButton>
+                        <EditButton>Sửa</EditButton>
                     </Link>
                     <DialogHOC title="Confirm Dialog" content="Do you want to delete this user?" onYes={() => { hadleDeleteUser(params.row.username) }}>
                         <DeleteButton>
@@ -148,7 +148,7 @@ const AdmUserList = () => {
             .then(res => {
                 const index = findIndexInArrByUsername(data, username);
                 setData(data.filter((item, crrIndex) => {
-                    if(crrIndex !== index){
+                    if (crrIndex !== index) {
                         return item;
                     }
                 }));
@@ -175,9 +175,9 @@ const AdmUserList = () => {
         <Container>
             <Wrapper style={{ height: 400, width: '100%' }}>
                 <TitleContainer>
-                    <Title>List User</Title>
+                    <Title>Danh sách tài khoản</Title>
                     <Link to="/admin/new-user">
-                        <TitleButton>Create</TitleButton>
+                        <TitleButton style={{ width: "100px" }}>Thêm mới</TitleButton>
                     </Link>
                 </TitleContainer>
                 {

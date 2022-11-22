@@ -262,9 +262,9 @@ const WebMyOrders = () => {
                         filterOrdersByStatus(data, item.id).length > 0 ?
                             (
                                 filterOrdersByStatus(data, item.id).sort((a, b) => (a.createdDate > b.createdDate ? -1 : 1))
-                                .map(item => (
-                                    <Order key={item.id} order={item} />
-                                ))
+                                    .map(item => (
+                                        <Order key={item.id} order={item} />
+                                    ))
                             )
                             :
                             (

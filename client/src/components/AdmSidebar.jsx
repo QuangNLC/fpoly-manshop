@@ -122,24 +122,24 @@ const AdmSidebar = () => {
                     <List>
                         <Link to="/admin/user-list" style={{ textDecoration: "none", color: "unset" }}>
                             <Item active={location.pathname === "/admin/user-list"}>
-                                <PermIdentityIcon style={{ fontSize: "20px" }} />
-                                <ItemText>
+                                <PermIdentityIcon style={{ fontSize: "20px", marginRight: "10px" }} />
+                                <ItemText style={{ marginBottom: "0px" }}>
                                     Tài Khoản Người Dùng
                                 </ItemText>
                             </Item>
                         </Link>
                         <Link to="/admin/category-list" style={{ textDecoration: "none", color: "unset" }}>
                             <Item>
-                                <StorefrontIcon style={{ fontSize: "20px" }} />
-                                <ItemText>
+                                <StorefrontIcon style={{ fontSize: "20px", marginRight: "10px" }} />
+                                <ItemText style={{ marginBottom: "0px" }}>
                                     Thể Loại Sản Phẩm
                                 </ItemText>
                             </Item>
                         </Link>
                         <Link to="/admin/product-list" style={{ textDecoration: "none", color: "unset" }}>
                             <Item>
-                                <StorefrontIcon style={{ fontSize: "20px" }} />
-                                <ItemText>
+                                <StorefrontIcon style={{ fontSize: "20px", marginRight: "10px" }} />
+                                <ItemText style={{ marginBottom: "0px" }}>
                                     Sản Phẩm
                                 </ItemText>
                             </Item>
@@ -154,22 +154,19 @@ const AdmSidebar = () => {
                         </Link>
                         <Link to="/admin/order-list" style={{ textDecoration: "none", color: "unset" }}>
                             <Item>
-                                <EventNoteIcon style={{ fontSize: "20px" }} />
-                                <ItemText>
+                                <EventNoteIcon style={{ fontSize: "20px", marginRight: "10px" }} />
+                                <ItemText style={{ marginBottom: "0px" }}>
                                     Đơn Đặt Hàng
                                 </ItemText>
                             </Item>
                         </Link>
-                        <Link to="/admin/message" style={{ textDecoration: "none", color: "unset" }}>
-                            <Item>
-                                <EmailOutlinedIcon style={{ fontSize: "20px" }} />
-                                <Badge count={count}>
-                                    <ItemText>
-                                        Hộp Thư Đến
-                                    </ItemText>
-                                </Badge>
-                            </Item>
-                        </Link>
+
+                        <Item>
+                            <BarChartIcon style={{ fontSize: "20px" }} />
+                            <ItemText>
+                                Báo Cáo Thống kê
+                            </ItemText>
+                        </Item>
                     </List>
                 </Menu>
             </Wrapper>

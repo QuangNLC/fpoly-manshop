@@ -9,6 +9,7 @@ import com.example.ManShop.JPAs.DistrictsJPA;
 import com.example.ManShop.JPAs.WardsJPA;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,6 +28,8 @@ public class AdressController {
     @Autowired
     private WardsJPA wardsJPA;
 
+
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/citys-json-to-sql-data")
     public ResponseEntity<?> changeCitysJsonToSqlData(@RequestBody List<Citys> jsonData){
         System.out.println(jsonData);
@@ -35,7 +38,7 @@ public class AdressController {
         });
         return ResponseEntity.ok().build();
     }
-
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/districts-json-to-sql-data/{districtsId}")
     public ResponseEntity<?> changeDistrictsJsonToSqlData(@PathVariable Integer districtsId, @RequestBody List<Districts> jsonData){
         System.out.println(districtsId);

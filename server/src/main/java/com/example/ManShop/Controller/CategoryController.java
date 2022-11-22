@@ -3,6 +3,7 @@ import com.example.ManShop.Entitys.Categorys;
 import com.example.ManShop.JPAs.CategoryJPA;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.websocket.server.PathParam;
@@ -23,12 +24,12 @@ public class CategoryController {
 
     @GetMapping("/details")
     public ResponseEntity<Categorys> getCategoryDetails(@PathParam(value = "categoryId") Integer categoryId){
-            if(!categoryJPA.existsById(categoryId)){
-                return ResponseEntity.notFound().build();
-            }
+        if(!categoryJPA.existsById(categoryId)){
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok(categoryJPA.findById(categoryId).get());
     }
-
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/create")
     public ResponseEntity<?> createCategory(@RequestBody Categorys reqCategory){
         Categorys newCategory = new Categorys();

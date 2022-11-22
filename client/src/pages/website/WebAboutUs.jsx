@@ -2,7 +2,7 @@ import React from 'react'
 
 const WebAboutUs = () => {
     return (
-        <div>
+        <div style={{ paddingLeft: "100px", paddingRight: "100px", paddingTop: "50px" }}>
             <div className="row">
                 <div className="jeg_main_content col-md-12">
                     <div className="entry-header">
