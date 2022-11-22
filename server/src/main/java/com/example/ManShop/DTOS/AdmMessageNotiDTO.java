@@ -14,4 +14,5 @@ public class AdmMessageNotiDTO {
     private String username;
     private Date latestmessage;
     private Long newmessage;
+    private Boolean resetCount;
 }

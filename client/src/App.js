@@ -34,6 +34,7 @@ import AdmEditProductDetails from "./pages/admin/AdmEditProductDetails";
 import WebMyAccount from "./pages/website/WebMyAccount";
 import WebChangePassword from "./pages/website/WebChangePassword";
 import AdmMessage from "./pages/admin/AdmMessage";
+import AdmBills from "./pages/admin/AdmBills";
 function App() {
   const store = createStore(rootReducer);
 
@@ -73,6 +74,7 @@ function App() {
             <Route path="edit-product/:productId" element={<AdmEditProductDetails />} />
             <Route path="user/:username" element={<AdmUserDetail />} />
             <Route path="message" element={<AdmMessage />} />
+            <Route path="bills" element={<AdmBills />} />
             <Route path="*" element={<div>Trang khong ton tai</div>} />
           </Route>
         </Routes>

@@ -183,6 +183,7 @@ const openNotificationWithIcon = (type, title, des) => {
     });
 };
 
+
 const Webcart = () => {
     const [isModalInfo, setIsModalInfo] = useState(false);
     const [isOpenDrawer, setIsOpenDrawer] = useState(false);
@@ -201,6 +202,10 @@ const Webcart = () => {
         districtId: null,
         wardId: null
     })
+
+
+
+
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -283,7 +288,7 @@ const Webcart = () => {
                             "user": {
                                 "username": auth.info.username
                             }
-                            
+
                         },
                         "orderDetail": [
                             ...data.map((item) => ({

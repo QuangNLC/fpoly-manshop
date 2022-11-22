@@ -24,10 +24,14 @@ public interface MessagesJPA extends JpaRepository<Messages, Long> {
     MemberAdmChatResponseDTO getTest(String username);
 
     @Query(
-            "select count(m.status) from Messages m where m.sendedby.username = :username and m.status = 0"
+            "select count(m.status) from Messages m where m.sendedby.username = :username and m.status = false"
     )
     Long getTotalNewMessage(String username);
 
+    @Query(
+            "select count(m.status) from Messages m where m.status = false and m.receivedby.username = 'admchat'"
+    )
+    Long getCountNewMessage();
 
     @Modifying
     @Transactional

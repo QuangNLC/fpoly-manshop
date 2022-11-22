@@ -1,5 +1,6 @@
 package com.example.ManShop.Controller;
 
+import com.example.ManShop.DTOS.AdmOrderNotiDTO;
 import com.example.ManShop.DTOS.OrderRequestDTO;
 import com.example.ManShop.DTOS.PageOrderRespone;
 import com.example.ManShop.Entitys.*;
@@ -10,9 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.websocket.server.PathParam;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,6 +43,11 @@ public class OrderContoller {
 
     @Autowired
     private AddressJPA addressJPA;
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
+
+    @Autowired
+    private OrderNotiJPA orderNotiJPA;
 
     public OrderContoller(UserJPA userJPA, CustomerJPA customerJPA, OrderDetailJPA orderDetailJPA, OrderJPA orderJPA, ProductsizeJPA productsizeJPA, SizeJPA sizeJPA) {
         this.userJPA = userJPA;
@@ -142,6 +150,20 @@ public class OrderContoller {
             detail.setOrders(orderForDetail);
             orderDetailJPA.save(detail);
         });
+
+        OrderNoti o = new OrderNoti();
+        o.setCreatedat(new Date());
+        o.setMessage(orderRequest.getUsers().getUsername()+"Da tao don hang moi");
+        o.setStatus(false);
+        o.setOrderId(responseOrder.getId());
+        OrderNoti savedNoti = orderNotiJPA.save(o);
+        AdmOrderNotiDTO resNoti = new AdmOrderNotiDTO();
+        List<OrderNoti> resList = new ArrayList<>();
+        resList.add(savedNoti);
+        resNoti.setList(resList);
+        resNoti.setCount(orderNotiJPA.getUnseenNotiCount());
+        System.out.println("save noti");
+        simpMessagingTemplate.convertAndSend("/noti/adm-order",resNoti);
         return ResponseEntity.ok().body("tao don hang thanh cong voi (id)= " +responseOrder.getId());
     }
 
@@ -231,5 +253,21 @@ public class OrderContoller {
     @GetMapping("/status-info")
     public ResponseEntity<?> getOrderStatusInfo(){
         return ResponseEntity.ok(statusOrderJPA.findAll());
+    }
+
+
+    @GetMapping("/order-noti")
+    public ResponseEntity<?> getOrderNotiList(){
+        AdmOrderNotiDTO res = new AdmOrderNotiDTO();
+        res.setList(orderNotiJPA.findAll());
+        res.setCount(orderNotiJPA.getUnseenNotiCount());
+        return  ResponseEntity.ok(res);
+    }
+
+    @GetMapping("/seen-noti")
+    public ResponseEntity<?> seenNotiByAdm(){
+        orderNotiJPA.seenNotiByAdm();
+
+        return ResponseEntity.ok("Seen noti");
     }
 }

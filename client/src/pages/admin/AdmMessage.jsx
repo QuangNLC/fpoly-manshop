@@ -270,21 +270,54 @@ const AdmMessage = () => {
     const onListNotiReceived = (payload) => {
         let payloadData = JSON.parse(payload.body);
         console.log(payloadData)
-        setChatmemberList(current => {
-            let index = current.findIndex(item => item.username === payloadData.username)
+        if (!payloadData.resetCount) {
+            setMatchingUser(matchUser => {
+                console.log(matchUser)
+                setChatmemberList(current => {
+                    let index = current.findIndex(item => item.username === payloadData.username)
 
-            if (index === -1) {
-                return [{ ...payloadData}, ...current]
-            } else {
-                let newList = [...current]
-                newList[index] = {
-                    ...newList[index],
-                    ...payloadData
+                    if (index === -1) {
+                        return [{ ...payloadData }, ...current]
+                    } else {
+                        if (payloadData.username === matchUser) {
+                            payloadData.newmessage = 0
+                            messagesAPI.seenByAdm(matchUser)
+                                .then((res => {
+                                    console.log(res)
+                                }))
+                                .catch(err => console.log(err))
+                        }
+                        let newList = [...current]
+                        newList[index] = {
+                            ...newList[index],
+                            ...payloadData
+                        }
+
+                        return [...newList]
+                    }
+                })
+                return matchUser
+            })
+        } else {
+            setChatmemberList(current => {
+                let index = current.findIndex(item => item.username === payloadData.username)
+
+                if (index === -1) {
+                    return [{ ...payloadData }, ...current]
+                } else {
+                    let newList = [...current]
+                    newList[index].newmessage = 0;
+                    newList[index] = {
+                        ...newList[index],
+                        ...payloadData
+                    }
+
+                    return [...newList]
                 }
+            })
+            console.log('resetcount')
+        }
 
-                return [...newList]
-            }
-        })
     }
 
 

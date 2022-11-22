@@ -49,6 +49,14 @@ public class MessagesController {
         System.out.println("Adm get private messages of: " + username);
         messagesJPA.seenMessageByAdm(username);
         System.out.println("Adm seen messages of: " + username);
+        AdmMessageNotiDTO resNoti = new AdmMessageNotiDTO();
+        resNoti.setUsername(username);
+        resNoti.setLatestmessage(new Date());
+        resNoti.setNewmessage(Long.parseLong("0"));
+        resNoti.setResetCount(true);
+        System.out.println(resNoti);
+        simpMessagingTemplate.convertAndSend("/noti/adm-message",resNoti);
+        simpMessagingTemplate.convertAndSend("/noti/adm-message-count",messagesJPA.getCountNewMessage());
         return ResponseEntity.ok(messagesJPA.getUserPrivateMessages(username));
     }
 
@@ -77,6 +85,7 @@ public class MessagesController {
             m.setCreatedat(reqMessage.getCreatedat());
             Messages resM = messagesJPA.save(m);
             System.out.println("save message to dtb");
+            simpMessagingTemplate.convertAndSend("/noti/adm-message-count",messagesJPA.getCountNewMessage());
             simpMessagingTemplate.convertAndSendToUser(reqMessage.getReceivedby(),"/private", resM);   //user/{username}/private
             return ResponseEntity.ok(resM);
         }catch(Exception e){
@@ -118,6 +127,7 @@ public class MessagesController {
             resNoti.setNewmessage(messagesJPA.getTotalNewMessage(username));
             System.out.println(resNoti);
             simpMessagingTemplate.convertAndSend("/noti/adm-message",resNoti);
+            simpMessagingTemplate.convertAndSend("/noti/adm-message-count",messagesJPA.getCountNewMessage());
             simpMessagingTemplate.convertAndSendToUser(reqMessage.getReceivedby(),"/private", resM);   //user/{username}/private
             return ResponseEntity.ok(resM);
         }catch(Exception e){
@@ -134,17 +144,42 @@ public class MessagesController {
         List<Users> listU = userJPA.getListMemberChatByAdm();
 
         List<MemberAdmChatResponseDTO> resList = new ArrayList<>();
-
-        for (int i = 0; i < listU.size(); i++) {
-            MemberAdmChatResponseDTO r = messagesJPA.getTest(listU.get(i).getUsername());
-            r.setNewmessage(messagesJPA.getTotalNewMessage(listU.get(i).getUsername()));
-            resList.add(r);
+        if(listU.size() > 0){
+            for (int i = 0; i < listU.size(); i++) {
+                MemberAdmChatResponseDTO r = messagesJPA.getTest(listU.get(i).getUsername());
+                r.setNewmessage(messagesJPA.getTotalNewMessage(listU.get(i).getUsername()));
+                resList.add(r);
+            }
         }
+
 
 
 
         return ResponseEntity.ok(resList);
     }
+
+    @GetMapping("/adm/get-message-count")
+    public ResponseEntity<?> getMessageCountByAdm(){
+        System.out.println(messagesJPA.getCountNewMessage());
+        return ResponseEntity.ok(messagesJPA.getCountNewMessage());
+    }
+
+
+    @GetMapping("/adm/seen-message/{username}")
+    public ResponseEntity<?> seenMessageByAdm(@PathVariable String username){
+        System.out.println("adm seen message"+ username);
+        messagesJPA.seenMessageByAdm(username);
+        AdmMessageNotiDTO resNoti = new AdmMessageNotiDTO();
+        resNoti.setUsername(username);
+        resNoti.setLatestmessage(new Date());
+        resNoti.setNewmessage(Long.parseLong("0"));
+        resNoti.setResetCount(true);
+        System.out.println(resNoti);
+        simpMessagingTemplate.convertAndSend("/noti/adm-message",resNoti);
+        simpMessagingTemplate.convertAndSend("/noti/adm-message-count",messagesJPA.getCountNewMessage());
+        return ResponseEntity.ok("adm seen" + username);
+    }
+
 
 
 }

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import LineStyleIcon from '@mui/icons-material/LineStyle';
 import StackedLineChartIcon from '@mui/icons-material/StackedLineChart';
@@ -8,7 +8,17 @@ import EventNoteIcon from '@mui/icons-material/EventNote';
 import StorefrontIcon from '@mui/icons-material/Storefront';
 import PermIdentityIcon from '@mui/icons-material/PermIdentity';
 import { Link, useLocation } from 'react-router-dom';
+import NoteAddOutlinedIcon from '@mui/icons-material/NoteAddOutlined';
+import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
+import { Badge } from 'antd';
+import { over } from 'stompjs';
+import SockJS from 'sockjs-client';
+import { useSelector } from 'react-redux'
+import messagesAPI from '../api/messagesAPI'
 
+
+
+var stompClient = null;
 
 const Container = styled.div`
     width: 20%;
@@ -33,6 +43,7 @@ const List = styled.ul`
     padding: 0;
 `
 const Item = styled.li`
+    width: 100%;
     display: flex;
     align-items: center;
     padding: 5px;
@@ -46,12 +57,49 @@ const Item = styled.li`
 `
 const ItemText = styled.p`
     text-decoration: none;
+    height: 100%;
+    margin: 0 10px;
 `
 
 const AdmSidebar = () => {
     const location = useLocation();
 
+    const isAuth = useSelector(state => state.auth.isAuth);
+    const auth = useSelector(state => state.auth.auth);
+    const [count, setCount] = useState(0)
+    const connectCountMessageNoti = () => {
+        let Sock = new SockJS("http://localhost:8080/ws");
+        stompClient = over(Sock);
+        stompClient.connect({}, () => {
+            stompClient.subscribe('/noti/adm-message-count', onListNotiReceived)
+            console.log('connect to received notification!')
+        }, onError);
+    }
 
+
+    const onListNotiReceived = (payload) => {
+        let payloadData = JSON.parse(payload.body);
+        console.log(payloadData)
+        setCount(Number(payloadData))
+    }
+
+    const onError = (err) => {
+        console.log(err);
+    }
+    useEffect(() => {
+        auth && auth.info &&
+            messagesAPI.getNewMessageCount()
+                .then(res => {
+                    if (!res.status) {
+                        setCount(res)
+                        connectCountMessageNoti()
+                        console.log(res)
+                    } else {
+                        console.log(res)
+                    }
+                })
+                .catch(err => console.log(err))
+    }, [auth])
 
     return (
         <Container>
@@ -61,7 +109,7 @@ const AdmSidebar = () => {
                     <List>
                         <Link to="/admin" style={{ textDecoration: "none", color: "unset" }}>
                             <Item active={location.pathname === "/admin"}>
-                                <LineStyleIcon style={{ fontSize: "20px", marginRight: "10px" }} />
+                                <LineStyleIcon style={{ fontSize: "20px" }} />
                                 <ItemText>
                                     Trang Chủ
                                 </ItemText>
@@ -96,6 +144,14 @@ const AdmSidebar = () => {
                                 </ItemText>
                             </Item>
                         </Link>
+                        <Link to="/admin/bills" style={{ textDecoration: "none", color: "unset" }}>
+                            <Item>
+                                <NoteAddOutlinedIcon style={{ fontSize: "20px" }} />
+                                <ItemText>
+                                    Hoá Đơn
+                                </ItemText>
+                            </Item>
+                        </Link>
                         <Link to="/admin/order-list" style={{ textDecoration: "none", color: "unset" }}>
                             <Item>
                                 <EventNoteIcon style={{ fontSize: "20px" }} />
@@ -104,13 +160,16 @@ const AdmSidebar = () => {
                                 </ItemText>
                             </Item>
                         </Link>
-
-                        <Item>
-                            <BarChartIcon style={{ fontSize: "20px" }} />
-                            <ItemText>
-                                Báo Cáo Thống kê
-                            </ItemText>
-                        </Item>
+                        <Link to="/admin/message" style={{ textDecoration: "none", color: "unset" }}>
+                            <Item>
+                                <EmailOutlinedIcon style={{ fontSize: "20px" }} />
+                                <Badge count={count}>
+                                    <ItemText>
+                                        Hộp Thư Đến
+                                    </ItemText>
+                                </Badge>
+                            </Item>
+                        </Link>
                     </List>
                 </Menu>
             </Wrapper>

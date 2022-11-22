@@ -1,11 +1,22 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import styled from 'styled-components'
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import SettingsIcon from '@mui/icons-material/Settings';
-import Badge from '@mui/material/Badge';
+import { Badge, Button, Dropdown, Empty } from 'antd';
 import avt from '../assets/imgs/avt.png';
-import { Link } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
+import SockJS from 'sockjs-client';
+import { over } from 'stompjs';
+import { useState } from 'react';
+
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import MenuItem from '@mui/material/MenuItem';
+import Menu from '@mui/material/Menu';
+import ordersAPI from '../api/ordersAPI';
+
 
 const Container = styled.div`
     width: 100%;
@@ -62,8 +73,99 @@ const AvatarImage = styled.img`
     object-fit: cover;
 `
 
+const NotiItemWrapper = styled.div``
+const NotiItemImg = styled.div``
+const NotiImage = styled.img``
+const NotiItemDetail = styled.div``
+
+var stompClient = null;
+
 
 const AdmTopbar = () => {
+
+    const [notiList, setNotiList] = useState(undefined)
+    const [isNotiOpen, setIsNotiOpen] = useState(false)
+    const navigate = useNavigate()
+    const connectListOrderNoti = () => {
+        let Sock = new SockJS("http://localhost:8080/ws");
+        stompClient = over(Sock);
+        stompClient.connect({}, () => {
+            stompClient.subscribe('/noti/adm-order', onListOrderNotiReceived)
+            console.log('connect to received orders notification!')
+        }, onError);
+    }
+
+    const onListOrderNotiReceived = (payload) => {
+        let payloadData = JSON.parse(payload.body);
+        console.log(payloadData)
+        setAnchorEl(null);
+        setIsNotiOpen(false)
+        setNotiList((curr) => {
+            console.log(curr)
+            curr.list = [{ ...payloadData.list[0] }, ...curr.list]
+            curr.count = payloadData.count
+            return { ...curr }
+        })
+    }
+
+    const onError = (err) => {
+        console.log(err);
+    }
+    const options = [
+        'Show some love to MUI',
+        'Show all notification content',
+        'Hide sensitive notification content',
+        'Hide all notification content',
+    ];
+
+
+    const handleClickOpenNoti = () => {
+        setIsNotiOpen(true)
+    }
+
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const open = Boolean(anchorEl);
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+        ordersAPI.seenNotiByAdm().then((res) => {
+            if (!res.status) {
+                console.log(res)
+                setIsNotiOpen(true)
+                setNotiList({
+                    ...notiList,
+                    count: 0
+                })
+
+            } else {
+                console.log(res)
+            }
+        })
+            .catch(err => console.log(err))
+    };
+    const handleClose = () => {
+        setAnchorEl(null);
+        setIsNotiOpen(false)
+        navigate("/admin/order-list")
+    };
+
+    useEffect(() => {
+        console.log(notiList)
+    }, [notiList])
+
+    useEffect(() => {
+        connectListOrderNoti();
+        ordersAPI.getOrderNotiList()
+            .then(res => {
+                if (!res.status) {
+                    console.log(res)
+                    setNotiList(res)
+                } else {
+                    console.log(res)
+                }
+            })
+            .catch(err => console.log(err))
+    }, [])
+
     return (
         <Container>
             <Wrapper>
@@ -74,17 +176,42 @@ const AdmTopbar = () => {
                 </Left>
                 <Right>
                     <IconContainer>
-                        <Badge badgeContent={5} color="primary">
-                            <NotificationsIcon color="action" />
+                        <Badge count={notiList && notiList.count}
+                            onClick={handleClick}
+                        >
+                            <NotificationsIcon />
                         </Badge>
+                        <Menu
+                            id="basic-menu"
+                            anchorEl={anchorEl}
+                            open={isNotiOpen}
+                            onClose={handleClose}
+                        >
+                            {
+                                notiList && notiList.list.length > 0 ?
+                                    (
+                                        <>
+                                            {notiList.list.sort((a, b) => a.createdat > b.createdat ? -1 : 1).map((item, index) => (
+                                                <MenuItem onClick={handleClose} key={index}>
+                                                    <NotiItemWrapper>
+                                                        <NotiItemImg>
+                                                            <NotiImage />
+                                                        </NotiItemImg>
+                                                        <NotiItemDetail>
+                                                            {item.message}
+                                                        </NotiItemDetail>
+                                                    </NotiItemWrapper>
+                                                </MenuItem>
+                                            ))}
+                                        </>
+                                    )
+                                    :
+                                    (
+                                        <Empty />
+                                    )
+                            }
+                        </Menu>
                     </IconContainer>
-                    {/* <IconContainer>
-                        <Badge badgeContent={1} color="primary">
-                            <Link to="/admin/message">
-                                <ChatBubbleIcon color="action" />
-                            </Link>
-                        </Badge>
-                    </IconContainer> */}
                     <Avatar>
                         <AvatarImage src={avt} />
                     </Avatar>

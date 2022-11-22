@@ -21,7 +21,17 @@ const messagesAPI = {
     replyPrivateMessageFromAdm: (username, payload) => {
         const url = '/messages/adm-private/reply/' + username;
         return axiosClient.post(url, payload);
+    },
+    getNewMessageCount : () => {
+        const url = 'messages/adm/get-message-count';
+        return axiosClient.get(url);
+    },
+    seenByAdm: (username) => {
+        const url = 'messages/adm/seen-message/' + username;
+        return axiosClient.get(url);
     }
+
+
 }
 
 export default messagesAPI

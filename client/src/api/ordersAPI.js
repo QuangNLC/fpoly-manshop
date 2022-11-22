@@ -16,6 +16,14 @@ const ordersAPI = {
     updateOrderStatus: (payload) => {
         const url='/order/update/'+ payload.id;
         return axiosClient.put(url, payload);
+    },
+    getOrderNotiList: () => {
+        const url = 'order/order-noti';
+        return axiosClient.get(url);
+    },
+    seenNotiByAdm: () => {
+        const url = 'order/seen-noti';
+        return axiosClient.get(url);
     }
 };
 
