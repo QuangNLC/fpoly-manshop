@@ -169,7 +169,7 @@ const SummaryItemText = styled.span`
 `
 const SummaryItemPrice = styled.span``
 
-
+var moment = require('moment');
 const AdmOrderList = () => {
     const columns = [
         {
@@ -322,7 +322,7 @@ const AdmOrderList = () => {
                                     }
                                     console.log(data[index])
                                     setData([...data])
-                                    
+
                                     handleCloseEditModal();
                                     Modal.success({
                                         title: "Hộp Thoại Thông Báo",
@@ -437,10 +437,12 @@ const AdmOrderList = () => {
                     ordersAPI.getAll()
                         .then(res => {
                             if (!res.status) {
-                                console.log(res)
+                                console.log("orders");
+                                console.log(res);
                                 setData([...res.map((item, index) => ({
                                     ...item,
                                     key: item.id,
+                                    createdDate: moment(item.createdDate).format('DD/MM/YYYY, H:mm:ss'),
                                     username: item.users.username,
                                     totalQuantity: item?.orderDetail.reduce((total, curr) => (total + curr.quantity), 0),
                                     status: item.statusOrders.title

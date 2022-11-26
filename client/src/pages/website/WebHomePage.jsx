@@ -160,10 +160,10 @@ const WebHomePage = () => {
             }
           })
           addressAPI.fillDistrictsData(districtData, (index + 1))
-          .then(res => {
-            console.log(res)
-          })
-          .catch(err => console.log(err))
+            .then(res => {
+              console.log(res)
+            })
+            .catch(err => console.log(err))
         })
       })
       .catch(err => console.log(err))
@@ -188,8 +188,8 @@ const WebHomePage = () => {
       <Announcement />
       <Slider items={sliderData} />
 
-      {/* Fill data from .json file to sql server data */}
-      {/* <div>
+      {/* Fill data from .json file to sql server data
+      <div>
         <button onClick={fillData}> fill</button>
       </div> */}
       <CategoriesContainer>
