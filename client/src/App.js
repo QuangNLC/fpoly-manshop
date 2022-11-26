@@ -35,6 +35,7 @@ import WebMyAccount from "./pages/website/WebMyAccount";
 import WebChangePassword from "./pages/website/WebChangePassword";
 import AdmMessage from "./pages/admin/AdmMessage";
 import AdmBills from "./pages/admin/AdmBills";
+import AdmOrderInfo from "./pages/admin/AdmOrderInfo";
 function App() {
   const store = createStore(rootReducer);
 
@@ -68,6 +69,7 @@ function App() {
             <Route path="user-list" element={<AdmUserList />} />
             <Route path="new-user" element={<AdmNewUser />} />
             <Route path="order-list" element={<AdmOrderList />} />
+            <Route path="order/:id" element={<AdmOrderInfo />} />
             <Route path="category-list" element={<AdmCategoryList />} />
             <Route path="product-list" element={<AdmProductList />} />
             <Route path="new-product" element={<AdmNewProduct />} />

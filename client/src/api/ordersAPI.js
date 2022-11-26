@@ -24,6 +24,10 @@ const ordersAPI = {
     seenNotiByAdm: () => {
         const url = 'order/seen-noti';
         return axiosClient.get(url);
+    },
+    getOrderInfo: (id) => {
+        const url = 'order/'+id;
+        return axiosClient.get(url);
     }
 };
 

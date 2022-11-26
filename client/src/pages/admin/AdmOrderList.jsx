@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import Helmet from '../../components/Helmet'
 import { useSelector } from 'react-redux'
 import { formatter } from '../../utils/index'
-import { Card, Badge, Tabs, Typography, Button, Empty, Modal, Select, Table, List, Form, Input, notification, Drawer } from 'antd';
+import { Card, Badge, Tabs, Typography, Button, Empty, Modal, Select, Table, List, Form, Input, notification, Drawer, Tag } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { South } from '@mui/icons-material';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
@@ -140,12 +140,7 @@ const SummaryContainer = styled.div`
     padding: 20px;
 `
 
-const openNotificationWithIcon = (type, title, des) => {
-    notification[type]({
-        message: title,
-        description: des,
-    });
-};
+
 
 
 const Summary = styled.div`
@@ -169,13 +164,66 @@ const SummaryItemText = styled.span`
 `
 const SummaryItemPrice = styled.span``
 
+const openNotificationWithIcon = (type, title, des) => {
+    notification[type]({
+        message: title,
+        description: des,
+    });
+};
+
+const StatusBadge = (props) => {
+
+    const [color, setColor] = useState('blue')
+
+    useEffect(() => {
+        console.log(props.status)
+        if (props.status) {
+            switch (props.status.id) {
+                case (1): {
+                    setColor('orange')
+                    break;
+                }
+                case (2): {
+                    setColor('cyan')
+                    break;
+                }
+                case (3): {
+                    setColor('purple')
+                    break;
+                }
+                case (4): {
+                    setColor('blue')
+                    break;
+                }
+                default: {
+                    setColor('blue')
+                    break;
+                }
+            }
+        }
+    }, [])
+
+    return (
+        <Tag color={color}>{props?.status?.title}</Tag>
+    )
+}
 
 const AdmOrderList = () => {
     const columns = [
         {
-            title: 'Ngày Tạo',
-            dataIndex: 'createdDate',
-            key: 'createdDate'
+            title: 'STT',
+            dataIndex: 'index',
+            key: 'index'
+        },
+        {
+            title: 'Trạng Thái',
+            dataIndex: 'status',
+            render: (text) => {
+                console.log(text)
+                return (
+                    <StatusBadge status={text}/>
+                )
+            }
         },
         {
             title: 'Người Mua',
@@ -194,16 +242,17 @@ const AdmOrderList = () => {
             render: (text) => (<>{formatter.format(text)}</>)
         },
         {
-            title: 'Trạng Thái',
-            dataIndex: 'status'
+            title: 'Ngày Tạo',
+            dataIndex: 'createdDate',
+            key: 'createdDate'
         },
         {
             render: (text) => {
                 return (
                     <ActionContainer>
-                        <Button icon={<RemoveRedEyeOutlinedIcon />} onClick={() => handleClickViewOrderInfo(text)}></Button>
-                        <Button icon={<EditOutlinedIcon />} type='primary' onClick={() => { handleClickUpdateStatus(text) }}></Button>
-                        <Button icon={<DeleteOutlineOutlinedIcon />} danger type='primary' onClick={() => { handleDeleteOrder(text) }}></Button>
+                        {/* <Button icon={<RemoveRedEyeOutlinedIcon />} onClick={() => handleClickViewOrderInfo(text)}></Button> */}
+                        <Button icon={<EditOutlinedIcon />} type='primary' onClick={() => { navigate(`/admin/order/${text.id}`) }}></Button>
+                        {/* <Button icon={<DeleteOutlineOutlinedIcon />} danger type='primary' onClick={() => { handleDeleteOrder(text) }}></Button> */}
                     </ActionContainer>
                 )
             }
@@ -440,10 +489,11 @@ const AdmOrderList = () => {
                                 console.log(res)
                                 setData([...res.map((item, index) => ({
                                     ...item,
+                                    index: index+1,
                                     key: item.id,
                                     username: item.users.username,
                                     totalQuantity: item?.orderDetail.reduce((total, curr) => (total + curr.quantity), 0),
-                                    status: item.statusOrders.title
+                                    status: item.statusOrders
                                 }))]);
                             } else {
                                 console.log(res)
@@ -466,7 +516,7 @@ const AdmOrderList = () => {
                 <Wrapper>
                     <Title>danh sách đơn hàng</Title>
                     <ListContainer>
-                        <ListFilterContainer>
+                        {/* <ListFilterContainer>
                             <ListFilterItem>
                                 <ListFilterTitle>Ngày tạo đơn</ListFilterTitle>
                                 <Select value={0}>
@@ -480,7 +530,7 @@ const AdmOrderList = () => {
                                     <Select.Option value={0}>Tất cả</Select.Option>
                                 </Select>
                             </ListFilterItem>
-                        </ListFilterContainer>
+                        </ListFilterContainer> */}
                         <ListItemWrapper>
                             <Table columns={columns} dataSource={data} />
                         </ListItemWrapper>
