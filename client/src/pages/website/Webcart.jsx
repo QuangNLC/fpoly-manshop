@@ -583,14 +583,14 @@ const Webcart = () => {
                                         <Product key={index}>
                                             <ProductDetail>
                                                 <Image src={item.product.images && `http://localhost:8080/api/file/images/${item.product.images[0].photo}`} />
-                                                <Details>
-                                                    <ProductName onClick={() => { navigate(`/product/${item.product.id}`) }}>
-                                                        <b>Product:</b> {item.product?.name}
+                                                <Details style={{ width: "900px" }}>
+                                                    <ProductName style={{ textDecoration: "none" }} onClick={() => { navigate(`/product/${item.product.id}`) }}>
+                                                        <b>Tên sản phẩm:</b> {item.product?.name}
                                                     </ProductName>
                                                     <ProductId>
-                                                        <b>ID:</b> {item.product.id}
+                                                        <b>Mã sản phẩm: </b> {item.product.id}
                                                     </ProductId>
-                                                    <ProductSize>
+                                                    <ProductSize >
                                                         <b>Size:</b> {item.selectedSize.size.title}
                                                         <br />
                                                         <Select value={item.selectedSize.size.title} onChange={(e) => { handleChangeCartItemSize(item, e, index) }}>
@@ -604,12 +604,12 @@ const Webcart = () => {
                                                 </Details>
                                             </ProductDetail>
                                             <PriceDetail>
-                                                <ProductAmountContainer>
+                                                <ProductAmountContainer >
                                                     <QuantityButton onClick={() => { handleClickUpdateCartItemQuantity(item, item.quantity + 1) }}>
                                                         <Add />
                                                     </QuantityButton>
                                                     <ProductAmount>
-                                                        <AmountInput
+                                                        <AmountInput style={{ textAlign: "center" }}
                                                             type='text'
                                                             value={item.quantity}
                                                             onChange={(e) => { handleChangeCartItemQuantity(e, item) }}
