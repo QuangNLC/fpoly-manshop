@@ -150,14 +150,14 @@ const OrderSummaryDetail = styled.div`
     font-weight: 500;
     margin-top: 5px;
 `
-
+var moment = require('moment');
 
 const Order = ({ order }) => {
 
     return (
         <OrderContainer>
             <Badge.Ribbon text={order.statusOrders.title}>
-                <Card title={`Đặt hàng lúc : ${order.order_date}     ||     ${order.orderDetail.reduce(((total, item) => (total + item.quantity)), 0)} sản phẩm`} size="small">
+                <Card title={`Đặt hàng lúc : ${moment(order.order_date).format('DD/MM/YYYY, H:mm:ss')}     ||     ${order.orderDetail.reduce(((total, item) => (total + item.quantity)), 0)} sản phẩm`} size="small">
                     <OrderDetails>
                         {
                             order.orderDetail.map((item, index) => (

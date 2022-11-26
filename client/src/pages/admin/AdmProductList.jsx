@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import productsAPI from '../../api/productsAPI';
 import DialogHOC from '../../hoc/DialogHOC';
-import {Form, Input, Select}  from  'antd';
+import { Form, Input, Select } from 'antd';
 
 
 const Container = styled.div`
@@ -43,7 +43,7 @@ const Right = styled.div`
     padding: 20px 10px;
     
 `
-const  ProductSizesDetails  =  styled.div`
+const ProductSizesDetails = styled.div`
     width: 100%;
     padding:  20px;
     -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);

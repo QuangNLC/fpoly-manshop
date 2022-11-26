@@ -12,6 +12,7 @@ import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import { useForm } from 'antd/lib/form/Form';
 import addressAPI from '../../api/addressAPI';
+import moment from 'moment'
 
 const Container = styled.div`
     width: 100%;
@@ -226,6 +227,16 @@ const AdmOrderList = () => {
             }
         },
         {
+            title: 'Trạng Thái',
+            dataIndex: 'status',
+            render: (text) => {
+                console.log(text)
+                return (
+                    <StatusBadge status={text}/>
+                )
+            }
+        },
+        {
             title: 'Người Mua',
             dataIndex: 'username',
             key: 'username'
@@ -371,7 +382,7 @@ const AdmOrderList = () => {
                                     }
                                     console.log(data[index])
                                     setData([...data])
-                                    
+
                                     handleCloseEditModal();
                                     Modal.success({
                                         title: "Hộp Thoại Thông Báo",
@@ -486,11 +497,13 @@ const AdmOrderList = () => {
                     ordersAPI.getAll()
                         .then(res => {
                             if (!res.status) {
-                                console.log(res)
+                                console.log("orders");
+                                console.log(res);
                                 setData([...res.map((item, index) => ({
                                     ...item,
                                     index: index+1,
                                     key: item.id,
+                                    createdDate: moment(item.createdDate).format('DD/MM/YYYY, H:mm:ss'),
                                     username: item.users.username,
                                     totalQuantity: item?.orderDetail.reduce((total, curr) => (total + curr.quantity), 0),
                                     status: item.statusOrders

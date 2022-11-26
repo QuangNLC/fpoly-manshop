@@ -85,7 +85,7 @@ const ChatAction = styled.div`
 `
 
 
-
+var moment = require('moment');
 
 
 var stompClient = null;
@@ -249,7 +249,7 @@ const WebMessage = () => {
                                         {
                                             myMessages.length > 0 && myMessages.map((item, index) => (
                                                 <Message key={index} messageType={item.sendedby.username === 'admchat' ? 'receive' : 'send'}>
-                                                    <SendTime messageType={item.sendedby.username === 'admchat' ? 'receive' : 'send'}>{item.createdat}</SendTime>
+                                                    <SendTime messageType={item.sendedby.username === 'admchat' ? 'receive' : 'send'}>{moment(item.createdat).format('DD/MM/YYYY, H:mm:ss')}</SendTime>
                                                     <Content messageType={item.sendedby.username === 'admchat' ? 'receive' : 'send'}>
                                                         {item.content}
                                                     </Content>
