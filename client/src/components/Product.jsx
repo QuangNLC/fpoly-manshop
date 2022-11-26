@@ -8,7 +8,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '../redux/actions/CartReducerAtion';
 import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
-import { message } from 'antd';
+import { message, Tooltip } from 'antd';
 
 const HoverOptionsContainer = styled.div`
     position:absolute;
@@ -142,11 +142,19 @@ const Product = ({ item }) => {
                 <ImgContainer>
                     <Image src={item.images && `http://localhost:8080/api/file/images/${item.images[0].photo}`} />
                     <HoverOptionsContainer>
-                        <HoverOption onClick={() => handleClickAddToCart(item)}><AddShoppingCartOutlinedIcon /></HoverOption>
-                        <HoverOption onClick={() => handleBuyNow(item)}><ShoppingCartCheckoutIcon /></HoverOption>
-                        <Link to={`/product/${item.id}`} style={{ color: 'black' }}>
-                            <HoverOption><SearchOutlinedIcon /></HoverOption>
-                        </Link>
+                        <Tooltip title={"Thêm Vào Giỏ Hàng"} >
+                            <HoverOption onClick={() => handleClickAddToCart(item)}>
+                                <AddShoppingCartOutlinedIcon />
+                            </HoverOption>
+                        </Tooltip>
+                        <Tooltip title={"Mua Ngay"}>
+                            <HoverOption onClick={() => handleBuyNow(item)}><ShoppingCartCheckoutIcon /></HoverOption>
+                        </Tooltip>
+                        <Tooltip title={"Thông Tin Sản Phẩm"}>
+                            <Link to={`/product/${item.id}`} style={{ color: 'black' }}>
+                                <HoverOption><SearchOutlinedIcon /></HoverOption>
+                            </Link>
+                        </Tooltip>
                     </HoverOptionsContainer>
                 </ImgContainer>
                 <DetailContainer>

@@ -1,4 +1,4 @@
-import { Button, Form, Input, Spin, Typography, Upload, Modal, Tabs, Badge, Card, Empty } from 'antd'
+import { Button, Form, Input, Spin, Typography, Upload, Modal, Tabs, Badge, Card, Empty, Timeline } from 'antd'
 import React, { useEffect, useState } from 'react'
 import Helmet from '../../components/Helmet'
 import styled from 'styled-components'
@@ -188,6 +188,12 @@ const Order = ({ order }) => {
                     </OrderSummary>
                 </Card>
             </Badge.Ribbon>
+            <Timeline>
+                <Timeline.Item>Create a services site 2015-09-01</Timeline.Item>
+                <Timeline.Item>Solve initial network problems 2015-09-01</Timeline.Item>
+                <Timeline.Item>Technical testing 2015-09-01</Timeline.Item>
+                <Timeline.Item>Network problems being solved 2015-09-01</Timeline.Item>
+            </Timeline>
         </OrderContainer>
     )
 
