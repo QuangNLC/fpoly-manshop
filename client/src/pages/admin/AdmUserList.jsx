@@ -130,12 +130,12 @@ const AdmUserList = () => {
             field: 'action', headerName: "Thao tác", width: 250,
             renderCell: (params) => (
                 <ActionContainer >
-                    <Link to={"/admin/user/" + params.row.username}>
-                        <EditButton>Sửa</EditButton>
+                    <Link to={"/admin/user/" + params.row.username} >
+                        <EditButton style={{ borderRadius: "20px" }}>Sửa</EditButton>
                     </Link>
                     <DialogHOC title="Confirm Dialog" content="Do you want to delete this user?" onYes={() => { hadleDeleteUser(params.row.username) }}>
-                        <DeleteButton>
-                            <DeleteOutlineOutlinedIcon style={{ fontSize: "20px" }} />
+                        <DeleteButton style={{ borderRadius: "20px" }}>
+                            <DeleteOutlineOutlinedIcon style={{ fontSize: "20px", marginTop: "5px" }} />
                         </DeleteButton>
                     </DialogHOC>
                 </ActionContainer>
@@ -177,7 +177,7 @@ const AdmUserList = () => {
                 <TitleContainer>
                     <Title>Danh sách tài khoản</Title>
                     <Link to="/admin/new-user">
-                        <TitleButton style={{ width: "100px" }}>Thêm mới</TitleButton>
+                        <TitleButton style={{ width: "100px", borderRadius: "20px" }}>Thêm mới</TitleButton>
                     </Link>
                 </TitleContainer>
                 {

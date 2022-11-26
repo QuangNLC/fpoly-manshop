@@ -220,11 +220,11 @@ const AdmUserDetail = () => {
                 <UserTitle>Chỉnh sửa tài khoản</UserTitle>
                 <UserTitleButtonContainer>
                     <Link to="/admin/user-list" style={{ marginRight: "20px", width: "0px" }}>
-                        <UserTitleButton style={{ width: "100px" }}>Danh sách
+                        <UserTitleButton style={{ width: "120px", borderRadius: "20px" }}>Danh sách
                         </UserTitleButton>
                     </Link>
                     <Link to="/admin/new-user">
-                        <UserTitleButton>Tạo mới</UserTitleButton>
+                        <UserTitleButton style={{ width: "120px", borderRadius: "20px" }}>Tạo mới</UserTitleButton>
                     </Link>
                 </UserTitleButtonContainer>
             </UserTitleContainer>
@@ -318,7 +318,7 @@ const AdmUserDetail = () => {
                                                     content="Do you want to update this user?"
                                                     onYes={() => { handleUpdateUser(updateValue) }}
                                                 >
-                                                    <UpdateButton>Cập nhật</UpdateButton>
+                                                    <UpdateButton style={{ width: "120px", borderRadius: "20px" }}>Cập nhật</UpdateButton>
                                                 </DialogHOC>
                                             </UserUpdateRight>
                                         </UserUpdateForm>

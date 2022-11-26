@@ -208,9 +208,9 @@ const WebChangePassword = () => {
                                                         <Input.Password />
                                                     </Form.Item>
                                                     <Form.Item
-                                                        label=" "
+                                                    // label=" ss"
                                                     >
-                                                        <Button type='primary' htmlType='submit'>Xác Nhận</Button>
+                                                        <Button style={{ marginLeft: "170px", borderRadius: "20px" }} type='primary' htmlType='submit'>Xác Nhận</Button>
                                                     </Form.Item>
                                                     <Form.Item
                                                     >

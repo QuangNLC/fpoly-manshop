@@ -203,19 +203,19 @@ const AdmCategoryList = () => {
 
     const columns = [
         {
-            field: 'id', headerName: 'Id', width: 80,
+            field: 'id', headerName: 'STT', width: 80,
         },
         {
-            field: 'title', headerName: 'Title', width: 320
+            field: 'title', headerName: 'Tên thể loại sản phẩm', width: 320
         },
         {
-            field: 'action', headerName: "Action", width: 250,
+            field: 'action', headerName: "Thao tác", width: 250,
             renderCell: (params) => (
                 <ActionContainer>
-                    <EditButton onClick={() => { handleClickEditButton(params.row.id) }}>Edit</EditButton>
-                    <DialogHOC title="Confirm Dialog" content="Do you want to delete this user?" onYes={() => { handleDeleteCategory(params.row.id) }}>
-                        <DeleteButton>
-                            <DeleteOutlineOutlinedIcon style={{ fontSize: "20px" }} />
+                    <EditButton style={{ borderRadius: "20px" }} onClick={() => { handleClickEditButton(params.row.id) }}>Sửa</EditButton>
+                    <DialogHOC title="Thông báo!" content="Bạn có xác nhận muốn xóa?" onYes={() => { handleDeleteCategory(params.row.id) }}>
+                        <DeleteButton style={{ borderRadius: "20px" }}>
+                            <DeleteOutlineOutlinedIcon style={{ fontSize: "20px", marginTop: "5px" }} />
                         </DeleteButton>
                     </DialogHOC>
                 </ActionContainer>
@@ -327,7 +327,7 @@ const AdmCategoryList = () => {
                                 return item;
                             }
                         }));
-                        openNotificationWithIcon('success','Success','Update category details successfully!')
+                        openNotificationWithIcon('success', 'Success', 'Update category details successfully!')
                         haldeCloseForm();
                     } else {
                         console.log(res)
@@ -369,8 +369,8 @@ const AdmCategoryList = () => {
                 >
                     <ListWrapper>
                         <TitleContainer>
-                            <Title>List User</Title>
-                            <TitleButton onClick={toggleOpenForm}>Create</TitleButton>
+                            <Title>DANH SÁCH THỂ LOẠI SẢN PHẨM</Title>
+                            <TitleButton style={{ width: "120px", borderRadius: "20px" }} onClick={toggleOpenForm}>Thêm mới</TitleButton>
                         </TitleContainer>
                         {
                             isLoading ?
@@ -467,18 +467,18 @@ const AdmCategoryList = () => {
                                             (
                                                 <>
                                                     <Form.Item
-                                                        label="Id"
+                                                        label="ID sản phẩm"
                                                         name="id"
                                                         hasFeedback
                                                     >
                                                         <Input disabled />
                                                     </Form.Item>
                                                     <Form.Item
-                                                        label="Title"
+                                                        label="Tên thể loại sản phẩm"
                                                         name="title"
                                                         rules={[
-                                                            { required: true, message: 'Please input this field!' },
-                                                            { whitespace: true },
+                                                            { required: true, message: 'Không được để trống!' },
+                                                            { whitespace: true, message: 'Không nhập ký tự dấu cách!' },
                                                             { min: 3 },
                                                             { max: 10 }
                                                         ]}
@@ -492,17 +492,17 @@ const AdmCategoryList = () => {
                                             (
                                                 <>
                                                     <Form.Item
-                                                        label="Title"
+                                                        label="Tên thể loại sản phẩm"
                                                         name="title"
                                                         rules={[
-                                                            { required: true, message: 'Please input this field!' },
-                                                            { whitespace: true },
+                                                            { required: true, message: 'Không được để trống!' },
+                                                            { whitespace: true, message: 'Không được nhập ký tự dấu cách' },
                                                             { min: 3 },
                                                             { max: 10 }
                                                         ]}
                                                         hasFeedback
                                                     >
-                                                        <Input placeholder='Title' />
+                                                        <Input placeholder='Ví dụ: Áo mùa đông...' />
                                                     </Form.Item>
                                                 </>
                                             )
@@ -514,24 +514,24 @@ const AdmCategoryList = () => {
                                                 (
                                                     <>
                                                         <DialogHOC
-                                                            title="Confirm Dialog"
-                                                            content="Do you want to update this category ?"
+                                                            title="Thông báo!"
+                                                            content="Bạn có muốn cập nhật không?"
                                                             onYes={() => form.submit()}
                                                         >
-                                                            <CateFormButton>Update</CateFormButton>
+                                                            <CateFormButton style={{ borderRadius: "20px" }}>Cập nhật</CateFormButton>
                                                         </DialogHOC>
                                                     </>
                                                 )
                                                 :
                                                 (
                                                     <>
-                                                        <CateFormButton onClick={() => { form.submit() }}>Create</CateFormButton>
+                                                        <CateFormButton style={{ borderRadius: "20px" }} onClick={() => { form.submit() }}>Thêm mới</CateFormButton>
                                                     </>
                                                 )
                                         }
                                     </Form.Item>
                                     <Form.Item>
-                                        <CateFormButton onClick={haldeCloseForm}>Close</CateFormButton>
+                                        <CateFormButton style={{ borderRadius: "20px" }} onClick={haldeCloseForm}>Đóng</CateFormButton>
                                     </Form.Item>
                                 </Form>
                             </CateFormContainer>

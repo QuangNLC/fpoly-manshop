@@ -142,7 +142,7 @@ const FilterButton = styled.div`
   color: white;
   background-color: teal;
   padding: 5px 10px;
-  border-radius: 5px;
+  border-radius: 20px;
   cursor: pointer;
   transition: all 0.25s ease-in;
 

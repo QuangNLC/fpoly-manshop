@@ -119,8 +119,8 @@ const AdmNewUser = () => {
                             <SelectOption value="no">Không kích hoạt</SelectOption>
                         </Select>
                     </Item>
-                    <Button>Thêm mới</Button>
-                    <Button style={{ marginLeft: "50px" }}>Làm mới</Button>
+                    <Button style={{ width: "120px", borderRadius: "20px" }}>Làm mới</Button>
+                    <Button style={{ marginLeft: "20px", width: "120px", borderRadius: "20px" }}>Thêm mới</Button>
                 </Form>
             </Wrapper>
         </Container>

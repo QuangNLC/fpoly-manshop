@@ -454,7 +454,7 @@ const WebMyAccount = () => {
                                                     </Form.Item>
                                                     <Form.Item
                                                     >
-                                                        <Button type='primary' htmlType='submit'>Lưu</Button>
+                                                        <Button style={{ borderRadius: "20px" }} type='primary' htmlType='submit'>Lưu</Button>
                                                     </Form.Item>
                                                 </Form>
                                             </FormContainer>
@@ -477,7 +477,7 @@ const WebMyAccount = () => {
                                                         accept='.png,.jpg,.jpeg'
                                                         fileList={uploadList}
                                                     >
-                                                        <Button>Chọn Ảnh</Button>
+                                                        <Button style={{ borderRadius: "20px" }}>Chọn Ảnh</Button>
                                                     </Upload>
                                                     <Typography.Text>Dung lượng tối đa: 1MB</Typography.Text>
                                                     <Typography.Text>Định dạng: .JPG, .JPEG, .PNG</Typography.Text>
@@ -503,7 +503,7 @@ const WebMyAccount = () => {
 
                 </Wrapper>
             </Container>
-        </Helmet>
+        </Helmet >
     )
 }
 

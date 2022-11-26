@@ -63,7 +63,7 @@ const Button = styled.button`
     border: none;
     background-color: rgba(0, 0, 0, 0.65);
     color: white;
-    border-radius: 10px;
+    border-radius: 20px;
     text-transform: capitalize;
     font-size: 20px;
     cursor: pointer;

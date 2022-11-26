@@ -31,7 +31,7 @@ const MessageContainer = styled.div`
     border: 1px solid gray;
     border-radius: 50%;
     right: 20px;
-    bottom: 20%;
+    bottom: 5%;
     cursor: pointer;
     -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
     box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
@@ -58,7 +58,7 @@ const WebsiteLayout = () => {
         <Container>
             {
                 location.pathname !== '/message' &&
-                <MessageContainer onClick={handleClickMatchMessage}>
+                <MessageContainer style={{ width: "50px", height: "50px" }} onClick={handleClickMatchMessage}>
                     <QuestionAnswerTwoToneIcon />
                 </MessageContainer>
             }
