@@ -301,4 +301,18 @@ public class OrderContoller {
 
         return ResponseEntity.ok("Seen noti");
     }
+
+//    @PostMapping("/create-wating-order")
+//    public ResponseEntity<?> createWatingOrder(){
+//        Orders newOrder = new Orders();
+//        newOrder.setCreatedDate(new Date());
+//        StatusOrder stt = new StatusOrder();
+//        stt.setId(5);
+//        newOrder.setStatusOrders(stt);
+//
+//    }
+    @GetMapping("/wating-order")
+    public ResponseEntity<?> getWatingOrder(){
+        return  ResponseEntity.ok(orderJPA.findWaitingOrders());
+    }
 }

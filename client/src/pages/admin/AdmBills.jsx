@@ -3,11 +3,14 @@ import Helmet from '../../components/Helmet'
 import styled from 'styled-components'
 import productAPI from '../../api/productsAPI'
 import { useState } from 'react'
-import { Table } from 'antd'
+import { Button, Table, Tag } from 'antd'
+import { formatter } from '../../utils'
+import ordersAPI from '../../api/ordersAPI'
+import { useNavigate } from 'react-router-dom'
 
 const Container = styled.div`
     width: 100%;
-    min-height: 100vh;
+    padding: 50px;
 `
 
 const Wrapper = styled.div`
@@ -15,136 +18,156 @@ const Wrapper = styled.div`
     padding: 20px;
     display: flex;
     align-items: flex-start;
+    flex-wrap: wrap;
+    background-color: white;
+    -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+    box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+    border-radius: 10px;
 `
-const Right = styled.div`
-    width: 75%;
-    padding: 20px;
-`
-const CartWrapper = styled.div`
-    width: 100%;
-`
-const Cart = styled.div``
-const CartTitle = styled.div`
-    width: 100%;
-    text-transform: capitalize;
-    font-size: 20px;
-    font-weight: 300;
-`
-const ProductListWrapper = styled.div``
-const ProductList = styled.div``
-const ProductTitle = styled.div`
-    width: 100%;
-    text-transform: capitalize;
-    font-size: 20px;
-    font-weight: 300;
-`
-const Left = styled.div`
-    width: 25%;
-`
-const BillWrapper = styled.div``
-const Bill = styled.div``
 
+const ActionContainer = styled.div`
+    width: 100%;
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: flex-end;
+`
+const ListContainer = styled.div`
+    width: 100%;
+`
 
-const productColumn = [
+const StatusBadge = (props) => {
+
+    const [color, setColor] = useState('blue')
+
+    useEffect(() => {
+        console.log(props.status)
+        if (props.status) {
+            switch (props.status.id) {
+                case (1): {
+                    setColor('orange')
+                    break;
+                }
+                case (2): {
+                    setColor('cyan')
+                    break;
+                }
+                case (3): {
+                    setColor('purple')
+                    break;
+                }
+                case (4): {
+                    setColor('blue')
+                    break;
+                }
+                default: {
+                    setColor('blue')
+                    break;
+                }
+            }
+        }
+    }, [])
+
+    return (
+        <Tag color={color}>{props?.status?.title}</Tag>
+    )
+}
+const columns = [
     {
         title: 'STT',
         dataIndex: 'index',
+        key: 'index'
     },
     {
-        title: 'Mã SP',
-        dataIndex: 'id',
+        title: 'Trạng Thái',
+        dataIndex: 'status',
+        render: (text) => {
+            console.log(text)
+            return (
+                <StatusBadge status={text} />
+            )
+        },
+        filters: [
+            {
+                text: 'Chờ Xác Nhận',
+                value: 1,
+            },
+            {
+                text: 'Đã Xác Nhận',
+                value: 2,
+            },
+            {
+                text: 'Đang Giao',
+                value: 3,
+            },
+            {
+                text: 'Hoàn Thành',
+                value: 4,
+            },
+        ],
+        onFilter: (value, record) => record.status.id === value,
     },
     {
-        title: 'Tên Sản Phẩm',
-        dataIndex: 'title',
+        title: 'Người Mua',
+        dataIndex: 'username',
+        key: 'username'
     },
     {
-        title: 'Thể Loại',
-        dataIndex: 'category',
+        title: 'Tổng Sản Phẩm',
+        dataIndex: 'totalQuantity',
+        key: 'totalQuantity',
+        sorter: (a, b) => a.totalQuantity - b.totalQuantity
     },
     {
-        title: 'Size',
-        dataIndex: 'size',
+        title: 'Thanh Toán',
+        dataIndex: 'total_price',
+        key: 'total_price',
+        render: (text) => (<>{formatter.format(text)}</>),
+        sorter: (a, b) => a.total_price - b.total_price
     },
     {
-        title: 'Số Lượng',
-        dataIndex: 'quantity',
+        title: 'Ngày Tạo',
+        dataIndex: 'createdDate',
+        key: 'createdDate',
+        sorter: (a, b) => (a.createdDate > b.createdDate ? -1 : 1)
     },
     {
-        title: 'Đơn Giá',
-        dataIndex: 'price',
+        render: (text) => {
+            return (
+                <Button type='primary' style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Chi Tiết</Button>
+            )
+        }
     }
 ];
 
 const AdmBills = () => {
+    const [data, setData] = useState([])
+    const navigate = useNavigate()
 
-    const [productData, setProductData] = useState([])
-    const [productTableData, setProductTableData] = useState([])
+    const  handleCreateNewBill = () => {
+        navigate('/admin/bill/new')
+    }
 
     useEffect(() => {
-        if (productData && productData.length > 0) {
-            setProductTableData(productData.map((item, index) => {
-                return (
-                    {
-                        key: item?.id,
-                        index,
-                        id: item?.id,
-                        title: item?.name,
-                        category: item?.category?.title,
-                        size: 'X',
-                        quantity: 1,
-                        price: item?.export_price
-                    }
-                )
-            }))
-        }
-    }, [productData])
-
-    const onChange = (pagination, filters, sorter, extra) => {
-        console.log('params', pagination, filters, sorter, extra);
-    };
-    useEffect(() => {
-        productAPI.getAll()
-            .then(res => {
-                if (!res.status) {
-                    setProductData(res)
-                } else {
-                    console.log(res)
-                }
-            })
-            .catch(err => console.log(err))
-    }, [])
+        ordersAPI.getWatingOrderList()
+        .then(res => {
+            if(!res.status){
+                setData(res)
+            }else{
+                console.log(res)
+            }
+        })
+        .catch(err => console.log(err))
+    },[])
     return (
         <Helmet title="Hoá Đơn">
             <Container>
                 <Wrapper>
-                    <Right>
-                        <CartWrapper>
-                            <CartTitle>giỏ hàng</CartTitle>
-                            <Cart>
-
-                            </Cart>
-                        </CartWrapper>
-                        <ProductListWrapper>
-                            <ProductTitle>Danh Sách Sản Phẩm</ProductTitle>
-                            <ProductList>
-                                <Table
-                                    columns={productColumn}
-                                    dataSource={productTableData}
-                                    bordered
-                                    onChange={onChange}
-                                />
-                            </ProductList>
-                        </ProductListWrapper>
-                    </Right>
-                    <Left>
-                        <BillWrapper>
-                            hóa đơn
-                            <Bill>
-
-                            </Bill>
-                        </BillWrapper>
-                    </Left>
+                    <ActionContainer>
+                        <Button type='primary' onClick={handleCreateNewBill}>Tạo Đơn Hàng</Button>
+                    </ActionContainer>
+                    <ListContainer>
+                    <Table data={data} columns={columns} style={{width: '100%'}}/>
+                    </ListContainer>
                 </Wrapper>
             </Container>
         </Helmet>

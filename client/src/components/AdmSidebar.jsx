@@ -105,7 +105,6 @@ const AdmSidebar = () => {
         <Container>
             <Wrapper>
                 <Menu>
-                    <Title>Bảng Điều Khiển</Title>
                     <List>
                         <Link to="/admin" style={{ textDecoration: "none", color: "unset" }}>
                             <Item active={location.pathname === "/admin"}>
@@ -118,7 +117,6 @@ const AdmSidebar = () => {
                     </List>
                 </Menu>
                 <Menu>
-                    <Title>Quản Lý</Title>
                     <List>
                         <Link to="/admin/user-list" style={{ textDecoration: "none", color: "unset" }}>
                             <Item active={location.pathname === "/admin/user-list"}>
@@ -148,7 +146,7 @@ const AdmSidebar = () => {
                             <Item>
                                 <NoteAddOutlinedIcon style={{ fontSize: "20px" }} />
                                 <ItemText>
-                                    Hoá Đơn
+                                    Tạo Đơn Hàng
                                 </ItemText>
                             </Item>
                         </Link>

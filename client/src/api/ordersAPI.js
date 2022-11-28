@@ -28,6 +28,10 @@ const ordersAPI = {
     getOrderInfo: (id) => {
         const url = 'order/'+id;
         return axiosClient.get(url);
+    },
+    getWatingOrderList: () => {
+        const url = 'order/wating-order';
+        return axiosClient.get(url);
     }
 };
 

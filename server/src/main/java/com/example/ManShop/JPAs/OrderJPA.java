@@ -12,4 +12,7 @@ public interface OrderJPA extends JpaRepository<Orders,Integer> {
     Page<Orders> findByUsers_Username(Pageable pageable,String username);
     @Query( "select o from Orders o where o.statusOrders.id in (1,2,3)" )
     List<Orders> findlistOrderId();
+
+    @Query("Select o from Orders o where o.statusOrders.title = 'Đang Chờ'")
+    List<Orders> findWaitingOrders();
 }

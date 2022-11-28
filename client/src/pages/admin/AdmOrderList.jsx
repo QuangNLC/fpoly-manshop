@@ -164,6 +164,14 @@ const SummaryItem = styled.div`
 const SummaryItemText = styled.span`
 `
 const SummaryItemPrice = styled.span``
+const NewActionContainer =  styled.div`
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    padding: 5px;
+    margin-bottom: 5px;
+`
+
 
 const openNotificationWithIcon = (type, title, des) => {
     notification[type]({
@@ -222,19 +230,28 @@ const AdmOrderList = () => {
             render: (text) => {
                 console.log(text)
                 return (
-                    <StatusBadge status={text}/>
+                    <StatusBadge status={text} />
                 )
-            }
-        },
-        {
-            title: 'Trạng Thái',
-            dataIndex: 'status',
-            render: (text) => {
-                console.log(text)
-                return (
-                    <StatusBadge status={text}/>
-                )
-            }
+            },
+            filters: [
+                {
+                    text: 'Chờ Xác Nhận',
+                    value: 1,
+                },
+                {
+                    text: 'Đã Xác Nhận',
+                    value: 2,
+                },
+                {
+                    text: 'Đang Giao',
+                    value: 3,
+                },
+                {
+                    text: 'Hoàn Thành',
+                    value: 4,
+                },
+            ],
+            onFilter: (value, record) => record.status.id === value,
         },
         {
             title: 'Người Mua',
@@ -244,25 +261,28 @@ const AdmOrderList = () => {
         {
             title: 'Tổng Sản Phẩm',
             dataIndex: 'totalQuantity',
-            key: 'totalQuantity'
+            key: 'totalQuantity',
+            sorter: (a, b) => a.totalQuantity - b.totalQuantity
         },
         {
             title: 'Thanh Toán',
             dataIndex: 'total_price',
             key: 'total_price',
-            render: (text) => (<>{formatter.format(text)}</>)
+            render: (text) => (<>{formatter.format(text)}</>),
+            sorter: (a, b) =>  a.total_price - b.total_price
         },
         {
             title: 'Ngày Tạo',
             dataIndex: 'createdDate',
-            key: 'createdDate'
+            key: 'createdDate',
+            sorter: (a, b) => (a.createdDate > b.createdDate ? -1 : 1)
         },
         {
             render: (text) => {
                 return (
                     <ActionContainer>
-                        {/* <Button icon={<RemoveRedEyeOutlinedIcon />} onClick={() => handleClickViewOrderInfo(text)}></Button> */}
-                        <Button icon={<EditOutlinedIcon />} type='primary' onClick={() => { navigate(`/admin/order/${text.id}`) }}></Button>
+                        {/* <Button icon={<RemoveRedEyeOutlinedIcon />} onClick={() => handleClickViewOrderInfo(text)}></Button> */} 
+                        <Button type='primary' icon={<RemoveRedEyeOutlinedIcon />} onClick={() => { navigate(`/admin/order/${text.id}`) }} style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}></Button>
                         {/* <Button icon={<DeleteOutlineOutlinedIcon />} danger type='primary' onClick={() => { handleDeleteOrder(text) }}></Button> */}
                     </ActionContainer>
                 )
@@ -501,7 +521,7 @@ const AdmOrderList = () => {
                                 console.log(res);
                                 setData([...res.map((item, index) => ({
                                     ...item,
-                                    index: index+1,
+                                    index: index + 1,
                                     key: item.id,
                                     createdDate: moment(item.createdDate).format('DD/MM/YYYY, H:mm:ss'),
                                     username: item.users.username,
@@ -527,8 +547,10 @@ const AdmOrderList = () => {
         >
             <Container>
                 <Wrapper>
-                    <Title>danh sách đơn hàng</Title>
                     <ListContainer>
+                        <NewActionContainer>
+                            <Button onClick={() => {navigate("/admin/bills")}} type='primary' >Tạo Đơn Hàng</Button>
+                        </NewActionContainer>
                         {/* <ListFilterContainer>
                             <ListFilterItem>
                                 <ListFilterTitle>Ngày tạo đơn</ListFilterTitle>
@@ -545,7 +567,7 @@ const AdmOrderList = () => {
                             </ListFilterItem>
                         </ListFilterContainer> */}
                         <ListItemWrapper>
-                            <Table columns={columns} dataSource={data} />
+                            <Table columns={columns} dataSource={data} bordered/>
                         </ListItemWrapper>
                     </ListContainer>
                 </Wrapper>

@@ -14,7 +14,7 @@ const Wrapper = styled.div`
 const ContentContainer = styled.div`
     width:80%;
     max-width: 80%;
-    background-color: white;
+    background-color: #f5f4f2;
 `
 
 const AdminLayout = () => {
