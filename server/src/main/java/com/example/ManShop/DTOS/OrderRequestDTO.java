@@ -17,14 +17,14 @@ import java.util.List;
 public class OrderRequestDTO {
     @NotBlank(message = "Không thấy thông tin người dùng")
     private Users users;
-    private Customers customers;
-    private double total_price;
-    private List<OrderDetail> orderDetail;
-    private StatusOrder statusOrders;
-    private Integer cityId;
-    private Integer districtId;
-    private Long wardId;
-    private String location;
+    private Customers customers= null;
+    private double total_price = 0;
+    private List<OrderDetail> orderDetail =null ;
+    private StatusOrder statusOrders= null;
+    private Integer cityId =null;
+    private Integer districtId=null;
+    private Long wardId =null;
+    private String location=null;
 
 
 }

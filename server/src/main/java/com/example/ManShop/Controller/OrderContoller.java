@@ -311,6 +311,65 @@ public class OrderContoller {
 //        newOrder.setStatusOrders(stt);
 //
 //    }
+@PostMapping("/checkout/waiting")
+public ResponseEntity<?> waiting(@RequestBody OrderRequestDTO orderRequestDTO){
+    log.info("Tạo 1 hóa đơn chờ  ");
+    Orders newOrder = new Orders();
+    Users user = new Users();
+    user.setUsername(orderRequestDTO.getUsers().getUsername());
+    try {
+        newOrder.setUsers(user);
+        StatusOrder sttOrder = new StatusOrder();
+        sttOrder.setId(5);
+        newOrder.setStatusOrders(sttOrder);
+        newOrder.setCustomers(customerJPA.findById(4).get());
+        newOrder.setOrder_date(new Date());
+        newOrder.setCreatedDate(new Date());
+        orderJPA.save(newOrder);
+        return ResponseEntity.ok().body(newOrder.getId());
+    }catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.notFound().build();
+    }
+}
+
+    @PutMapping("/update/waiting/{id}")
+    public ResponseEntity<?> updateCheckoutWt(@RequestBody OrderRequestDTO orderRequestDTO,@PathVariable("id")Integer id){
+        Orders  newOrder = orderJPA.findById(id).get();
+//    System.out.println(newOrder.getStatusOrders().getTitle());
+//        if(newOrder.getStatusOrders().getTitle() != "?ang ch?"){
+//            return ResponseEntity.status(404).body("lỗi khi update đơn hàng" +id);
+//        }else
+        log.info("Gọi vào hàm update đơn hàng ");
+        if (!orderJPA.existsById(id)){
+            return ResponseEntity.status(404).body("lỗi : không tìm thấy đơn hàng với (id)= " +id);
+        }else{
+            try {
+                newOrder.setTotal_price(orderRequestDTO.getTotal_price());
+                orderJPA.save(newOrder);
+                Orders orderForDetail = new Orders();
+                orderForDetail.setId(id);
+
+                List<OrderDetail> orderDetails = orderRequestDTO.getOrderDetail();
+//                    System.out.println(orderRequestDTO.getTotal_price());
+//                    System.out.println(orderRequestDTO.getOrderDetail().size());
+//                    for(int i =0;i< orderDetails.size();i++){
+//                        OrderDetail newor = orderDetails.get(i);
+//                        System.out.println(newor.getQuantity());
+//                        orderDetailJPA.save(newor);
+//                    }
+                orderDetails.forEach(detail -> {
+                    detail.setOrders(orderForDetail);
+                    orderDetailJPA.save(detail);
+                });
+                return ResponseEntity.ok().body(orderJPA.findById(id));
+
+            }catch (Exception e){
+                return ResponseEntity.notFound().build();
+            }
+        }
+    }
+
     @GetMapping("/wating-order")
     public ResponseEntity<?> getWatingOrder(){
         return  ResponseEntity.ok(orderJPA.findWaitingOrders());

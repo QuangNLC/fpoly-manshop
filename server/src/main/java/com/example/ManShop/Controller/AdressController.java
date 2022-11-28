@@ -29,7 +29,7 @@ public class AdressController {
     private WardsJPA wardsJPA;
 
 
-    @PreAuthorize("isAuthenticated()")
+//    @PreAuthorize("isAuthenticated()")
     @PostMapping("/citys-json-to-sql-data")
     public ResponseEntity<?> changeCitysJsonToSqlData(@RequestBody List<Citys> jsonData){
         System.out.println(jsonData);
@@ -38,7 +38,7 @@ public class AdressController {
         });
         return ResponseEntity.ok().build();
     }
-    @PreAuthorize("isAuthenticated()")
+//    @PreAuthorize("isAuthenticated()")
     @PostMapping("/districts-json-to-sql-data/{districtsId}")
     public ResponseEntity<?> changeDistrictsJsonToSqlData(@PathVariable Integer districtsId, @RequestBody List<Districts> jsonData){
         System.out.println(districtsId);
