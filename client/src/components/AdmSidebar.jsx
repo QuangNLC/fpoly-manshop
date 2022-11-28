@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import LineStyleIcon from '@mui/icons-material/LineStyle';
-import StackedLineChartIcon from '@mui/icons-material/StackedLineChart';
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import BarChartIcon from '@mui/icons-material/BarChart';
 import EventNoteIcon from '@mui/icons-material/EventNote';
 import StorefrontIcon from '@mui/icons-material/Storefront';
 import PermIdentityIcon from '@mui/icons-material/PermIdentity';
@@ -15,6 +12,7 @@ import { over } from 'stompjs';
 import SockJS from 'sockjs-client';
 import { useSelector } from 'react-redux'
 import messagesAPI from '../api/messagesAPI'
+import LocalActivityOutlinedIcon from '@mui/icons-material/LocalActivityOutlined';
 
 
 
@@ -155,6 +153,14 @@ const AdmSidebar = () => {
                                 <EventNoteIcon style={{ fontSize: "20px", marginRight: "10px" }} />
                                 <ItemText style={{ marginBottom: "0px" }}>
                                     Đơn Đặt Hàng
+                                </ItemText>
+                            </Item>
+                        </Link>
+                        <Link to="/admin/promotions" style={{ textDecoration: "none", color: "unset" }}>
+                            <Item>
+                                <LocalActivityOutlinedIcon style={{ fontSize: "20px", marginRight: "10px" }} />
+                                <ItemText style={{ marginBottom: "0px" }}>
+                                    Khuyến Mại
                                 </ItemText>
                             </Item>
                         </Link>
