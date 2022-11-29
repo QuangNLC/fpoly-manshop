@@ -9,13 +9,14 @@ import java.util.List;
 @Data
 public class PromotionRequestDTO {
 
-    private Date date_after;
-    private Date date_befor;
-    private String title;
-    private Users users;
-    private  double by_price;
-    private int  by_persent;
-    private int check;
-    private List<Integer> listpr;
+    private Date date_after=null;
+    private Date date_befor=null;
+    private String title=null;
+    private Users users=null;
+    private  double by_price=0;
+    private int  by_persent=0;
+    private int check=1;
+    private boolean isActive= true;
+    private List<Integer> listpr=null;
 
 }

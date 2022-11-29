@@ -48,6 +48,13 @@ public interface ProductJPA extends JpaRepository<Product,Integer> {
     List<Product> findNewProducts(Pageable pageable);
 
 
+    @Query("select   p from Product p where p.id not in (:list)")
+    List<Product> findByPromotionActive(List<Integer> list);
+
+    @Query("select DISTINCT  p.id from Product p join PromotionProduct pp on  pp.product.id =p.id join Promotions  pr on pr.id =pp.promition.id where pr.isactive =1")
+    List<Integer> findListInteger();
+
+
 
 
 

@@ -10,6 +10,8 @@ import com.example.ManShop.Entitys.Promotions;
 import com.example.ManShop.JPAs.ProductJPA;
 import com.example.ManShop.JPAs.ProductPromotionJPA;
 import com.example.ManShop.JPAs.PromotionJPA;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -29,7 +32,7 @@ import java.util.Optional;
 @CrossOrigin("*")
 @RequestMapping("/api/promotions")
 public class PromotionsController {
-
+    private final Logger log = LoggerFactory.getLogger(PromotionsController.class);
     final PromotionJPA promotionJPA;
     final ProductJPA productJPA;
     final ProductPromotionJPA productPromotionJPA;
@@ -107,6 +110,56 @@ public class PromotionsController {
                 System.out.println("có ngoại lệ ");
                 return ResponseEntity.status(115).body("có lỗi xảy ra khi chọn sản phẩm");
             }
+        }
+    }
+    @GetMapping("/product-to promotions")
+    public ResponseEntity<?> getProduct(){
+        try {
+            List<Product> productList = productJPA.findByPromotionActive(productJPA.findListInteger());
+            System.out.println(productList.size());
+            return ResponseEntity.ok(productList);
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.notFound().build();
+        }
+    }
+    @Transactional
+    @PutMapping("/updatepromotion/{id}")
+    public ResponseEntity<?> updatePromotions(@RequestBody PromotionRequestDTO promotions,@PathVariable("id") Integer id ) {
+        log.info("Gọi vào hàm update promotions với (id) = " + id);
+        Promotions promotions1 = promotionJPA.findById(id).get();
+        try {
+
+            productPromotionJPA.deletelistProductPr(promotions1.getId());
+            if (promotions.getCheck() == 0) {
+                promotions1.setBy_price(0);
+                promotions1.setBy_persent(promotions.getBy_persent());
+            } else {
+                promotions1.setBy_price(promotions.getBy_price());
+                promotions1.setBy_persent(0);
+            }
+            promotions1.setIsactive(promotions.isActive());
+            Promotions uppromitons = promotionJPA.save(promotions1);
+            try {
+                List<Product> proList = productJPA.findAllById(promotions.getListpr());
+                List<PromotionProduct> s = new ArrayList<>();
+                for (int i = 0; i < proList.size(); i++) {
+                    PromotionProduct newls = new PromotionProduct();
+                    newls.setProduct(proList.get(i));
+                    newls.setPromition(uppromitons);
+                    productPromotionJPA.save(newls);
+                    s.add(newls);
+                }
+                Promotions prnew = promotionJPA.findById(uppromitons.getId()).get();
+                prnew.setPromotionProducts(s);
+                return ResponseEntity.ok().body(convertoDTO(prnew.getId()));
+            } catch (Exception e) {
+                e.printStackTrace();
+                return ResponseEntity.notFound().build();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.notFound().build();
         }
     }
 

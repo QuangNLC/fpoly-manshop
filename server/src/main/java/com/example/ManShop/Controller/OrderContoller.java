@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.websocket.server.PathParam;
@@ -96,15 +97,6 @@ public class OrderContoller {
         Orders newOrder = new Orders();
         Users user = new Users();
         user.setUsername(orderRequest.getUsers().getUsername());
-//        if(check.equals("for-someone")){
-//        Customers customers  = new Customers();
-//        customers.setPhone(orderRequest.getCustomers().getPhone());
-//        customers.setAddress(orderRequest.getCustomers().getAddress());
-//        customers.setName(orderRequest.getCustomers().getName());
-//        customers.setUser(orderRequest.getUsers());
-//        customerJPA.save(customers);
-//        newOrder.setCustomers(customers);
-//        }
         if(check.equals("for-me")){
             Customers customers  = new Customers();
             Address address = new Address();
@@ -312,6 +304,7 @@ public class OrderContoller {
 //
 //    }
 @PostMapping("/checkout/waiting")
+@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_STAFF')")
 public ResponseEntity<?> waiting(@RequestBody OrderRequestDTO orderRequestDTO){
     log.info("Tạo 1 hóa đơn chờ  ");
     Orders newOrder = new Orders();
