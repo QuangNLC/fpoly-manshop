@@ -106,7 +106,7 @@ const AdmSidebar = () => {
                     <List>
                         <Link to="/admin" style={{ textDecoration: "none", color: "unset" }}>
                             <Item active={location.pathname === "/admin"}>
-                                <LineStyleIcon style={{ fontSize: "20px" }} />
+                                <LineStyleIcon style={{ fontSize: "20px", marginRight: "10px" }} />
                                 <ItemText>
                                     Trang Chủ
                                 </ItemText>
@@ -142,7 +142,7 @@ const AdmSidebar = () => {
                         </Link>
                         <Link to="/admin/bills" style={{ textDecoration: "none", color: "unset" }}>
                             <Item>
-                                <NoteAddOutlinedIcon style={{ fontSize: "20px" }} />
+                                <NoteAddOutlinedIcon style={{ fontSize: "20px", marginRight: "10px" }} />
                                 <ItemText>
                                     Tạo Đơn Hàng
                                 </ItemText>
@@ -166,7 +166,7 @@ const AdmSidebar = () => {
                         </Link>
                         <Link to="/admin/message" style={{ textDecoration: "none", color: "unset" }}>
                             <Item>
-                                <EmailOutlinedIcon style={{ fontSize: "20px" }} />
+                                <EmailOutlinedIcon style={{ fontSize: "20px", marginRight: "10px" }} />
                                 <Badge count={count && count <= 10 ? count : "10+"}>
                                     <ItemText>
                                         Hộp Thư Đến

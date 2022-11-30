@@ -295,12 +295,13 @@ const ProductDetail = () => {
                                                 </FilterSize>
                                             </Filter>
                                         </FilterContainer>
-                                        <AddContainer>
+                                        <AddContainer style={{ textAlign: "center" }}>
                                             <AmountContainer>
                                                 <Remove onClick={() => { setSelectedQuantity(selectedQuantity > 0 ? selectedQuantity - 1 : 0) }} />
                                                 <Amount>
                                                     <AmountInput
                                                         type='number'
+                                                        style={{ textAlign: "center" }}
                                                         value={selectedQuantity}
                                                         onChange={onChangeQuantity}
                                                         onBlur={(e) => {
@@ -318,8 +319,8 @@ const ProductDetail = () => {
                                             </AmountContainer>
                                         </AddContainer>
                                         <ButtonContainer>
-                                            <Button onClick={() => { handleAddToCart(product) }}>Thêm Vào Giỏ Hàng</Button>
-                                            <Button onClick={() => { handleBuyNow(product) }}> Mua Ngay</Button>
+                                            <Button style={{ borderRadius: "30px" }} onClick={() => { handleAddToCart(product) }}>Thêm Vào Giỏ Hàng</Button>
+                                            <Button style={{ borderRadius: "30px", marginLeft: "0px" }} onClick={() => { handleBuyNow(product) }}> Mua Ngay</Button>
                                         </ButtonContainer>
                                     </InfoContainer></>
                             )

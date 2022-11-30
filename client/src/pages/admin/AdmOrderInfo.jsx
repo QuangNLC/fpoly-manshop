@@ -270,7 +270,7 @@ const UpdateStatusButton = ({ item, onClickUpdate }) => {
             )
             :
             (
-                <Button onClick={handleUpdateItemStatus}>{btnText}</Button >
+                <Button style={{ borderRadius: "20px" }} onClick={handleUpdateItemStatus}>{btnText}</Button >
             )
     )
 }
@@ -356,7 +356,7 @@ const AdmOrderInfo = () => {
                     (
                         info?.statusOrders?.id === 5 ?
                             (
-                                <AdmWatingOrder id={info?.id} info={info} onClickUpdateStatus={onClickUpdateStatus}/>
+                                <AdmWatingOrder id={info?.id} info={info} onClickUpdateStatus={onClickUpdateStatus} />
                             )
                             :
                             (<Container>
@@ -418,11 +418,11 @@ const AdmOrderInfo = () => {
                                                                 <ProductDetail>
                                                                     <Image src={item.product.images && `http://localhost:8080/api/file/images/${item.product.images[0].photo}`} />
                                                                     <Details>
-                                                                        <ProductName onClick={() => { navigate(`/product/${item.product.id}`) }}>
-                                                                            <b>Product:</b> {item.product?.name}
+                                                                        <ProductName style={{ textDecoration: "none" }} onClick={() => { navigate(`/product/${item.product.id}`) }}>
+                                                                            <b>Tên Sản Phẩm:</b> {item.product?.name}
                                                                         </ProductName>
                                                                         <ProductId>
-                                                                            <b>ID:</b> {item.product.id}
+                                                                            <b>Mã sản phẩm:</b> {item.product.id}
                                                                         </ProductId>
                                                                         <b>Size:</b> {item.size}
                                                                         {/* <ProductSize>
@@ -442,7 +442,7 @@ const AdmOrderInfo = () => {
                                                                         <ProductAmount>
                                                                             <AmountInput
                                                                                 type='text'
-                                                                                value={item.quantity}
+                                                                                value={'x ' + item.quantity}
                                                                             />
                                                                         </ProductAmount>
                                                                     </ProductAmountContainer>

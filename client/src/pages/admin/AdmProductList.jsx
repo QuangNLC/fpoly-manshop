@@ -6,7 +6,7 @@ import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined
 import productsAPI from '../../api/productsAPI';
 import DialogHOC from '../../hoc/DialogHOC';
 import { Form, Input, Select } from 'antd';
-
+import moment from 'moment'
 
 const Container = styled.div`
     width: 100%;
@@ -138,28 +138,28 @@ const AdmProductList = () => {
 
     const columns = [
         {
-            field: 'index', headerName: 'Index', width: 100,
+            field: 'index', headerName: 'STT', width: 100,
         },
-        { field: 'create_date', headerName: 'Created Date', width: 200 },
-        { field: 'name', headerName: 'Name', width: 300, },
+        { field: 'create_date', headerName: 'Ngày Tạo', width: 200 },
+        { field: 'name', headerName: 'Tên Sản Phẩm', width: 300, },
         {
-            field: 'stock', headerName: 'In Stock', width: 100,
+            field: 'stock', headerName: 'Số Lượng', width: 100,
             renderCell: (params) => (
                 <>{params.row.productsizes.reduce((total, item) => { return total + item.quantity }, 0)}</>
             )
         },
-        { field: 'export_price', headerName: "Export Price", width: 200 },
-        { field: 'import_price', headerName: "Import Price", width: 200 },
+        { field: 'export_price', headerName: "Giá Bán", width: 200 },
+        { field: 'import_price', headerName: "Giá Nhập", width: 200 },
         {
-            field: 'action', headerName: "Action", width: 250,
+            field: 'action', headerName: "Thao Tác", width: 250,
             renderCell: (params) => (
                 <ActionContainer>
                     <Link to={"/admin/edit-product/" + params.row.id}>
-                        <EditButton>Edit</EditButton>
+                        <EditButton style={{ borderRadius: "20px" }}>Sửa</EditButton>
                     </Link>
-                    <DialogHOC title="Confirm Dialog" content="Do you want to delete this user?" onYes={() => { hadleDeleteUser(params.row.username) }}>
-                        <DeleteButton>
-                            <DeleteOutlineOutlinedIcon style={{ fontSize: "20px" }} />
+                    <DialogHOC title="Thông báo!" content="Bạn có muốn xóa sản phẩm này ?" onYes={() => { hadleDeleteUser(params.row.username) }}>
+                        <DeleteButton style={{ borderRadius: "20px" }}>
+                            <DeleteOutlineOutlinedIcon style={{ fontSize: "20px", marginTop: "5px" }} />
                         </DeleteButton>
                     </DialogHOC>
                 </ActionContainer>
@@ -186,7 +186,8 @@ const AdmProductList = () => {
                 setData(res.map((item, index) => (
                     {
                         ...item,
-                        index: index + 1
+                        index: index + 1,
+                        create_date: moment(item.create_date).format('DD-MM-YYYY')
                     }
                 )));
                 setIsLoading(false);
@@ -201,9 +202,9 @@ const AdmProductList = () => {
             <Wrapper>
                 <Bottom>
                     <TitleContainer>
-                        <Title>List Product</Title>
+                        <Title>DANH SÁCH SẢN </Title>
                         <Link to="/admin/new-product">
-                            <TitleButton>Create</TitleButton>
+                            <TitleButton style={{ width: "120px", borderRadius: "20px" }}>Thêm mới</TitleButton>
                         </Link>
                     </TitleContainer>
                     {

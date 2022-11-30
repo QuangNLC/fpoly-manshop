@@ -205,10 +205,10 @@ const AdmNewProduct = () => {
                 })
                 .then(imgsRes => {
                     console.log(imgsRes)
-                    productAPI.createProduct({...reqValue, images: imgsRes})
+                    productAPI.createProduct({ ...reqValue, images: imgsRes })
                         .then(res => {
                             if (!res.status) {
-                                openNotificationWithIcon('success', 'Successfully', 'Create  product successfully!');
+                                openNotificationWithIcon('success', 'Thành công', 'Tạo mới sản phẩm thành công!');
                                 navigate('/admin/product-list')
                             } else {
                                 console.log(res)
@@ -221,7 +221,7 @@ const AdmNewProduct = () => {
             productAPI.createProduct(reqValue)
                 .then(res => {
                     if (!res.status) {
-                        openNotificationWithIcon('success', 'Successfully', 'Create  product successfully!');
+                        openNotificationWithIcon('success', 'Thành công', 'Tạo mới sản phẩm thành công!');
                         navigate('/admin/product-list')
                     } else {
                         console.log(res)
@@ -244,7 +244,7 @@ const AdmNewProduct = () => {
                 quantity: ""
             })
         } else {
-            openNotificationWithIcon('warning', 'Create failed!', 'Size  is  exist!')
+            openNotificationWithIcon('warning', 'Tạo mới thất bại !', 'Sản phẩm chưa có size!')
             sizeForm.setFieldsValue({
                 id: 0,
                 quantity: ""
@@ -282,7 +282,7 @@ const AdmNewProduct = () => {
         >
             <Container>
                 <Wrapper>
-                    <Title>New Product</Title>
+                    <Title>TẠO MỚI SẢN PHẨM</Title>
                     <Details>
                         <Left>
                             <ProductDetailsFormContainer>
@@ -294,10 +294,10 @@ const AdmNewProduct = () => {
                                     onFinish={onFinish}
                                 >
                                     <Form.Item>
-                                        Create Product
+                                        TẠO MỚI
                                     </Form.Item>
                                     <Form.Item
-                                        label="Name"
+                                        label="Tên sản phẩm"
                                         name="name"
                                         rules={[
                                             { required: true },
@@ -308,7 +308,7 @@ const AdmNewProduct = () => {
                                         <Input />
                                     </Form.Item>
                                     <Form.Item
-                                        label="Desc"
+                                        label="Thông tin mô tả"
                                         name="title"
                                         rules={[
                                             { required: true },
@@ -319,7 +319,7 @@ const AdmNewProduct = () => {
                                         <Input />
                                     </Form.Item>
                                     <Form.Item
-                                        label="Import Price"
+                                        label="Giá nhập"
                                         name="import_price"
                                         rules={[
                                             { required: true },
@@ -328,7 +328,7 @@ const AdmNewProduct = () => {
                                                     if (value && value > 0) {
                                                         return Promise.resolve()
                                                     }
-                                                    return Promise.reject('Import price must be more than 0!')
+                                                    return Promise.reject('Giá nhập không thể nhỏ hơn 0!')
                                                 }
                                             })
                                         ]}
@@ -336,7 +336,7 @@ const AdmNewProduct = () => {
                                         <InputNumber style={{ width: '100%' }} />
                                     </Form.Item>
                                     <Form.Item
-                                        label="Export Price"
+                                        label="Giá bán"
                                         name="export_price"
                                         rules={[
                                             { required: true },
@@ -345,7 +345,7 @@ const AdmNewProduct = () => {
                                                     if (value && value >= getFieldValue('import_price')) {
                                                         return Promise.resolve()
                                                     }
-                                                    return Promise.reject('Export price must be equal or more than import price')
+                                                    return Promise.reject('Giá bán không thể thấp hơn giá nhập!')
                                                 }
                                             })
                                         ]}
@@ -353,7 +353,7 @@ const AdmNewProduct = () => {
                                         <InputNumber style={{ width: '100%' }} />
                                     </Form.Item>
                                     <Form.Item
-                                        label="Category"
+                                        label="Thể loại sản phẩm"
                                         name="category"
                                         rules={[
                                             ((getFieldValue) => ({
@@ -361,13 +361,13 @@ const AdmNewProduct = () => {
                                                     if (value && value > 0) {
                                                         return Promise.resolve()
                                                     }
-                                                    return Promise.reject('Please select category!')
+                                                    return Promise.reject('Vui lòng chọn thể loại!')
                                                 }
                                             }))
                                         ]}
                                     >
                                         <Select defaultValue={0}>
-                                            <Select.Option value={0} disabled>Category</Select.Option>
+                                            <Select.Option value={0} disabled>Vui lòng chọn thể loại</Select.Option>
                                             {
                                                 categories && categories.length > 0 && categories.map((item, index) => (
                                                     <Select.Option key={item.id} value={item.id}>{item.title}</Select.Option>
@@ -392,17 +392,17 @@ const AdmNewProduct = () => {
                                                 setUploadList(uploadList.filter((item) => file.uid !== item.uid))
                                             }}
                                         >
-                                            <p>Drag files here OR</p>
+                                            <p>Kéo thả ảnh hoặc</p>
                                             <br />
-                                            <Button>Choose file</Button>
+                                            <Button style={{ borderRadius: "20px" }} >Chọn ảnh</Button>
                                         </Upload.Dragger>
 
-                                        <Button onClick={() => {handleUploadImage()}}>Upload</Button>
+                                        {/* <Button style={{ borderRadius: "20px" }} onClick={() => { handleUploadImage() }}>Upload</Button> */}
                                     </Form.Item>
                                     <Form.Item
                                     >
-                                        <Button htmlType='submit'> Create </Button>
-                                        <Button> Reset </Button>
+                                        <Button htmlType='submit' style={{ borderRadius: "20px" }}> Tạo mới </Button>
+                                        <Button style={{ borderRadius: "20px", marginLeft: "20px" }}> Làm mới </Button>
                                     </Form.Item>
                                 </Form>
                             </ProductDetailsFormContainer>
@@ -410,8 +410,8 @@ const AdmNewProduct = () => {
                         <Right>
                             <ProductSizesDetails>
                                 <ProductSizesTitleContainer>
-                                    <ProductSizesTitle>Product Sizes</ProductSizesTitle>
-                                    <ProductSizesButton>New Size</ProductSizesButton>
+                                    <ProductSizesTitle>Size sản phẩm</ProductSizesTitle>
+                                    <ProductSizesButton style={{ borderRadius: "20px" }}>Tạo size</ProductSizesButton>
                                 </ProductSizesTitleContainer>
                                 <SizeFormContainer>
                                     <Form
@@ -432,7 +432,7 @@ const AdmNewProduct = () => {
                                                         if (value && value > 0) {
                                                             return Promise.resolve()
                                                         }
-                                                        return Promise.reject('Please select size!')
+                                                        return Promise.reject('Vui lòng chọn size!')
                                                     }
                                                 }))
                                             ]}
@@ -448,7 +448,7 @@ const AdmNewProduct = () => {
                                             </Select>
                                         </Form.Item>
                                         <Form.Item
-                                            label="Quantity"
+                                            label="Số lượng"
                                             name="quantity"
                                             rules={[
                                                 { required: true },
@@ -458,7 +458,7 @@ const AdmNewProduct = () => {
                                                             setFieldValue('quantity', Math.floor(value))
                                                             return Promise.resolve()
                                                         }
-                                                        return Promise.reject('Quantity must be more than 0!')
+                                                        return Promise.reject('Số lượng không được nhỏ hơn 0!')
                                                     }
                                                 })
                                             ]}
@@ -467,13 +467,13 @@ const AdmNewProduct = () => {
                                             <InputNumber style={{ width: '100%' }} />
                                         </Form.Item>
                                         <Form.Item>
-                                            <Button htmlType='submit'>Create</Button>
-                                            <Button>Close</Button>
+                                            <Button style={{ borderRadius: "20px" }} htmlType='submit'>Tạo size</Button>
+                                            <Button style={{ borderRadius: "20px", marginLeft: "20px" }}>Close</Button>
                                         </Form.Item>
                                     </Form>
                                 </SizeFormContainer>
                                 <SizesContainer>
-                                    <SizesContainerTitle>List size of product</SizesContainerTitle>
+                                    <SizesContainerTitle>Danh sách size sản phẩm</SizesContainerTitle>
                                     {
                                         product.productsizes.length > 0 ?
                                             (
@@ -481,28 +481,29 @@ const AdmNewProduct = () => {
                                                     <SizeDetailsContainer key={item.size.id}>
                                                         <SizeDetails>
                                                             <SizeDetailsItem>
-                                                                <SizeDetailsItemLabel>size: </SizeDetailsItemLabel>
+                                                                <SizeDetailsItemLabel>Size: </SizeDetailsItemLabel>
                                                                 <SizeDetailsItemInfo>{item.size.title}</SizeDetailsItemInfo>
                                                             </SizeDetailsItem>
                                                             <SizeDetailsItem>
-                                                                <SizeDetailsItemLabel>quantity: </SizeDetailsItemLabel>
+                                                                <SizeDetailsItemLabel>Số lượng: </SizeDetailsItemLabel>
                                                                 <SizeDetailsItemInfo>{item.quantity}</SizeDetailsItemInfo>
                                                             </SizeDetailsItem>
                                                         </SizeDetails>
                                                         <SizeDetailsAction>
                                                             <DialogHOC
-                                                                title="Confirm Dialog"
-                                                                content="Do you want to delete this product size?"
+                                                                title="Thông báo!"
+                                                                content="Bạn có muốn xóa size không?"
                                                                 onYes={() => { console.log('delete size') }}
                                                             >
                                                                 <Button
                                                                     icon={<DeleteOutlineOutlinedIcon />}
+                                                                    style={{ marginTop: 10, borderRadius: 10 }}
                                                                 >
                                                                 </Button>
                                                             </DialogHOC>
                                                             <Button
                                                                 icon={<CreateOutlinedIcon />}
-                                                                style={{ marginTop: 10 }}
+                                                                style={{ marginTop: 10, borderRadius: 10 }}
                                                             >
                                                             </Button>
                                                         </SizeDetailsAction>
@@ -512,7 +513,7 @@ const AdmNewProduct = () => {
                                             :
                                             (
                                                 <>
-                                                    Empty size
+                                                    Size trống !
                                                 </>
                                             )
                                     }
