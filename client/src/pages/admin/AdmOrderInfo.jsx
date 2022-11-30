@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import { List, Spin, Steps, Tag, Typography, Select, Button, Skeleton, Modal, notification } from 'antd';
 import ordersAPI from '../../api/ordersAPI';
 import { formatter } from '../../utils';
+import AdmWatingOrder from './AdmWatingOrder';
 
 const Container = styled.div`
     width: 100%;
@@ -221,13 +222,13 @@ const UpdateStatusButton = ({ item, onClickUpdate }) => {
         }
     ])
     const handleUpdateItemStatus = () => {
-        if(item && nextStatus) {
+        if (item && nextStatus) {
             Modal.confirm({
                 title: "Hộp Thoại Xác Nhận",
                 content: modalContent,
                 okText: "Xác Nhận",
                 cancelText: "Hủy Bỏ",
-                onOk: () => {onClickUpdate({...item, statusOrders: nextStatus})}
+                onOk: () => { onClickUpdate({ ...item, statusOrders: nextStatus }) }
             })
         }
     }
@@ -286,24 +287,31 @@ const AdmOrderInfo = () => {
     const { id } = useParams();
     const [info, setInfo] = useState(undefined)
     const [IsLoadingInfo, setIsLoadingInfo] = useState(true)
-    const [steps, setSteps] = useState([])
+    const [steps, setSteps] = useState([
+        { id: 5, title: "Đang Chờ" },
+        { id: 1, title: "Chờ Xác Nhận" },
+        { id: 2, title: "Đã Xác Nhận" },
+        { id: 3, title: "Đang Giao" },
+        { id: 4, title: "Hoàn Thành" }
+
+    ])
     const navigate = useNavigate();
 
     const onClickUpdateStatus = (item) => {
         ordersAPI.updateOrderStatus(item)
-        .then(res => {
-            if(!res.status){
-                setInfo({...item})
-                console.log(res)
-                Modal.success({
-                    title: "Hộp Thoại Thông Báo",
-                    content: "Cập nhật trạng thái đơn hàng thành công!"
-                })
-            }else{
-                console.log(res)
-            }
-        })
-        .catch(err => console.log(err))
+            .then(res => {
+                if (!res.status) {
+                    setInfo({ ...item })
+                    console.log(res)
+                    Modal.success({
+                        title: "Hộp Thoại Thông Báo",
+                        content: "Cập nhật trạng thái đơn hàng thành công!"
+                    })
+                } else {
+                    console.log(res)
+                }
+            })
+            .catch(err => console.log(err))
     }
 
     useEffect(() => {
@@ -313,17 +321,17 @@ const AdmOrderInfo = () => {
                 if (!res.status) {
                     console.log(res)
                     setInfo(res)
-                    ordersAPI.getAllOrderStatus()
-                        .then(stepsRes => {
-                            if (!stepsRes.status) {
-                                setSteps(stepsRes)
-                            } else {
-                                console.log(stepsRes)
-                            }
-                        }).then(() => {
-                            setIsLoadingInfo(false)
-                        })
-                        .catch(err => console.log(err))
+                    setIsLoadingInfo(false)
+                    // ordersAPI.getAllOrderStatus()
+                    //     .then(stepsRes => {
+                    //         if (!stepsRes.status) {
+                    //             setSteps(stepsRes)
+                    //         } else {
+                    //             console.log(stepsRes)
+                    //         }
+                    //     }).then(() => {
+                    //     })
+                    //     .catch(err => console.log(err))
                 } else {
                     console.log(res)
                 }
@@ -346,73 +354,78 @@ const AdmOrderInfo = () => {
                     )
                     :
                     (
-                        <Container>
-                            <Wrapper>
-                                <StepsContainer>
-                                    {
-                                        steps && steps.length > 0 &&
-                                        <Steps current={steps.findIndex((item) => item.id === info?.statusOrders?.id)}>
-                                            {steps.map(item => (
-                                                <Steps.Step title={item.title} key={item.id} />
-                                            ))}
-                                        </Steps>
-                                    }
-                                    <br />
-                                    <UpdateStatusButton item={info} onClickUpdate={onClickUpdateStatus} />
-                                </StepsContainer>
-                                <CustomerInfoContainer>
-                                    <Title>thông tin đơn hàng</Title>
-                                    <CustomerInfo>
-                                        <CustomerInfoItem>
-                                            <CustomerInfoItemLabel>trạng thái</CustomerInfoItemLabel>
-                                            <CustomerInfoItemContent>
-                                                <StatusBadge status={info?.statusOrders} />
-                                            </CustomerInfoItemContent>
-                                        </CustomerInfoItem>
-                                        <CustomerInfoItem>
-                                            <CustomerInfoItemLabel>mã đơn hàng</CustomerInfoItemLabel>
-                                            <CustomerInfoItemContent>{info?.id}</CustomerInfoItemContent>
-                                        </CustomerInfoItem>
-                                        <CustomerInfoItem>
-                                            <CustomerInfoItemLabel>họ và tên</CustomerInfoItemLabel>
-                                            <CustomerInfoItemContent>{info?.customers?.name}</CustomerInfoItemContent>
-                                        </CustomerInfoItem>
-                                        <CustomerInfoItem>
-                                            <CustomerInfoItemLabel>số điện thoại</CustomerInfoItemLabel>
-                                            <CustomerInfoItemContent>{info?.customers?.phone}</CustomerInfoItemContent>
-                                        </CustomerInfoItem>
-                                        <CustomerInfoItem>
-                                            <CustomerInfoItemLabel>địa chỉ</CustomerInfoItemLabel>
-                                            <CustomerInfoItemContent>{`${info?.customers?.address?.location} - ${info?.customers?.address?.ward?.title} - ${info?.customers?.address?.district?.title} - ${info?.customers?.address?.city?.title}`}</CustomerInfoItemContent>
-                                        </CustomerInfoItem>
-                                    </CustomerInfo>
-                                </CustomerInfoContainer>
-                                <CartContainer>
-                                    <CartDetails>
-                                        <CartBody>
-                                            <List
-                                                bordered
-                                                dataSource={info?.orderDetail}
-                                                style={{
-                                                    height: '100%',
-                                                    maxHeight: '60vh',
-                                                    overflowY: 'scroll',
-                                                    backgroundColor: 'white'
-                                                }}
-                                                renderItem={(item, index) => (
-                                                    <List.Item>
-                                                        <Product key={index}>
-                                                            <ProductDetail>
-                                                                <Image src={item.product.images && `http://localhost:8080/api/file/images/${item.product.images[0].photo}`} />
-                                                                <Details>
-                                                                    <ProductName onClick={() => { navigate(`/product/${item.product.id}`) }}>
-                                                                        <b>Product:</b> {item.product?.name}
-                                                                    </ProductName>
-                                                                    <ProductId>
-                                                                        <b>ID:</b> {item.product.id}
-                                                                    </ProductId>
-                                                                    <b>Size:</b> {item.size}
-                                                                    {/* <ProductSize>
+                        info?.statusOrders?.id === 5 ?
+                            (
+                                <AdmWatingOrder id={info?.id} info={info} onClickUpdateStatus={onClickUpdateStatus}/>
+                            )
+                            :
+                            (<Container>
+                                <Wrapper>
+                                    <StepsContainer>
+                                        {
+                                            steps && steps.length > 0 &&
+                                            <Steps current={steps.findIndex((item) => item.id === info?.statusOrders?.id)}>
+                                                {steps.map(item => (
+                                                    <Steps.Step title={item.title} key={item.id} />
+                                                ))}
+                                            </Steps>
+                                        }
+                                        <br />
+                                        <UpdateStatusButton item={info} onClickUpdate={onClickUpdateStatus} />
+                                    </StepsContainer>
+                                    <CustomerInfoContainer>
+                                        <Title>thông tin đơn hàng</Title>
+                                        <CustomerInfo>
+                                            <CustomerInfoItem>
+                                                <CustomerInfoItemLabel>trạng thái</CustomerInfoItemLabel>
+                                                <CustomerInfoItemContent>
+                                                    <StatusBadge status={info?.statusOrders} />
+                                                </CustomerInfoItemContent>
+                                            </CustomerInfoItem>
+                                            <CustomerInfoItem>
+                                                <CustomerInfoItemLabel>mã đơn hàng</CustomerInfoItemLabel>
+                                                <CustomerInfoItemContent>{info?.id}</CustomerInfoItemContent>
+                                            </CustomerInfoItem>
+                                            <CustomerInfoItem>
+                                                <CustomerInfoItemLabel>họ và tên</CustomerInfoItemLabel>
+                                                <CustomerInfoItemContent>{info?.customers?.name}</CustomerInfoItemContent>
+                                            </CustomerInfoItem>
+                                            <CustomerInfoItem>
+                                                <CustomerInfoItemLabel>số điện thoại</CustomerInfoItemLabel>
+                                                <CustomerInfoItemContent>{info?.customers?.phone}</CustomerInfoItemContent>
+                                            </CustomerInfoItem>
+                                            <CustomerInfoItem>
+                                                <CustomerInfoItemLabel>địa chỉ</CustomerInfoItemLabel>
+                                                <CustomerInfoItemContent>{`${info?.customers?.address?.location} - ${info?.customers?.address?.ward?.title} - ${info?.customers?.address?.district?.title} - ${info?.customers?.address?.city?.title}`}</CustomerInfoItemContent>
+                                            </CustomerInfoItem>
+                                        </CustomerInfo>
+                                    </CustomerInfoContainer>
+                                    <CartContainer>
+                                        <CartDetails>
+                                            <CartBody>
+                                                <List
+                                                    bordered
+                                                    dataSource={info?.orderDetail}
+                                                    style={{
+                                                        height: '100%',
+                                                        maxHeight: '60vh',
+                                                        overflowY: 'scroll',
+                                                        backgroundColor: 'white'
+                                                    }}
+                                                    renderItem={(item, index) => (
+                                                        <List.Item>
+                                                            <Product key={index}>
+                                                                <ProductDetail>
+                                                                    <Image src={item.product.images && `http://localhost:8080/api/file/images/${item.product.images[0].photo}`} />
+                                                                    <Details>
+                                                                        <ProductName onClick={() => { navigate(`/product/${item.product.id}`) }}>
+                                                                            <b>Product:</b> {item.product?.name}
+                                                                        </ProductName>
+                                                                        <ProductId>
+                                                                            <b>ID:</b> {item.product.id}
+                                                                        </ProductId>
+                                                                        <b>Size:</b> {item.size}
+                                                                        {/* <ProductSize>
                                                                         <br />
                                                                         <Select value={item.selectedSize.size.title} disabled>
                                                                             {
@@ -422,31 +435,34 @@ const AdmOrderInfo = () => {
                                                                             }
                                                                         </Select>
                                                                     </ProductSize> */}
-                                                                </Details>
-                                                            </ProductDetail>
-                                                            <PriceDetail>
-                                                                <ProductAmountContainer>
-                                                                    <ProductAmount>
-                                                                        <AmountInput
-                                                                            type='text'
-                                                                            value={item.quantity}
-                                                                        />
-                                                                    </ProductAmount>
-                                                                </ProductAmountContainer>
-                                                                <ProductPrice>{formatter.format(item.total_price)}</ProductPrice>
-                                                            </PriceDetail>
-                                                        </Product>
-                                                    </List.Item>
-                                                )}
-                                            />
-                                        </CartBody>
-                                        <CartFooter>
-                                            {/* Tổng tiền : <b>{formatter.format(data.reduce((total, item) => { return total + item.quantity * item.price }, 0))}</b> */}
-                                        </CartFooter>
-                                    </CartDetails>
-                                </CartContainer>
-                            </Wrapper>
-                        </Container>
+                                                                    </Details>
+                                                                </ProductDetail>
+                                                                <PriceDetail>
+                                                                    <ProductAmountContainer>
+                                                                        <ProductAmount>
+                                                                            <AmountInput
+                                                                                type='text'
+                                                                                value={item.quantity}
+                                                                            />
+                                                                        </ProductAmount>
+                                                                    </ProductAmountContainer>
+                                                                    <ProductPrice>{formatter.format(item.total_price)}</ProductPrice>
+                                                                </PriceDetail>
+                                                            </Product>
+                                                        </List.Item>
+                                                    )}
+                                                />
+                                            </CartBody>
+                                            <CartFooter>
+                                                {/* Tổng tiền : <b>{formatter.format(data.reduce((total, item) => { return total + item.quantity * item.price }, 0))}</b> */}
+                                            </CartFooter>
+                                        </CartDetails>
+                                    </CartContainer>
+                                </Wrapper >
+                            </Container >
+                            )
+
+
                     )
             }
         </Helmet >

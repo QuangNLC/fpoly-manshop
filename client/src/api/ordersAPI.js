@@ -32,6 +32,14 @@ const ordersAPI = {
     getWatingOrderList: () => {
         const url = 'order/wating-order';
         return axiosClient.get(url);
+    },
+    createWatingOrder: (payload) => {
+        const url ='order/checkout/waiting';
+        return axiosClient.post(url, payload);
+    },
+    updateWatingOrder: (payload) => {
+        const url = 'order/update/waiting/' + payload.id;
+        return axiosClient.put(url, payload);
     }
 };
 

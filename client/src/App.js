@@ -79,7 +79,6 @@ function App() {
             <Route path="user/:username" element={<AdmUserDetail />} />
             <Route path="message" element={<AdmMessage />} />
             <Route path="bills" element={<AdmBills />} />
-            <Route path="bill/new" element={<AdmWatingOrder />} />
             <Route path="promotions" element={<AdmPromotions />} />
             <Route path="*" element={<div>Trang khong ton tai</div>} />
           </Route>

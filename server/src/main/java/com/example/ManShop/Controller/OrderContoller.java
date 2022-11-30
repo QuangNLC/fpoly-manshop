@@ -304,7 +304,7 @@ public class OrderContoller {
 //
 //    }
 @PostMapping("/checkout/waiting")
-@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_STAFF')")
+//@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_STAFF')")
 public ResponseEntity<?> waiting(@RequestBody OrderRequestDTO orderRequestDTO){
     log.info("Tạo 1 hóa đơn chờ  ");
     Orders newOrder = new Orders();

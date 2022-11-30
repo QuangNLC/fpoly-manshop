@@ -185,7 +185,6 @@ const StatusBadge = (props) => {
     const [color, setColor] = useState('blue')
 
     useEffect(() => {
-        console.log(props.status)
         if (props.status) {
             switch (props.status.id) {
                 case (1): {
@@ -228,12 +227,15 @@ const AdmOrderList = () => {
             title: 'Trạng Thái',
             dataIndex: 'status',
             render: (text) => {
-                console.log(text)
                 return (
                     <StatusBadge status={text} />
                 )
             },
             filters: [
+                {
+                    text: "Đang Chờ",
+                    value: 5
+                },
                 {
                     text: 'Chờ Xác Nhận',
                     value: 1,

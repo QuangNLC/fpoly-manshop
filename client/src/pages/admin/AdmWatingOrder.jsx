@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react'
 import Helmet from '../../components/Helmet'
 import styled from 'styled-components'
-import { Button, Empty, Select, Table, List, notification, Modal, Form, InputNumber, Switch, Typography, Input, Space } from 'antd'
+import { Button, Empty, Select, Table, List, notification, Modal, Form, InputNumber, Switch, Typography, Input, Space, Steps } from 'antd'
 import { SearchOutlined } from '@ant-design/icons';
 import { useEffect } from 'react'
 import productAPI from '../../api/productsAPI'
@@ -12,6 +12,8 @@ import DialogHOC from '../../hoc/DialogHOC'
 import { useForm } from 'antd/es/form/Form'
 import addressAPI from '../../api/addressAPI'
 import Highlighter from 'react-highlight-words';
+import { useSelector } from 'react-redux';
+import ordersAPI from '../../api/ordersAPI';
 
 const Container = styled.div`
     width: 100%;
@@ -90,7 +92,7 @@ const PayItem = styled.div`
 const PayItemTitle = styled.div``
 const PayItemContent = styled.div``
 const ShipContainer = styled.div`
-    width: 50%;
+    width: 100%;
     padding: 20px;
 `
 const PayContainer = styled.div`
@@ -99,7 +101,13 @@ const PayContainer = styled.div`
     display:flex;
     flex-direction: column;
 `
-const CustomerInfoContainer = styled.div``
+const FormContainer = styled.div`
+    width: 100%;
+    display: flex;
+`
+const CustomerInfoContainer = styled.div`
+    width: 50%;
+`
 const CartBody = styled.div`
 `
 const CartFooter = styled.div`
@@ -187,6 +195,13 @@ const FormLocationGroup = styled.div`
     align-items: center;
     justify-content: space-between;
 `
+const StepContainer = styled.div`
+    width: 100%;
+    padding: 20px;
+    background-color: white;
+    margin-bottom: 20px;
+    border-radius: 10px
+`
 
 const findByProductIdAndSizeId = (arr, prId, sId) => {
     let result = -1
@@ -210,17 +225,23 @@ const openNotificationWithIcon = (type, title, des) => {
 };
 
 
-const AdmWatingOrder = () => {
+const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
+    const [steps, setSteps] = useState([
+        { id: 5, title: "Đang Chờ" },
+        { id: 1, title: "Chờ Xác Nhận" },
+        { id: 2, title: "Đã Xác Nhận" },
+        { id: 3, title: "Đang Giao" },
+        { id: 4, title: "Hoàn Thành" }
 
+    ])
     const [cart, setCart] = useState([])
-
+    const auth = useSelector(state => state.auth.auth);
     const [product, setProduct] = useState([])
     const navigate = useNavigate()
     const [addingProduct, setAddingProduct] = useState(undefined)
     const [form] = useForm()
     const [isDefaultCustomer, setIsDefaultCustomer] = useState(true)
     const onChangeCity = (value) => {
-        console.log(value)
         form.setFieldValue('districtId', null)
         form.setFieldValue('wardId', null)
         setSelectedData({
@@ -541,6 +562,48 @@ const AdmWatingOrder = () => {
         }
     }
 
+    const handleSaveWatingOrder = () => {
+        if (auth && id) {
+            Modal.confirm({
+                title: "Hộp Thoại Xác Nhận",
+                content: "Bạn có muốn lưu đơn chờ không",
+                okText: "Xác Nhận",
+                cancelText: "Hủy Bỏ",
+                onOk: () => {
+                    let payload = {
+                        users: {
+                            username: auth?.info?.username
+                        },
+                        id,
+                        orderDetail: [
+                            ...cart.map((item, index) => ({
+                                product: { id: item?.item?.id },
+                                quantity: item?.quantity,
+                                size: item?.selectedSize?.size?.title,
+                                total_price: item?.item?.export_price * item?.quantity
+                            }))
+                        ]
+                    }
+                    console.log(payload)
+                    ordersAPI.updateWatingOrder(payload)
+                        .then(res => {
+                            if (!res.status) {
+                                openNotificationWithIcon('success', 'Lưu Đơn Hàng', 'Lưu đơn chờ thàn công');
+                                navigate('/admin/bills')
+                            }
+                        }
+                        )
+                        .catch(err => console.log(err))
+                }
+            })
+        }
+    }
+
+
+    const handleClickSubmitForm = (value) => {
+        console.log(value)
+        // onClickUpdateStatus
+    }
 
 
     const [searchText, setSearchText] = useState('');
@@ -562,6 +625,23 @@ const AdmWatingOrder = () => {
             form.setFieldsValue({ sizeId: addingProduct?.productsizes[0].id, quantity: 1 })
         }
     }, [addingProduct])
+
+    useEffect(() => {
+        if (info?.orderDetail) {
+            setCart([
+                ...info?.orderDetail.map((c, index) => {
+                    return (
+                        {
+                            item: c?.product,
+                            quantity: c?.quantity,
+                            size: c.size,
+                            selectedSize: c?.product?.productsizes.find(s => s?.size?.title === c?.size)
+                        }
+                    )
+                })
+            ])
+        }
+    }, [info])
 
     useEffect(() => {
         productAPI.getAll()
@@ -594,9 +674,19 @@ const AdmWatingOrder = () => {
         <Helmet title={"Quản Lý Hóa Đơn"}>
             <Container>
                 <Wrapper>
+                    <StepContainer>
+                        {
+                            steps && steps.length > 0 &&
+                            <Steps current={steps.findIndex((item) => item.id === info?.statusOrders?.id)}>
+                                {steps.map(item => (
+                                    <Steps.Step title={item.title} key={item.id} />
+                                ))}
+                            </Steps>
+                        }
+                    </StepContainer>
                     <ActionContainer>
-                        <Button type='primary' onClick={() => {navigate("/admin/bills")}}>Danh Sách</Button>
-                        <Button type='primary'>Lưu Đơn Chờ</Button>
+                        <Button type='primary' onClick={() => { navigate("/admin/bills") }}>Danh Sách</Button>
+                        <Button type='primary' onClick={() => { handleSaveWatingOrder() }}>Lưu Đơn Chờ</Button>
                     </ActionContainer>
                     <CartContainer>
                         {
@@ -666,176 +756,181 @@ const AdmWatingOrder = () => {
                                         <PayDetails>
                                             <ShipContainer>
                                                 {
-                                                    !isDefaultCustomer &&
                                                     <Form
                                                         layout='vertical'
                                                         wrapperCol={{ span: 24 }}
                                                         labelCol={{ span: 24 }}
+                                                        onFinish={handleClickSubmitForm}
                                                     >
-                                                        <CustomerInfoContainer>
-                                                            <Form.Item
-                                                                label="Họ và tên"
-                                                                name="name"
-                                                                hasFeedback
-                                                                rules={[
-                                                                    { required: true, message: "Vui lòng nhập họ và tên!" },
-                                                                    { whitespace: true, message: "Vui lòng không nhập khoảng trắng!" }
-                                                                ]}
-                                                            >
-                                                                <Input />
-                                                            </Form.Item>
-                                                            <Form.Item
-                                                                label="Số điện thoại"
-                                                                name="phone"
-                                                                hasFeedback
-                                                                rules={[
-                                                                    { required: true, message: "Vui lòng nhập số điện thoại!" },
-                                                                    { whitespace: true, message: "Vui lòng không nhập khoảng trắng!" }
-                                                                ]}
-                                                            >
-                                                                <Input />
-                                                            </Form.Item>
-                                                            <Form.Item
-                                                                label="Tỉnh/Thành Phố"
-                                                                name="cityId"
-                                                                hasFeedback
-                                                                rules={[
-                                                                    { required: true, message: 'Vui lòng chọn Tỉnh/Thành Phố!' }
-                                                                ]}
-
-                                                            >
-                                                                <Select
-                                                                    onChange={onChangeCity}
-                                                                    placeholder="Tỉnh/Thành"
+                                                        <FormContainer>
+                                                        <PayContainer>
+                                                            <PayTitle>Thông tin thanh toán</PayTitle>
+                                                            <PayItem>
+                                                                <PayItemTitle>
+                                                                    Giao Hàng
+                                                                    <Switch checked={!isDefaultCustomer} onChange={onChangeCustomerDefault} style={{ marginLeft: '20px' }} />
+                                                                </PayItemTitle>
+                                                            </PayItem>
+                                                            <PayItem>
+                                                                <PayItemTitle>
+                                                                    Tổng Tiền
+                                                                </PayItemTitle>
+                                                                <PayItemContent>
+                                                                    <b>
+                                                                        {formatter.format(cart.reduce((total, curr) => total + curr?.item?.export_price * curr.quantity, 0))}
+                                                                    </b>
+                                                                </PayItemContent>
+                                                            </PayItem>
+                                                            <PayItem>
+                                                                <PayItemTitle>
+                                                                    Thanh Toán
+                                                                </PayItemTitle>
+                                                                <PayItemContent>
+                                                                    <b>
+                                                                        {formatter.format(cart.reduce((total, curr) => total + curr?.item?.export_price * curr.quantity, 0))}
+                                                                    </b>
+                                                                </PayItemContent>
+                                                            </PayItem>
+                                                            <PayItem>
+                                                                <PayItemContent>
+                                                                    <Button type='primary' htmlType='submit'>Xác Nhận Đơn Hàng</Button>
+                                                                </PayItemContent>
+                                                            </PayItem>
+                                                        </PayContainer>
+                                                        {
+                                                            !isDefaultCustomer &&
+                                                            <CustomerInfoContainer>
+                                                                <Form.Item
+                                                                    label="Họ và tên"
+                                                                    name="name"
+                                                                    hasFeedback
+                                                                    rules={[
+                                                                        { required: true, message: "Vui lòng nhập họ và tên!" },
+                                                                        { whitespace: true, message: "Vui lòng không nhập khoảng trắng!" }
+                                                                    ]}
                                                                 >
-                                                                    {
-                                                                        cityData.map((item, index) => (
-                                                                            <Select.Option key={item.id} value={item.id}>{item.title}</Select.Option>
-                                                                        ))
-                                                                    }
-                                                                </Select>
-                                                            </Form.Item>
-                                                            <Form.Item
-                                                                label="Quận/Huyện"
-                                                                name="districtId"
-                                                                hasFeedback
-                                                                rules={[
-                                                                    { required: true, message: 'Vui lòng chọn Quận/Huyện' }
-                                                                ]}
-
-                                                            >
-                                                                <Select placeholder="Quận/Huyện" disabled={!selectedData.cityId}
-                                                                    onChange={onChangeDistrict}
+                                                                    <Input />
+                                                                </Form.Item>
+                                                                <Form.Item
+                                                                    label="Số điện thoại"
+                                                                    name="phone"
+                                                                    hasFeedback
+                                                                    rules={[
+                                                                        { required: true, message: "Vui lòng nhập số điện thoại!" },
+                                                                        { whitespace: true, message: "Vui lòng không nhập khoảng trắng!" }
+                                                                    ]}
                                                                 >
-                                                                    {
-                                                                        selectedData.cityId ?
-                                                                            (
-                                                                                <>
-                                                                                    {
-                                                                                        (cityData.find(item => item.id === selectedData.cityId)).districts.map(item => (
-                                                                                            <Select.Option value={item.id} key={item.id} >{item.title}</Select.Option>
-                                                                                        ))
-                                                                                    }
-                                                                                </>
-                                                                            )
-                                                                            :
-                                                                            (
-                                                                                <>
+                                                                    <Input />
+                                                                </Form.Item>
+                                                                <Form.Item
+                                                                    label="Tỉnh/Thành Phố"
+                                                                    name="cityId"
+                                                                    hasFeedback
+                                                                    rules={[
+                                                                        { required: true, message: 'Vui lòng chọn Tỉnh/Thành Phố!' }
+                                                                    ]}
 
-                                                                                </>
-                                                                            )
-                                                                    }
-                                                                </Select>
-                                                            </Form.Item>
-                                                            <Form.Item
-                                                                label="Phường/Xã"
-                                                                name="wardId"
-                                                                hasFeedback
-                                                                rules={[
-                                                                    { required: true, message: 'Vui lòng chọn Phường/Xã!' }
-                                                                ]}
-
-                                                            >
-                                                                <Select disabled={!selectedData.districtId}
-                                                                    onChange={onChangeWard}
-                                                                    placeholder="Phường/Xã"
                                                                 >
-                                                                    {
-                                                                        selectedData.cityId && selectedData.districtId ?
-                                                                            (
-                                                                                <>
-                                                                                    {
-                                                                                        ((cityData.find(item => item.id === selectedData.cityId)).districts.find(item => item.id === selectedData.districtId)).wards.map(item => (
-                                                                                            <Select.Option value={item.id} key={item.id} >{item.title}</Select.Option>
-                                                                                        ))
-                                                                                    }
-                                                                                </>
-                                                                            )
-                                                                            :
-                                                                            (
-                                                                                <>
+                                                                    <Select
+                                                                        onChange={onChangeCity}
+                                                                        placeholder="Tỉnh/Thành"
+                                                                    >
+                                                                        {
+                                                                            cityData.map((item, index) => (
+                                                                                <Select.Option key={item.id} value={item.id}>{item.title}</Select.Option>
+                                                                            ))
+                                                                        }
+                                                                    </Select>
+                                                                </Form.Item>
+                                                                <Form.Item
+                                                                    label="Quận/Huyện"
+                                                                    name="districtId"
+                                                                    hasFeedback
+                                                                    rules={[
+                                                                        { required: true, message: 'Vui lòng chọn Quận/Huyện' }
+                                                                    ]}
 
-                                                                                </>
-                                                                            )
-                                                                    }
-                                                                </Select>
-                                                            </Form.Item>
+                                                                >
+                                                                    <Select placeholder="Quận/Huyện" disabled={!selectedData.cityId}
+                                                                        onChange={onChangeDistrict}
+                                                                    >
+                                                                        {
+                                                                            selectedData.cityId ?
+                                                                                (
+                                                                                    <>
+                                                                                        {
+                                                                                            (cityData.find(item => item.id === selectedData.cityId)).districts.map(item => (
+                                                                                                <Select.Option value={item.id} key={item.id} >{item.title}</Select.Option>
+                                                                                            ))
+                                                                                        }
+                                                                                    </>
+                                                                                )
+                                                                                :
+                                                                                (
+                                                                                    <>
 
-                                                            <Form.Item
-                                                                label="Địa chỉ"
-                                                                name="location"
-                                                                hasFeedback
-                                                                rules={[
-                                                                    { required: true, message: 'Vui lòng nhập địa chỉ nhận hàng!' },
-                                                                    { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' }
-                                                                ]}
-                                                            >
-                                                                <Input />
-                                                            </Form.Item>
-                                                            <Form.Item
-                                                                label="Ghi Chú"
-                                                                name="note"
-                                                            >
-                                                                <Input.TextArea />
-                                                            </Form.Item>
-                                                        </CustomerInfoContainer>
+                                                                                    </>
+                                                                                )
+                                                                        }
+                                                                    </Select>
+                                                                </Form.Item>
+                                                                <Form.Item
+                                                                    label="Phường/Xã"
+                                                                    name="wardId"
+                                                                    hasFeedback
+                                                                    rules={[
+                                                                        { required: true, message: 'Vui lòng chọn Phường/Xã!' }
+                                                                    ]}
+
+                                                                >
+                                                                    <Select disabled={!selectedData.districtId}
+                                                                        onChange={onChangeWard}
+                                                                        placeholder="Phường/Xã"
+                                                                    >
+                                                                        {
+                                                                            selectedData.cityId && selectedData.districtId ?
+                                                                                (
+                                                                                    <>
+                                                                                        {
+                                                                                            ((cityData.find(item => item.id === selectedData.cityId)).districts.find(item => item.id === selectedData.districtId)).wards.map(item => (
+                                                                                                <Select.Option value={item.id} key={item.id} >{item.title}</Select.Option>
+                                                                                            ))
+                                                                                        }
+                                                                                    </>
+                                                                                )
+                                                                                :
+                                                                                (
+                                                                                    <>
+
+                                                                                    </>
+                                                                                )
+                                                                        }
+                                                                    </Select>
+                                                                </Form.Item>
+
+                                                                <Form.Item
+                                                                    label="Địa chỉ"
+                                                                    name="location"
+                                                                    hasFeedback
+                                                                    rules={[
+                                                                        { required: true, message: 'Vui lòng nhập địa chỉ nhận hàng!' },
+                                                                        { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' }
+                                                                    ]}
+                                                                >
+                                                                    <Input />
+                                                                </Form.Item>
+                                                                <Form.Item
+                                                                    label="Ghi Chú"
+                                                                    name="note"
+                                                                >
+                                                                    <Input.TextArea />
+                                                                </Form.Item>
+                                                            </CustomerInfoContainer>
+                                                        }
+                                                        </FormContainer>
                                                     </Form>
                                                 }
                                             </ShipContainer>
-                                            <PayContainer>
-                                                <PayTitle>Thông tin thanh toán</PayTitle>
-                                                <PayItem>
-                                                    <PayItemTitle>
-                                                        Giao Hàng
-                                                        <Switch checked={!isDefaultCustomer} onChange={onChangeCustomerDefault} style={{ marginLeft: '20px' }} />
-                                                    </PayItemTitle>
-                                                </PayItem>
-                                                <PayItem>
-                                                    <PayItemTitle>
-                                                        Tổng Tiền
-                                                    </PayItemTitle>
-                                                    <PayItemContent>
-                                                        <b>
-                                                            {formatter.format(cart.reduce((total, curr) => total + curr?.item?.export_price * curr.quantity, 0))}
-                                                        </b>
-                                                    </PayItemContent>
-                                                </PayItem>
-                                                <PayItem>
-                                                    <PayItemTitle>
-                                                        Thanh Toán
-                                                    </PayItemTitle>
-                                                    <PayItemContent>
-                                                        <b>
-                                                            {formatter.format(cart.reduce((total, curr) => total + curr?.item?.export_price * curr.quantity, 0))}
-                                                        </b>
-                                                    </PayItemContent>
-                                                </PayItem>
-                                                <PayItem>
-                                                    <PayItemContent>
-                                                        <Button type='primary'>Xác Nhận Đơn Hàng</Button>
-                                                    </PayItemContent>
-                                                </PayItem>
-                                            </PayContainer>
                                         </PayDetails>
                                     </>
                                 )

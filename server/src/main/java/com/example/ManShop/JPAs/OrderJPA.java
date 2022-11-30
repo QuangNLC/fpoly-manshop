@@ -13,6 +13,6 @@ public interface OrderJPA extends JpaRepository<Orders,Integer> {
     @Query( "select o from Orders o where o.statusOrders.id in (1,2,3)" )
     List<Orders> findlistOrderId();
 
-    @Query("Select o from Orders o where o.statusOrders.title = 'Đang Chờ'")
+    @Query("Select o from Orders o where o.statusOrders.id in(5)")
     List<Orders> findWaitingOrders();
 }
