@@ -188,8 +188,8 @@ const WebHomePage = () => {
       <Announcement />
       <Slider items={sliderData} />
 
-      {/* Fill data from .json file to sql server data
-      <div>
+      {/* Fill data from .json file to sql server data */}
+      {/* <div>
         <button onClick={fillData}> fill</button>
       </div> */}
       <CategoriesContainer>

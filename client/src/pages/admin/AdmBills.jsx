@@ -183,7 +183,7 @@ const AdmBills = () => {
             <Container>
                 <Wrapper>
                     <ActionContainer>
-                        <Button type='primary' onClick={handleCreateNewBill}>Tạo Đơn Hàng</Button>
+                        <Button style={{ borderRadius: "20px" }} type='primary' onClick={handleCreateNewBill}>Tạo Đơn Hàng</Button>
                     </ActionContainer>
                     <ListContainer>
                         <Table dataSource={data} columns={columns} style={{ width: '100%' }} />

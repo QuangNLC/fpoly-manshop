@@ -164,7 +164,7 @@ const SummaryItem = styled.div`
 const SummaryItemText = styled.span`
 `
 const SummaryItemPrice = styled.span``
-const NewActionContainer =  styled.div`
+const NewActionContainer = styled.div`
     width: 100%;
     display: flex;
     justify-content: flex-end;
@@ -271,7 +271,7 @@ const AdmOrderList = () => {
             dataIndex: 'total_price',
             key: 'total_price',
             render: (text) => (<>{formatter.format(text)}</>),
-            sorter: (a, b) =>  a.total_price - b.total_price
+            sorter: (a, b) => a.total_price - b.total_price
         },
         {
             title: 'Ngày Tạo',
@@ -283,8 +283,8 @@ const AdmOrderList = () => {
             render: (text) => {
                 return (
                     <ActionContainer>
-                        {/* <Button icon={<RemoveRedEyeOutlinedIcon />} onClick={() => handleClickViewOrderInfo(text)}></Button> */} 
-                        <Button type='primary' icon={<RemoveRedEyeOutlinedIcon />} onClick={() => { navigate(`/admin/order/${text.id}`) }} style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}></Button>
+                        {/* <Button icon={<RemoveRedEyeOutlinedIcon />} onClick={() => handleClickViewOrderInfo(text)}></Button> */}
+                        <Button type='primary' icon={<RemoveRedEyeOutlinedIcon />} onClick={() => { navigate(`/admin/order/${text.id}`) }} style={{ borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}></Button>
                         {/* <Button icon={<DeleteOutlineOutlinedIcon />} danger type='primary' onClick={() => { handleDeleteOrder(text) }}></Button> */}
                     </ActionContainer>
                 )
@@ -551,7 +551,7 @@ const AdmOrderList = () => {
                 <Wrapper>
                     <ListContainer>
                         <NewActionContainer>
-                            <Button onClick={() => {navigate("/admin/bills")}} type='primary' >Tạo Đơn Hàng</Button>
+                            <Button style={{ borderRadius: "20px" }} onClick={() => { navigate("/admin/bills") }} type='primary' >Tạo Đơn Hàng</Button>
                         </NewActionContainer>
                         {/* <ListFilterContainer>
                             <ListFilterItem>
@@ -569,7 +569,7 @@ const AdmOrderList = () => {
                             </ListFilterItem>
                         </ListFilterContainer> */}
                         <ListItemWrapper>
-                            <Table columns={columns} dataSource={data} bordered/>
+                            <Table columns={columns} dataSource={data} bordered />
                         </ListItemWrapper>
                     </ListContainer>
                 </Wrapper>

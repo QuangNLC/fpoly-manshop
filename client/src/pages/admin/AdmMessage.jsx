@@ -410,7 +410,7 @@ const AdmMessage = () => {
                                                         <Time>
                                                             {moment(item.createdat).format('DD/MM/YYYY, H:mm:ss')}
                                                         </Time>
-                                                        <Chat send={item.sendedby.username === 'admchat'}>
+                                                        <Chat style={{ paddingBottom: "0px" }} send={item.sendedby.username === 'admchat'}>
                                                             <p>
                                                                 {item.content}
                                                             </p>

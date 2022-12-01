@@ -69,7 +69,7 @@ const AdmPromotions = () => {
             render: (record) => {
                 return (
                     <>
-                        <Button type='primary'>Thêm Sản Phẩm</Button>
+                        <Button style={{ borderRadius: "20px" }} type='primary'>Thêm Sản Phẩm</Button>
                     </>
                 )
             }
