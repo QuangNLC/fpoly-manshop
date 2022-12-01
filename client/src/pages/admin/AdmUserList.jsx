@@ -16,6 +16,9 @@ const Container = styled.div`
 const Wrapper = styled.div`
     width: 100%;
     height: 500px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
 `
 const TitleContainer = styled.div`   
     display: flex;
@@ -118,7 +121,7 @@ const AdmUserList = () => {
             field: 'username', headerName: 'Tên tài khoản', width: 200,
             renderCell: (params) => (
                 <UserContainer>
-                    <UserImg src={params.row.photo ? params.row.photo : defaultAvt} alt="" />
+                    <UserImg src={params.row.photo ? `http://localhost:8080/api/file/images/${params.row.photo}` : defaultAvt} alt="" />
                     {params.row.username}
                 </UserContainer>
             )

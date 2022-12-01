@@ -88,10 +88,11 @@ const AdmBills = () => {
     const auth = useSelector(state => state.auth.auth);
     const handleCreateNewBill = () => {
         if (auth) {
+            console.log(`Bearer ${JSON.parse(localStorage.getItem("AUTH"))?.token}`)
             ordersAPI.createWatingOrder({ users: { username: auth?.info?.username }, orderDetail: [] })
                 .then(res => {
                     if (!res.status) {
-                        openNotificationWithIcon('success','Tạo Đơn Chờ','Tạo đơn chờ thành công')
+                        openNotificationWithIcon('success', 'Tạo Đơn Chờ', 'Tạo đơn chờ thành công')
                         navigate(`/admin/order/${res}`)
                     } else {
                         console.log(res)

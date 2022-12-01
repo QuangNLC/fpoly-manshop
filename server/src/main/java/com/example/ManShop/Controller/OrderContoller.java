@@ -304,7 +304,7 @@ public class OrderContoller {
 //
 //    }
 @PostMapping("/checkout/waiting")
-//@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_STAFF')")
+@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_STAFF')")
 public ResponseEntity<?> waiting(@RequestBody OrderRequestDTO orderRequestDTO){
     log.info("Tạo 1 hóa đơn chờ  ");
     Orders newOrder = new Orders();
@@ -351,10 +351,13 @@ public ResponseEntity<?> waiting(@RequestBody OrderRequestDTO orderRequestDTO){
 //                        System.out.println(newor.getQuantity());
 //                        orderDetailJPA.save(newor);
 //                    }
-                orderDetails.forEach(detail -> {
-                    detail.setOrders(orderForDetail);
-                    orderDetailJPA.save(detail);
-                });
+                if (orderDetails.size() >0){
+                    orderDetails.forEach(detail -> {
+                        detail.setOrders(orderForDetail);
+                        orderDetailJPA.save(detail);
+                    });
+                }
+
                 return ResponseEntity.ok().body(orderJPA.findById(id));
 
             }catch (Exception e){

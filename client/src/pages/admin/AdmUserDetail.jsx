@@ -242,7 +242,7 @@ const AdmUserDetail = () => {
                                 <UserContainer>
                                     <UserShow>
                                         <UserShowTop>
-                                            <UserShowTopImg src={user.photo || defaultAvt} alt="" />
+                                            <UserShowTopImg src={`http://localhost:8080/api/file/images/${user?.photo}`} alt="" />
                                             <UserShowTopTitle>
                                                 <UserShowTopUsername>{user.fullname}</UserShowTopUsername>
                                             </UserShowTopTitle>

@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import { Form, Input } from 'antd'
 
 const Container = styled.div`
     padding: 20px;
@@ -8,9 +9,11 @@ const Wrapper = styled.div`
     padding: 20px;
     -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
     box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+    background-color: white;
+    border-radius: 10px;
 `
 const Title = styled.h1``
-const Form = styled.form`
+const FormWrapper = styled.form`
     display: flex;
     flex-wrap: wrap;
 `
@@ -70,58 +73,107 @@ const Button = styled.button`
 `
 
 const AdmNewUser = () => {
+
+    const onClickCreateAccount = () => {
+        
+    }
+
+
     return (
         <Container>
             <Wrapper>
                 <Title>Thêm tài khoản mới</Title>
-                <Form>
-                    <Item>
-                        <ItemLabel>Tên tài khoản</ItemLabel>
-                        <ItemInput type="text" placeholder='Ví dụ: nguoidung... ' />
-                    </Item>
-                    <Item>
-                        <ItemLabel>Họ và Tên</ItemLabel>
-                        <ItemInput type="text" placeholder='Ví dụ: Phạm Văn A' />
-                    </Item>
-                    <Item>
-                        <ItemLabel>Email</ItemLabel>
-                        <ItemInput type="email" placeholder='Ví dụ: a@gmail.com' />
-                    </Item>
-                    <Item>
-                        <ItemLabel>Mật khẩu</ItemLabel>
-                        <ItemInput type="password" placeholder='********' />
-                    </Item>
-                    <Item>
-                        <ItemLabel>Số điện thoại</ItemLabel>
-                        <ItemInput type="text" placeholder='Ví dụ: 0123456789' />
-                    </Item>
-                    <Item>
-                        <ItemLabel>Địa chỉ</ItemLabel>
-                        <ItemInput type="text" placeholder='Ví dụ: Ấp 36, Thị trấn A, Tỉnh A, Thành phố A' />
-                    </Item>
-                    <Genders>
-                        <ItemLabel>Giới tính</ItemLabel>
-                        <GenderOptions style={{ paddingBottom: "5px" }}>
-                            <Item>
-                                <ItemInput type="radio" name="gender" id="male" value="male" style={{ marginBottom: "5px" }} />
-                                <ItemLabel htmlFor='male' style={{ textAlign: "Center" }}>Nam</ItemLabel>
-                            </Item>
-                            <Item>
-                                <ItemInput type="radio" name="gender" id="female" value="male" style={{ marginBottom: "5px" }} />
-                                <ItemLabel htmlFor='female' style={{ textAlign: "Center" }}>Nữ</ItemLabel>
-                            </Item>
-                        </GenderOptions>
-                    </Genders>
-                    <Item style={{ width: "100%" }}>
-                        <ItemLabel>Trạng thái tài khoản</ItemLabel>
-                        <Select name="active" id="active">
-                            <SelectOption value="yes">Kích hoạt</SelectOption>
-                            <SelectOption value="no">Không kích hoạt</SelectOption>
-                        </Select>
-                    </Item>
-                    <Button style={{ width: "120px", borderRadius: "20px" }}>Làm mới</Button>
-                    <Button style={{ marginLeft: "20px", width: "120px", borderRadius: "20px" }}>Thêm mới</Button>
+                <Form
+                    layout='vertical'
+                    labelCol={{ span: 24 }}
+                    wrapperCol={{ span: 24 }}
+                >
+                    <FormWrapper>
+                        <Item>
+                            <Form.Item
+                                label={"Tên Đăng Nhập"}
+                            >
+                                <Input
+                                    placeholder="Tên Đăng Nhập"
+                                />
+                            </Form.Item>
+                        </Item>
+                        <Item>
+                            <Form.Item
+                                label={"Họ Và Tên"}
+                            >
+                                <Input
+                                    placeholder="Họ Và Tên"
+                                />
+                            </Form.Item>
+                        </Item>
+                        <Item>
+                            <Form.Item
+                                label={"Email"}
+                            >
+                                <Input
+                                    placeholder="Email"
+                                />
+                            </Form.Item>
+                        </Item>
+                        <Item>
+                            <Form.Item
+                                label={"Số Điện Thoại"}
+                            >
+                                <Input
+                                    placeholder="Số Điện Thoại"
+                                />
+                            </Form.Item>
+                        </Item>
+                        <Item>
+                            <Form.Item
+                                label={"Mật Khẩu"}
+                            >
+                                <Input
+                                    type='password'
+                                    placeholder="Mật Khẩu"
+                                />
+                            </Form.Item>
+                        </Item>
+                        <Item>
+                            <Form.Item
+                                label={"Xác Nhận Mật Khẩu"}
+                            >
+                                <Input
+                                    type='password'
+                                    placeholder="Xác Nhận Mật Khẩu"
+                                />
+                            </Form.Item>
+                        </Item>
+                        <Genders>
+                            <ItemLabel>Quyền Truy cập</ItemLabel>
+                            <GenderOptions style={{ paddingBottom: "5px" }}>
+                                <Item>
+                                    <ItemInput type="radio" name="gender" id="male" value="user" style={{ marginBottom: "5px" }} />
+                                    <ItemLabel htmlFor='male' style={{ textAlign: "Center" }}>Người Dùng</ItemLabel>
+                                </Item>
+                                <Item>
+                                    <ItemInput type="radio" name="gender" id="female" value="staff" style={{ marginBottom: "5px" }} />
+                                    <ItemLabel htmlFor='female' style={{ textAlign: "Center" }}>Nhân Viên</ItemLabel>
+                                </Item>
+                                <Item>
+                                    <ItemInput type="radio" name="gender" id="female" value="admin" style={{ marginBottom: "5px" }} />
+                                    <ItemLabel htmlFor='female' style={{ textAlign: "Center" }}>Quản Trị Viên</ItemLabel>
+                                </Item>
+                            </GenderOptions>
+                        </Genders>
+                        <Item style={{ width: "100%" }}>
+                            <ItemLabel>Trạng thái tài khoản</ItemLabel>
+                            <Select name="active" id="active">
+                                <SelectOption value="yes">Kích hoạt</SelectOption>
+                                <SelectOption value="no">Không kích hoạt</SelectOption>
+                            </Select>
+                        </Item>
+                        <Button style={{ width: "120px", borderRadius: "20px" }}>Làm mới</Button>
+                        <Button style={{ marginLeft: "20px", width: "120px", borderRadius: "20px" }} onClick={onClickCreateAccount}>Thêm mới</Button>
+                    </FormWrapper>
                 </Form>
+
             </Wrapper>
         </Container>
     )

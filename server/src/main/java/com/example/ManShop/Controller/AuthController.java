@@ -108,4 +108,45 @@ public class AuthController {
         return ResponseEntity.ok(users);
     }
 
+
+    @PostMapping("/adm-register")
+    public ResponseEntity<?> registerByAdmin(@Valid @RequestBody RegisterRequest request){
+        log.info("Gọi vào hàm đăng kí người dùng với dữ liệu từ client:" +request);
+        int defaurole =3;
+        if (userJPA.existsById(request.getUsername())){
+            log.error("(Username) = " + request.getUsername() + " đã được sử dụng!");
+            return ResponseEntity.badRequest().body("Username da duoc su dung, hay nhap lai!");
+        }
+        if(userJPA.existsByEmail(request.getEmail())){
+            log.error("(Email) = " + request.getEmail() +" đã được sử dụng");
+            return ResponseEntity.badRequest().body("Email đã được sử dụng");
+        }
+        Users users = new Users();
+        users.setUsername(request.getUsername());
+        users.setFullname(request.getFullname());
+        users.setEmail(request.getEmail());
+        users.setPhone(request.getPhone());
+        users.setPhoto("default-avt.jpg");
+        users.setActivated(true);
+        users.setVerificode(RandomString.make(64));
+        users.setPassword(passwordEncoder.encode(request.getPassword()));
+        Role roles = rolesJPA.findById(3).get();
+        users.setRoles(roles);
+        Address address = new Address();
+        Citys city = new Citys();
+        Districts district = new Districts();
+        Wards ward = new Wards();
+        city.setId(request.getCityId());
+        district.setId(request.getDistrictId());
+        ward.setId(request.getWardId());
+        address.setCity(city);
+        address.setDistrict(district);
+        address.setWard(ward);
+        address.setLocation(request.getLocation());
+        users.setAddress(address);
+        userJPA.save(users);
+
+
+        return ResponseEntity.ok(users);
+    }
 }
