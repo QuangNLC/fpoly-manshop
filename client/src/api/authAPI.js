@@ -8,6 +8,10 @@ const authAPI = {
     register: (payload) => {
         const url = '/auth/register';
         return axiosClient.post(url, payload)
+    },
+    registerByAdmd: (payload) => {
+        const url = 'auth/adm-register';
+        return axiosClient.post(url, payload);
     }
 };
 

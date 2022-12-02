@@ -1,6 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Form, Input } from 'antd'
+import { Button, Form, Input, notification } from 'antd'
+import authAPI from '../../api/authAPI'
+import { useNavigate } from 'react-router-dom'
 
 const Container = styled.div`
     padding: 20px;
@@ -13,7 +15,7 @@ const Wrapper = styled.div`
     border-radius: 10px;
 `
 const Title = styled.h1``
-const FormWrapper = styled.form`
+const FormWrapper = styled.div`
     display: flex;
     flex-wrap: wrap;
 `
@@ -39,6 +41,7 @@ const ItemInput = styled.input`
 `
 const Genders = styled.div`
     width: 100%;
+    margin-bottom: 10px;
 `
 const GenderOptions = styled.div`
     width: 400px;
@@ -55,27 +58,38 @@ const Select = styled.select`
 `
 const SelectOption = styled.option`
 `
-const Button = styled.button`
-    width: 200px;
-    border: none;
-    background-color: teal;
-    color: white;
-    padding: 10px;
-    font-weight: 600;
-    border-radius: 10px;
-    margin-top: 30px;
-    cursor: pointer;
-    transition: all 0.25s ease-in;
 
-    &:hover{    
-        background-color: darkblue;
-    }
-`
+
+const openNotificationWithIcon = (type, title, des) => {
+    notification[type]({
+        message: title,
+        description:
+            des,
+    });
+};
+
 
 const AdmNewUser = () => {
+    const navigate = useNavigate();
+    const onClickCreateAccount = (value) => {
+        console.log(value)
+        try {
+            authAPI.registerByAdmd({ ...value })
+                .then(res => {
+                    if (!res.status) {
+                        openNotificationWithIcon('success', 'Đăng ký thành công!', 'Đăng ký thành công!');
+                        navigate('/adm/user-list')
 
-    const onClickCreateAccount = () => {
-        
+                    } else {
+                        openNotificationWithIcon('error', 'Đăng ký thất bại!', 'Đăng ký thất bại!');
+                        console.log(res)
+                    }
+
+                })
+                .catch(err => console.log(err));
+        } catch (err) {
+            console.log(err)
+        }
     }
 
 
@@ -87,11 +101,18 @@ const AdmNewUser = () => {
                     layout='vertical'
                     labelCol={{ span: 24 }}
                     wrapperCol={{ span: 24 }}
+                    onFinish={onClickCreateAccount}
                 >
                     <FormWrapper>
                         <Item>
                             <Form.Item
                                 label={"Tên Đăng Nhập"}
+                                name="username"
+                                hasFeedback
+                                rules={[
+                                    { required: true, message: 'Vui lòng nhập tên tài khoản!' },
+                                    { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' }
+                                ]}
                             >
                                 <Input
                                     placeholder="Tên Đăng Nhập"
@@ -101,6 +122,12 @@ const AdmNewUser = () => {
                         <Item>
                             <Form.Item
                                 label={"Họ Và Tên"}
+                                name="fullname"
+                                hasFeedback
+                                rules={[
+                                    { required: true, message: 'Vui lòng nhập Họ và tên!' },
+                                    { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' }
+                                ]}
                             >
                                 <Input
                                     placeholder="Họ Và Tên"
@@ -110,6 +137,13 @@ const AdmNewUser = () => {
                         <Item>
                             <Form.Item
                                 label={"Email"}
+                                name="email"
+                                hasFeedback
+                                rules={[
+                                    { required: true, message: 'Vui lòng nhập Email!' },
+                                    { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' },
+                                    { type: 'email' }
+                                ]}
                             >
                                 <Input
                                     placeholder="Email"
@@ -119,6 +153,12 @@ const AdmNewUser = () => {
                         <Item>
                             <Form.Item
                                 label={"Số Điện Thoại"}
+                                name="phone"
+                                hasFeedback
+                                rules={[
+                                    { required: true, message: 'Vui lòng nhập Số điện thoại!' },
+                                    { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' }
+                                ]}
                             >
                                 <Input
                                     placeholder="Số Điện Thoại"
@@ -128,6 +168,12 @@ const AdmNewUser = () => {
                         <Item>
                             <Form.Item
                                 label={"Mật Khẩu"}
+                                name="password"
+                                hasFeedback
+                                rules={[
+                                    { required: true, message: 'Vui lòng nhập Mật khẩu!' },
+                                    { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' }
+                                ]}
                             >
                                 <Input
                                     type='password'
@@ -138,6 +184,20 @@ const AdmNewUser = () => {
                         <Item>
                             <Form.Item
                                 label={"Xác Nhận Mật Khẩu"}
+                                name="confirmPasswrod"
+                                hasFeedback
+                                rules={[
+                                    { required: true, message: 'Vui lòng nhập Xác nhận mật khẩu!' },
+                                    { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' },
+                                    ({ getFieldValue }) => ({
+                                        validator(_, value) {
+                                            if (!value || getFieldValue('password') === value) {
+                                                return Promise.resolve()
+                                            }
+                                            return Promise.reject('Xác nhận mật khẩu không trùng khớp!')
+                                        }
+                                    })
+                                ]}
                             >
                                 <Input
                                     type='password'
@@ -149,7 +209,7 @@ const AdmNewUser = () => {
                             <ItemLabel>Quyền Truy cập</ItemLabel>
                             <GenderOptions style={{ paddingBottom: "5px" }}>
                                 <Item>
-                                    <ItemInput type="radio" name="gender" id="male" value="user" style={{ marginBottom: "5px" }} />
+                                    <ItemInput type="radio" name="gender" id="male" value="user" style={{ marginBottom: "5px" }} defaultChecked />
                                     <ItemLabel htmlFor='male' style={{ textAlign: "Center" }}>Người Dùng</ItemLabel>
                                 </Item>
                                 <Item>
@@ -162,15 +222,15 @@ const AdmNewUser = () => {
                                 </Item>
                             </GenderOptions>
                         </Genders>
-                        <Item style={{ width: "100%" }}>
+                        {/* <Item style={{ width: "100%" }}>
                             <ItemLabel>Trạng thái tài khoản</ItemLabel>
                             <Select name="active" id="active">
                                 <SelectOption value="yes">Kích hoạt</SelectOption>
                                 <SelectOption value="no">Không kích hoạt</SelectOption>
                             </Select>
-                        </Item>
-                        <Button style={{ width: "120px", borderRadius: "20px" }}>Làm mới</Button>
-                        <Button style={{ marginLeft: "20px", width: "120px", borderRadius: "20px" }} onClick={onClickCreateAccount}>Thêm mới</Button>
+                        </Item> */}
+                        {/* <Button style={{ width: "120px", borderRadius: "20px" }}>Làm mới</Button> */}
+                        <Button style={{ marginLeft: "20px", width: "120px", borderRadius: "20px" }} htmlType='submit'>Thêm mới</Button>
                     </FormWrapper>
                 </Form>
 
