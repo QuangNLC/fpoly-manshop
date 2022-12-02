@@ -15,6 +15,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import javax.websocket.server.PathParam;
 import java.util.ArrayList;
 import java.util.Date;
@@ -294,7 +295,7 @@ public class OrderContoller {
         return ResponseEntity.ok("Seen noti");
     }
 
-//    @PostMapping("/create-wating-order")
+    //    @PostMapping("/create-wating-order")
 //    public ResponseEntity<?> createWatingOrder(){
 //        Orders newOrder = new Orders();
 //        newOrder.setCreatedDate(new Date());
@@ -303,61 +304,69 @@ public class OrderContoller {
 //        newOrder.setStatusOrders(stt);
 //
 //    }
-@PostMapping("/checkout/waiting")
-@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_STAFF')")
-public ResponseEntity<?> waiting(@RequestBody OrderRequestDTO orderRequestDTO){
-    log.info("Tạo 1 hóa đơn chờ  ");
-    Orders newOrder = new Orders();
-    Users user = new Users();
-    user.setUsername(orderRequestDTO.getUsers().getUsername());
-    try {
-        newOrder.setUsers(user);
-        StatusOrder sttOrder = new StatusOrder();
-        sttOrder.setId(5);
-        newOrder.setStatusOrders(sttOrder);
-        newOrder.setCustomers(customerJPA.findById(4).get());
-        newOrder.setOrder_date(new Date());
-        newOrder.setCreatedDate(new Date());
-        orderJPA.save(newOrder);
-        return ResponseEntity.ok().body(newOrder.getId());
-    }catch (Exception e) {
-        e.printStackTrace();
-        return ResponseEntity.notFound().build();
+    @PostMapping("/checkout/waiting")
+//@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_STAFF')")
+    public ResponseEntity<?> waiting(@RequestBody OrderRequestDTO orderRequestDTO){
+        log.info("Tạo 1 hóa đơn chờ  ");
+        Orders newOrder = new Orders();
+        Users user = new Users();
+        user.setUsername(orderRequestDTO.getUsers().getUsername());
+        try {
+            newOrder.setUsers(user);
+            StatusOrder sttOrder = new StatusOrder();
+            sttOrder.setId(5);
+            newOrder.setStatusOrders(sttOrder);
+            newOrder.setCustomers(customerJPA.findById(4).get());
+            newOrder.setOrder_date(new Date());
+            newOrder.setCreatedDate(new Date());
+            orderJPA.save(newOrder);
+            return ResponseEntity.ok().body(newOrder.getId());
+        }catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.notFound().build();
+        }
     }
-}
 
+    @Transactional
     @PutMapping("/update/waiting/{id}")
     public ResponseEntity<?> updateCheckoutWt(@RequestBody OrderRequestDTO orderRequestDTO,@PathVariable("id")Integer id){
         Orders  newOrder = orderJPA.findById(id).get();
-//    System.out.println(newOrder.getStatusOrders().getTitle());
-//        if(newOrder.getStatusOrders().getTitle() != "?ang ch?"){
-//            return ResponseEntity.status(404).body("lỗi khi update đơn hàng" +id);
-//        }else
         log.info("Gọi vào hàm update đơn hàng ");
         if (!orderJPA.existsById(id)){
             return ResponseEntity.status(404).body("lỗi : không tìm thấy đơn hàng với (id)= " +id);
         }else{
             try {
+                if(orderRequestDTO.getCustomers() != null){
+                    Customers customers  = new Customers();
+                    Address address = new Address();
+                    Citys city = new Citys();
+                    Districts district = new Districts();
+                    Wards ward = new Wards();
+                    city.setId(orderRequestDTO.getCityId());
+                    district.setId(orderRequestDTO.getDistrictId());
+                    ward.setId(orderRequestDTO.getWardId());
+                    address.setCity(city);
+                    address.setDistrict(district);
+                    address.setWard(ward);
+                    address.setLocation(orderRequestDTO.getLocation());
+                    Address savedAddress = addressJPA.save(address);
+                    customers.setAddress(savedAddress);
+                    customers.setPhone(orderRequestDTO.getCustomers().getPhone());
+                    customers.setName(orderRequestDTO.getCustomers().getName());
+                    customers.setUser(orderRequestDTO.getUsers());
+                    customerJPA.save(customers);
+                    newOrder.setCustomers(customers);
+                }
                 newOrder.setTotal_price(orderRequestDTO.getTotal_price());
                 orderJPA.save(newOrder);
+                orderDetailJPA.deletelistOrderdetail(newOrder.getId());
                 Orders orderForDetail = new Orders();
                 orderForDetail.setId(id);
-
                 List<OrderDetail> orderDetails = orderRequestDTO.getOrderDetail();
-//                    System.out.println(orderRequestDTO.getTotal_price());
-//                    System.out.println(orderRequestDTO.getOrderDetail().size());
-//                    for(int i =0;i< orderDetails.size();i++){
-//                        OrderDetail newor = orderDetails.get(i);
-//                        System.out.println(newor.getQuantity());
-//                        orderDetailJPA.save(newor);
-//                    }
-                if (orderDetails.size() >0){
-                    orderDetails.forEach(detail -> {
-                        detail.setOrders(orderForDetail);
-                        orderDetailJPA.save(detail);
-                    });
-                }
-
+                orderDetails.forEach(detail -> {
+                    detail.setOrders(orderForDetail);
+                    orderDetailJPA.save(detail);
+                });
                 return ResponseEntity.ok().body(orderJPA.findById(id));
 
             }catch (Exception e){
