@@ -324,7 +324,7 @@ public class OrderContoller {
             StatusOrder sttOrder = new StatusOrder();
             sttOrder.setId(5);
             newOrder.setStatusOrders(sttOrder);
-            newOrder.setCustomers(customerJPA.findById(4).get());
+            newOrder.setCustomers(customerJPA.findById(1).get());
             newOrder.setOrder_date(new Date());
             newOrder.setCreatedDate(new Date());
             orderJPA.save(newOrder);

@@ -260,7 +260,7 @@ const AdmNewPromotions = () => {
                 username: auth?.info?.username
             },
             by_persent: value?.discount,
-            check: value?.isactive ? 1 : 0,
+            check: 0,
             listpr: [...listPr.map(item => item.id)]
         }
         promotionsAPI.createPromotion(payload)

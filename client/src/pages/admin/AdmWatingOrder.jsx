@@ -582,7 +582,8 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
                                 size: item?.selectedSize?.size?.title,
                                 total_price: item?.item?.export_price * item?.quantity
                             }))
-                        ]
+                        ],
+                        statusOrders:({ id: 5, title: 'Đang Chờ' })
                     }
                     console.log(payload)
                     ordersAPI.updateWatingOrder(payload)

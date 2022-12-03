@@ -192,7 +192,7 @@ const WebHomePage = () => {
       {/* <div>
         <button onClick={fillData}> fill</button>
       </div> */}
-      <CategoriesContainer>
+      {/* <CategoriesContainer>
         <CategoryWrapper>
           <CategoryImageContainer>
             <CategoryTitle>Quần Bò</CategoryTitle>
@@ -214,7 +214,7 @@ const WebHomePage = () => {
             <CategoryImage src={cate3} />
           </CategoryImageContainer>
         </CategoryWrapper>
-      </CategoriesContainer>
+      </CategoriesContainer> */}
       <ProductSection>
         <ProductSectionTitle>Sản Phẩm Mới Nhất</ProductSectionTitle>
         {

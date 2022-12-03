@@ -15,6 +15,11 @@ import moment from 'moment'
 const Container = styled.div`
     width: 100%;
 `
+const ActionsWrapper = styled.div`
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+`
 const Wrapper = styled.div`
     width: 100%;
     padding: 20px;
@@ -273,7 +278,7 @@ const AdmUpdatePromotion = () => {
                             username: auth?.info?.username
                         },
                         by_persent: value?.discount,
-                        check: value?.isactive ? 1 : 0,
+                        check: 0,
                         listpr: [...listPr.map(item => item.id)]
                     }
                     promotionsAPI.updatePromotion(payload)
