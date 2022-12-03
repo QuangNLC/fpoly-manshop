@@ -112,7 +112,7 @@ public class PromotionsController {
             }
         }
     }
-    @GetMapping("/product-to promotions")
+    @GetMapping("/product-to-promotions")
     public ResponseEntity<?> getProduct(){
         try {
             List<Product> productList = productJPA.findByPromotionActive(productJPA.findListInteger());
@@ -128,6 +128,7 @@ public class PromotionsController {
     public ResponseEntity<?> updatePromotions(@RequestBody PromotionRequestDTO promotions,@PathVariable("id") Integer id ) {
         log.info("Gọi vào hàm update promotions với (id) = " + id);
         Promotions promotions1 = promotionJPA.findById(id).get();
+        System.out.println(promotions);
         try {
 
             productPromotionJPA.deletelistProductPr(promotions1.getId());

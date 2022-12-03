@@ -45,6 +45,14 @@ public class OrderContoller {
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
 
+
+    @Autowired
+    private CitysJPA citysJPA;
+    @Autowired
+    private DistrictsJPA districtsJPA;
+    @Autowired
+    private WardsJPA wardsJPA;
+
     public OrderContoller(UserJPA userJPA, CustomerJPA customerJPA, OrderDetailJPA orderDetailJPA, OrderJPA orderJPA, ProductsizeJPA productsizeJPA, SizeJPA sizeJPA) {
         this.userJPA = userJPA;
         this.customerJPA = customerJPA;
@@ -331,6 +339,7 @@ public class OrderContoller {
     @PutMapping("/update/waiting/{id}")
     public ResponseEntity<?> updateCheckoutWt(@RequestBody OrderRequestDTO orderRequestDTO,@PathVariable("id")Integer id){
         Orders  newOrder = orderJPA.findById(id).get();
+        newOrder.setStatusOrders(orderRequestDTO.getStatusOrders());
         log.info("Gọi vào hàm update đơn hàng ");
         if (!orderJPA.existsById(id)){
             return ResponseEntity.status(404).body("lỗi : không tìm thấy đơn hàng với (id)= " +id);
@@ -339,12 +348,15 @@ public class OrderContoller {
                 if(orderRequestDTO.getCustomers() != null){
                     Customers customers  = new Customers();
                     Address address = new Address();
-                    Citys city = new Citys();
-                    Districts district = new Districts();
-                    Wards ward = new Wards();
-                    city.setId(orderRequestDTO.getCityId());
-                    district.setId(orderRequestDTO.getDistrictId());
-                    ward.setId(orderRequestDTO.getWardId());
+                    Citys city = citysJPA.findById(orderRequestDTO.getCityId()).get();
+                    Districts district = districtsJPA.findById(orderRequestDTO.getDistrictId()).get();
+                    Wards ward = wardsJPA.findById(orderRequestDTO.getWardId()).get();
+//                    Citys city = new Citys();
+//                    Districts district = new Districts();
+//                    Wards ward = new Wards();
+//                    city.setId(orderRequestDTO.getCityId());
+//                    district.setId(orderRequestDTO.getDistrictId());
+//                    ward.setId(orderRequestDTO.getWardId());
                     address.setCity(city);
                     address.setDistrict(district);
                     address.setWard(ward);
@@ -367,11 +379,13 @@ public class OrderContoller {
                     detail.setOrders(orderForDetail);
                     orderDetailJPA.save(detail);
                 });
-                return ResponseEntity.ok().body(orderJPA.findById(id));
 
             }catch (Exception e){
                 return ResponseEntity.notFound().build();
             }
+
+
+            return ResponseEntity.ok().body(orderJPA.findById(id));
         }
     }
 

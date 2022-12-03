@@ -3,8 +3,11 @@ import Helmet from '../../components/Helmet'
 import styled from 'styled-components'
 import { useEffect } from 'react'
 import productAPI from '../../api/productsAPI'
+import { useNavigate } from 'react-router-dom'
 import { Button, Table } from 'antd'
 import { formatter } from '../../utils'
+import promotionsAPI from '../../api/promotionsAPI'
+import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined';
 
 const Container = styled.div`
     width: 100%;
@@ -14,84 +17,65 @@ const Wrapper = styled.div`
     min-height: 100vh;
     padding: 20px;
     display: flex;
+    flex-direction: column;
     flex-wrap: wrap;
 `
-const Left = styled.div`
-    flex: 3;
-    padding: 10px;
-`
-const ProductsContainer = styled.div`
+
+const PromotionsContainer = styled.div`
     width: 100%;
-    padding: 5px;
+    padding: 10px;
     background-color: white;
     border-radius: 10px;
 `
-const Right = styled.div`
-    flex : 1;
-    padding: 10px;
+
+const ActionsContainer = styled.div`
+    width: 100%;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: flex-end;
 `
 
 const AdmPromotions = () => {
-    const [products, setProducts] = useState([])
-    const productColumn = [
+    const [promotions, setPromotions] = useState([])
+    const navigate = useNavigate();
+    const promotionsColumn = [
         {
             title: 'STT',
             dataIndex: 'index',
         },
         {
-            title: 'Tên Sản Phẩm',
-            dataIndex: 'name',
+            title: 'Tên Khuyến Mại',
+            dataIndex: 'title',
         },
         {
-            title: 'Loại Sản Phẩm',
-            render: (record) => {
-                return (
-                    <>
-                        {record?.category?.title}
-                    </>
-                )
-            }
+            title: 'Ngày Bắt Đầu',
+            dataIndex: 'date_after'
         },
         {
-            title: 'Giá',
-            dataIndex: 'export_price',
-            render: (text) => {
-                return (
-                    <>
-                        {formatter.format(text)}
-                    </>
-                )
-            },
-            sorter: (a, b) => a.export_price - b.export_price
+            title: 'Ngày Kết Thúc',
+            dataIndex: 'date_befor'
+        },
+        {
+            title: 'Giảm Giá',
+            render: (record) => (<>{record?.by_persent} %</>)
         },
         {
             title: 'Thao Tác',
-            render: (record) => {
-                return (
-                    <>
-                        <Button style={{ borderRadius: "20px" }} type='primary'>Thêm Sản Phẩm</Button>
-                    </>
-                )
-            }
+            render: (record) => (<Button type='primary' onClick={() => {navigate(`/admin/promotion/detail/${record?.id}`)}} icon={<RemoveRedEyeOutlinedIcon />} ></Button>)
         }
     ]
 
     useEffect(() => {
-        productAPI.getAll()
-            .then(res => {
-                if (!res.status) {
-                    setProducts(res.map((item, index) => {
-                        return ({
-                            index: index + 1,
-                            key: item.id,
-                            ...item
-                        })
-                    }))
-                } else {
-                    console.log(res)
-                }
-            })
-            .catch(err => console.log(err))
+        promotionsAPI.getAll()
+        .then(res => {
+            console.log(res)
+            setPromotions(res.map((item, index) => ({
+                index: index+1,
+                key: item.id,
+                ...item
+            })))
+        })
+        .catch(err => console.log(err))
     }, [])
     return (
         <Helmet
@@ -99,12 +83,12 @@ const AdmPromotions = () => {
         >
             <Container>
                 <Wrapper>
-                    <Left>
-                        <ProductsContainer>
-                            <Table dataSource={products} columns={productColumn} />
-                        </ProductsContainer>
-                    </Left>
-                    <Right>Right</Right>
+                    <ActionsContainer>
+                        <Button type='primary' onClick={() => {navigate(`/admin/promotion/new`)}}>Tạo Khuyến Mại</Button>
+                    </ActionsContainer>
+                    <PromotionsContainer>
+                        <Table dataSource={promotions} columns={promotionsColumn} />
+                    </PromotionsContainer>
                 </Wrapper>
             </Container>
         </Helmet>

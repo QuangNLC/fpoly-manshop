@@ -503,7 +503,7 @@ const Webcart = () => {
     }
 
     useEffect(() => {
-        if (auth) {
+        if (auth && auth.info.address) {
             setCustomerValue(
                 {
                     fullname: auth.info.fullname,
@@ -536,22 +536,24 @@ const Webcart = () => {
                 }
             })
             .then((res) => {
-                setCustomerValue(
-                    {
-                        name: auth.info.fullname,
-                        phone: auth.info.phone,
+                if (auth?.info?.address) {
+                    setCustomerValue(
+                        {
+                            name: auth.info.fullname,
+                            phone: auth.info.phone,
+                            cityId: auth.info.address.city.id,
+                            districtId: auth.info.address.district.id,
+                            wardId: auth.info.address.ward.id,
+                            location: auth.info.address.location
+                        }
+                    )
+                    setSelectedData({
                         cityId: auth.info.address.city.id,
                         districtId: auth.info.address.district.id,
-                        wardId: auth.info.address.ward.id,
-                        location: auth.info.address.location
-                    }
-                )
-                setSelectedData({
-                    cityId: auth.info.address.city.id,
-                    districtId: auth.info.address.district.id,
-                    wardId: auth.info.address.ward.id
-                })
-                form.resetFields();
+                        wardId: auth.info.address.ward.id
+                    })
+                    form.resetFields();
+                }
             })
             .catch(err => console.log(err))
     }, [])

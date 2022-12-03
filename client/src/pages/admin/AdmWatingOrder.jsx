@@ -601,7 +601,6 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
 
 
     const handleClickSubmitForm = (value) => {
-        console.log(value)
         Modal.confirm({
             title: 'Hộp Thoại Xác Nhận',
             content: 'Xác nhận đơn hàng.',
@@ -617,8 +616,22 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
                             total_price: item?.item?.export_price * item?.quantity
                         }))
                     ],
-                    statusOrders: isDefaultCustomer ? ({ id: 4, title: 'Hoàn Thành' }) : ({ id: 3, title: 'Đã Xác Nhận' })
+                    statusOrders: isDefaultCustomer ? ({ id: 4, title: 'Hoàn Thành' }) : ({ id: 3, title: 'Đã Xác Nhận' }),
+                    customers: isDefaultCustomer ? null : {
+                        "phone": value?.phone,
+                        "name": value?.name,
+                        "note": value.note ? value.note : '',
+                        "user": {
+                            "username": auth?.info?.username
+                        }
+                    }
+                    ,
+                    cityId: value.cityId,
+                    districtId: value.districtId,
+                    wardId: value.wardId,
+                    location: value.location
                 }
+                console.log(payload)
                 onClickUpdateStatus(payload)
             }
         })
@@ -659,6 +672,9 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
                     )
                 })
             ])
+        }
+        if (info?.customers) {
+            console.log(info)
         }
     }, [info])
 

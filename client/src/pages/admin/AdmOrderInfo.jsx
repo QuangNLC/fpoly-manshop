@@ -166,7 +166,6 @@ const StatusBadge = (props) => {
     const [color, setColor] = useState('blue')
 
     useEffect(() => {
-        console.log(props.status)
         if (props.status) {
             switch (props.status.id) {
                 case (1): {
@@ -297,6 +296,23 @@ const AdmOrderInfo = () => {
     ])
     const navigate = useNavigate();
 
+    const onClickUpdateWatingOrder = (item) => {
+        ordersAPI.updateWatingOrder(item)
+        .then(res => {
+            if (!res.status) {
+                console.log(res)
+                setInfo({ ...res })
+                Modal.success({
+                    title: "Hộp Thoại Thông Báo",
+                    content: "Cập nhật trạng thái đơn hàng thành công!"
+                })
+            } else {
+                console.log(res)
+            }
+        })
+        .catch(err => console.log(err))
+    }
+
     const onClickUpdateStatus = (item) => {
         ordersAPI.updateOrderStatus(item)
             .then(res => {
@@ -315,11 +331,9 @@ const AdmOrderInfo = () => {
     }
 
     useEffect(() => {
-        console.log(id)
         ordersAPI.getOrderInfo(id)
             .then(res => {
                 if (!res.status) {
-                    console.log(res)
                     setInfo(res)
                     setIsLoadingInfo(false)
                     // ordersAPI.getAllOrderStatus()
@@ -356,7 +370,7 @@ const AdmOrderInfo = () => {
                     (
                         info?.statusOrders?.id === 5 ?
                             (
-                                <AdmWatingOrder id={info?.id} info={info} onClickUpdateStatus={onClickUpdateStatus} />
+                                <AdmWatingOrder id={info?.id} info={info} onClickUpdateStatus={onClickUpdateWatingOrder} />
                             )
                             :
                             (<Container>

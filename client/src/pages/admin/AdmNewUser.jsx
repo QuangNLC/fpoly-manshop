@@ -78,7 +78,7 @@ const AdmNewUser = () => {
                 .then(res => {
                     if (!res.status) {
                         openNotificationWithIcon('success', 'Đăng ký thành công!', 'Đăng ký thành công!');
-                        navigate('/adm/user-list')
+                        navigate('/admin/user-list')
 
                     } else {
                         openNotificationWithIcon('error', 'Đăng ký thất bại!', 'Đăng ký thất bại!');

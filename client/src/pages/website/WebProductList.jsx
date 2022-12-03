@@ -261,7 +261,7 @@ const WebProductList = (props) => {
   }
 
   const handleFilterProduct = () => {
-    productAPI.getByFilter(filterInfo, 1, 16)
+    productAPI.getByFilter(filterInfo, 1, 15)
       .then((res) => {
         if (!res.status) {
           setProducts(res.list);
@@ -277,7 +277,7 @@ const WebProductList = (props) => {
   useEffect(() => {
     console.log(filterInfo)
     console.log(currPage)
-    productAPI.getByFilter(filterInfo, currPage, 16)
+    productAPI.getByFilter(filterInfo, currPage, 15)
       .then((res) => {
         if (!res.status) {
           console.log(res)
@@ -309,7 +309,7 @@ const WebProductList = (props) => {
       "minPrice": null,
       "maxPrice": null,
       "sortname": ""
-    }, 1, 16)
+    }, 1, 15)
       .then(res => {
         setProducts(res.list)
         setTotalPage(res.totalItems)

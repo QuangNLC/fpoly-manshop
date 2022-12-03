@@ -38,6 +38,8 @@ import AdmBills from "./pages/admin/AdmBills";
 import AdmOrderInfo from "./pages/admin/AdmOrderInfo";
 import AdmWatingOrder from "./pages/admin/AdmWatingOrder";
 import AdmPromotions from "./pages/admin/AdmPromotions";
+import AdmNewPromotions from "./pages/admin/AdmNewPromotions";
+import AdmUpdatePromotion from "./pages/admin/AdmUpdatePromotion";
 function App() {
   const store = createStore(rootReducer);
 
@@ -80,6 +82,8 @@ function App() {
             <Route path="message" element={<AdmMessage />} />
             <Route path="bills" element={<AdmBills />} />
             <Route path="promotions" element={<AdmPromotions />} />
+            <Route path="promotion/new" element={<AdmNewPromotions />} />
+            <Route path="promotion/detail/:id" element={<AdmUpdatePromotion />} />
             <Route path="*" element={<div>Trang khong ton tai</div>} />
           </Route>
         </Routes>

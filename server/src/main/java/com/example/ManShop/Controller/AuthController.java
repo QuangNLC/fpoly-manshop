@@ -5,14 +5,13 @@ import com.example.ManShop.DTOS.LoginRequest;
 import com.example.ManShop.DTOS.OrderStatusRequest;
 import com.example.ManShop.DTOS.RegisterRequest;
 import com.example.ManShop.Entitys.*;
-import com.example.ManShop.JPAs.OrderJPA;
-import com.example.ManShop.JPAs.RolesJPA;
-import com.example.ManShop.JPAs.UserJPA;
+import com.example.ManShop.JPAs.*;
 import com.example.ManShop.security.JwtUtils;
 import com.example.ManShop.security.UserDetailsIpml;
 import net.bytebuddy.utility.RandomString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -38,6 +37,13 @@ public class AuthController {
     final PasswordEncoder passwordEncoder;
     final JwtUtils jwtUtils;
     final OrderJPA orderJPA;
+
+    @Autowired
+    private CitysJPA citysJPA;
+    @Autowired
+    private DistrictsJPA districtsJPA;
+    @Autowired
+    private WardsJPA wardsJPA;
 
     public AuthController(AuthenticationManager authenticationManager, UserJPA userJPA, RolesJPA rolesJPA, PasswordEncoder passwordEncoder, JwtUtils jwtUtils, OrderJPA orderJPA) {
         this.authenticationManager = authenticationManager;
@@ -133,12 +139,10 @@ public class AuthController {
         Role roles = rolesJPA.findById(3).get();
         users.setRoles(roles);
         Address address = new Address();
-        Citys city = new Citys();
-        Districts district = new Districts();
-        Wards ward = new Wards();
-        city.setId(request.getCityId());
-        district.setId(request.getDistrictId());
-        ward.setId(request.getWardId());
+        // config address
+        Citys city = citysJPA.findById(1).get();
+        Districts district = districtsJPA.findById(75).get();
+        Wards ward = wardsJPA.findById(Long.parseLong("1155")).get();
         address.setCity(city);
         address.setDistrict(district);
         address.setWard(ward);
