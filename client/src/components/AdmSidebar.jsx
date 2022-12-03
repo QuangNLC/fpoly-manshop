@@ -167,7 +167,7 @@ const AdmSidebar = () => {
                         <Link to="/admin/message" style={{ textDecoration: "none", color: "unset" }}>
                             <Item>
                                 <EmailOutlinedIcon style={{ fontSize: "20px", marginRight: "10px" }} />
-                                <Badge count={count && count <= 10 ? count : "10+"}>
+                                <Badge count={count && (count <= 10 ? count : "10+")}>
                                     <ItemText>
                                         Hộp Thư Đến
                                     </ItemText>

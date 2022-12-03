@@ -87,6 +87,8 @@ const ListWrapper = styled.div`
     -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.55);
     box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.55);
     padding: 20px;
+    
+    background-color: white;
 `
 const TitleContainer = styled.div`   
     display: flex;
@@ -180,7 +182,7 @@ const AdmCategoryList = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [data, setData] = useState([]);
 
-    const [isOpenForm, setIsOpenForm] = useState(false);
+    const [isOpenForm, setIsOpenForm] = useState(true);
     const [updatingId, setUpdatingId] = useState(undefined);
     const [categoryValue, setCategoryValue] = useState({ id: undefined, title: "" });
     const [form] = useForm();
