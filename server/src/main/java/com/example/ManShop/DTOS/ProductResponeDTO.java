@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 public class ProductResponeDTO {
     private int id;
-    private  double import_price;
+    private  double export_price;
     private Date create_date;
     private Date update_create_date;
     private String name;

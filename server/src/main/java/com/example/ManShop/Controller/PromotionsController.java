@@ -189,7 +189,7 @@ public class PromotionsController {
             a.setCategory(prod.getCategory());
             a.setImages(prod.getImages());
             a.setCreate_date(prod.getCreate_date());
-            a.setImport_price(prod.getImport_price());
+            a.setExport_price(prod.getExport_price());
             a.setUpdate_create_date(prod.getUpdate_create_date());
             a.setProductsizes(prod.getProductsizes());
             a.setTitle(prod.getTitle());
