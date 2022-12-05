@@ -10,6 +10,7 @@ import styled from 'styled-components'
 import Helmet from "../../components/Helmet";
 import DialogHOC from "../../hoc/DialogHOC";
 import { Popconfirm, Pagination, Spin } from 'antd'
+import { useParams } from "react-router-dom";
 
 const Container = styled.div`
   width: 100%;
@@ -191,7 +192,7 @@ const sortOption = [
   // { id: 6, by: 'createdAt', sort: 'desc', title: 'Ngày ra mắt(lâu nhất)' }
 ]
 
-const WebProductList = (props) => {
+const WebTestProductList = (props) => {
   // const [products, setProducts] = useState([])
   // const [currPage, setCurrPage] = useState(1)
   // const [totalPage, setTotalPage] = useState(1)
@@ -423,12 +424,14 @@ const WebProductList = (props) => {
   //   </Helmet>
   // );
 
-
+  const {page, categoryId} = useParams()
   const [products, setProducts] = useState([])
   const [showProducts, setShowProducts] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [currPage, setCurrPage] = useState(1)
 
+
+  console.log(page, categoryId)
 
   const onChangePage = (page, total) => {
     setCurrPage(page)
@@ -495,4 +498,4 @@ const WebProductList = (props) => {
   )
 };
 
-export default WebProductList;
+export default WebTestProductList;

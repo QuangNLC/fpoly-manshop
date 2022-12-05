@@ -327,8 +327,8 @@ public class OrderContoller {
             newOrder.setCustomers(customerJPA.findById(1).get());
             newOrder.setOrder_date(new Date());
             newOrder.setCreatedDate(new Date());
-            orderJPA.save(newOrder);
-            return ResponseEntity.ok().body(newOrder.getId());
+           Orders savedOrder = orderJPA.save(newOrder);
+            return ResponseEntity.ok().body(savedOrder);
         }catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.notFound().build();

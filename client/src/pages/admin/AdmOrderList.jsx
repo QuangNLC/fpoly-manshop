@@ -220,8 +220,9 @@ const AdmOrderList = () => {
     const columns = [
         {
             title: 'STT',
-            dataIndex: 'index',
-            key: 'index'
+            render: (text, record, index) => {
+                return (<>{index + 1}</>)
+            }
         },
         {
             title: 'Trạng Thái',
@@ -270,7 +271,7 @@ const AdmOrderList = () => {
             title: 'Thanh Toán',
             dataIndex: 'total_price',
             key: 'total_price',
-            render: (text) => (<>{formatter.format(text)}</>),
+            render: (text) => (<>{text ? formatter.format(text) : formatter.format(0)}</>),
             sorter: (a, b) => a.total_price - b.total_price
         },
         {
@@ -422,7 +423,41 @@ const AdmOrderList = () => {
         }
     }
 
+    const handleCreateNewBill = () => {
+        if (auth) {
+            console.log(`Bearer ${JSON.parse(localStorage.getItem("AUTH"))?.token}`)
+            ordersAPI.createWatingOrder({ users: { username: auth?.info?.username }, orderDetail: [] })
+                .then(res => {
+                    if (!res.status) {
+                        openNotificationWithIcon('success', 'Tạo Đơn Chờ', 'Tạo đơn chờ thành công')
+                        console.log(res)
 
+                        setData(
+                            [...data,
+                            {
+                                key: res.id,
+                                createdDate: moment(res.createdDate).format('DD/MM/YYYY, H:mm:ss'),
+                                username: res.users.username,
+                                totalQuantity: 0,
+                                status: { id: 5, title: 'Đang Chờ' }
+                            }
+                            ]
+                        )
+                        // [...res.map((item, index) => ({
+                        //     ...item,
+                        //     key: item.id,
+                        //     createdDate: moment(item.createdDate).format('DD/MM/YYYY, H:mm:ss'),
+                        //     username: item.users.username,
+                        //     totalQuantity: item?.orderDetail.reduce((total, curr) => (total + curr.quantity), 0),
+                        //     status: item.statusOrders
+                        // }))]);
+                    } else {
+                        console.log(res)
+                    }
+                })
+                .catch(err => console.log(err))
+        }
+    }
 
 
     const handleClickViewOrderInfo = (item) => {
@@ -523,7 +558,6 @@ const AdmOrderList = () => {
                                 console.log(res);
                                 setData([...res.map((item, index) => ({
                                     ...item,
-                                    index: index + 1,
                                     key: item.id,
                                     createdDate: moment(item.createdDate).format('DD/MM/YYYY, H:mm:ss'),
                                     username: item.users.username,
@@ -551,7 +585,7 @@ const AdmOrderList = () => {
                 <Wrapper>
                     <ListContainer>
                         <NewActionContainer>
-                            <Button style={{ borderRadius: "20px" }} onClick={() => { navigate("/admin/bills") }} type='primary' >Tạo Đơn Hàng</Button>
+                            <Button style={{ borderRadius: "20px" }} onClick={() => { handleCreateNewBill() }} type='primary' >Tạo Đơn Hàng</Button>
                         </NewActionContainer>
                         {/* <ListFilterContainer>
                             <ListFilterItem>
@@ -569,7 +603,7 @@ const AdmOrderList = () => {
                             </ListFilterItem>
                         </ListFilterContainer> */}
                         <ListItemWrapper>
-                            <Table columns={columns} dataSource={data} bordered />
+                            <Table columns={columns} dataSource={data.sort((a, b) => a.createdDate > b.createdDate ? -1 : 1)} bordered />
                         </ListItemWrapper>
                     </ListContainer>
                 </Wrapper>
