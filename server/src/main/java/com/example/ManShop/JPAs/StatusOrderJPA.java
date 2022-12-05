@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface StatusOrderJPA  extends JpaRepository<StatusOrder, Integer> {
 
+
+    StatusOrder findByTitle(String title);
 }
