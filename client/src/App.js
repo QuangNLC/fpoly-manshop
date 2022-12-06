@@ -60,8 +60,8 @@ function App() {
             <Route path="products" element={<WebProductList />} />
             <Route path="list-product/page=:page" element={<WebTestProductList />} />
             <Route path="list-product/categorryId=:categoryId/page=:page" element={<WebTestProductList />} />
-            {/* <Route path="cart" element={<Webcart />} /> */}
-            <Route path="cart" element={<WebCartDetails />} />
+            <Route path="cart" element={<Webcart />} />
+            {/* <Route path="cart" element={<WebCartDetails />} /> */}
             <Route path="my-orders" element={<WebMyOrders />} />
             <Route path="my-account" element={<WebMyAccount />} />
             <Route path="change-password" element={<WebChangePassword />} />

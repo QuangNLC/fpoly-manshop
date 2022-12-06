@@ -15,6 +15,7 @@ import { CHANGE_CART_ITEM_QUANTITY, DELETE_CART_ITEM } from '../../redux/types'
 import CustomerInfoForm from '../../components/CustomerInfoForm'
 import addressAPI from '../../api/addressAPI'
 import feeAPI from '../../api/feeAPI'
+import axios from 'axios'
 
 const Container = styled.div`
     width: 100%;
@@ -197,7 +198,6 @@ const Webcart = () => {
     })
     const [useDefaultCustomer, setUseDefaultCustomer] = useState(false)
 
-
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -219,6 +219,44 @@ const Webcart = () => {
             districtId: value,
             wardId: null
         })
+        const province = cityData.find((item) => item.id === selectedData?.cityId)
+        const district = province?.districts.find((item) => item.id === value)
+        console.log(province, district)
+        if (province && district) {
+            console.log({
+                "pick_province": "Hà Nội",
+                "pick_district": "Quận Nam Từ Liêm",
+                "province": province.title,
+                "district": district.title,
+                "address": "",
+                "weight": 1000,
+                "value": null,
+                "transport": "road",
+                "deliver_option": "none",
+                "tags": []
+            })
+            axios.get(' https://services.giaohangtietkiem.vn/services/shipment/fee', {
+                token: '0F39423929357c68955e79974BFe7e0CB54029E5'
+            })
+            .then(res => console.log(res))
+            .catch(err => console.log(err))
+            // feeAPI.getShippingFeeByGHTK({
+            //     "pick_province": "Hà Nội",
+            //     "pick_district": "Quận Nam Từ Liêm",
+            //     "province": province.title,
+            //     "district": district.title,
+            //     "address": "",
+            //     "weight": 1000,
+            //     "value": null,
+            //     "transport": "road",
+            //     "deliver_option": "none",
+            //     "tags": []
+            // })
+            // .then(res => {
+            //     console.log(res)
+            // })
+            // .catch( err => console.log(err))
+        }
     }
 
     const onChangeWard = (value) => {
@@ -557,19 +595,6 @@ const Webcart = () => {
                 }
             })
             .catch(err => console.log(err))
-
-        feeAPI.getCityData()
-        .then(response => {
-            if(response.status && (response.status ===200)){
-                console.log(response.data.data.map((item, index) => {
-                    return({
-                        id: item?.ProvinceID,
-                        title: item?.ProvinceName
-                    })
-                }))
-            }
-        })
-        .catch(err => console.log(err))
     }, [])
     return (
         <Helmet

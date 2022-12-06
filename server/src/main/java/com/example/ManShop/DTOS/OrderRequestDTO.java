@@ -2,6 +2,7 @@ package com.example.ManShop.DTOS;
 
 import com.example.ManShop.Entitys.Customers;
 import com.example.ManShop.Entitys.OrderDetail;
+import com.example.ManShop.Entitys.StatusDetail;
 import com.example.ManShop.Entitys.StatusOrder;
 import com.example.ManShop.Entitys.Users;
 import lombok.AllArgsConstructor;
@@ -20,7 +21,7 @@ public class OrderRequestDTO {
     private Customers customers= null;
     private double total_price = 0;
     private List<OrderDetail> orderDetail =null ;
-    private StatusOrder statusOrders= null;
+    private StatusDetail statusOrders= null;
     private Integer cityId =null;
     private Integer districtId=null;
     private Long wardId =null;

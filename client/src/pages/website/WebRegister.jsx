@@ -10,6 +10,7 @@ import { Form, Input, notification, Select } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import vietnamData from '../../assets/data/vietnamData.json';
 import addressAPI from '../../api/addressAPI';
+import Helmet from '../../components/Helmet';
 
 const Container = styled.div`
     width: 100vw;
@@ -180,197 +181,201 @@ const WebRegister = () => {
                 )
                 :
                 (
-                    <Container>
-                        <Wrapper>
-                            <BackgroundImgContainer>
-                                <BackgroundImg src={loginImg} />
-                            </BackgroundImgContainer>
-                            <FormContainer>
-                                <FormTitle>Đăng Ký</FormTitle>
-                                <Form
-                                    name='login'
-                                    labelCol={{ span: 24 }}
-                                    wrapperCol={{ span: 24 }}
-                                    onFinish={onFinish}
-                                    layout='horizontal'
-                                    autoComplete='off'
-                                    form={form}
-                                >
-                                    <FormTitle>Thông tin tài khoản</FormTitle>
-                                    <Form.Item
-                                        label="Tên đăng nhập"
-                                        name="username"
-                                        rules={[
-                                            { required: true, message: 'Vui lòng nhập tên tài khoản!' },
-                                            { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' }
-                                        ]}
+                    <Helmet
+                        title="Đăng Ký"
+                    >
+                        <Container>
+                            <Wrapper>
+                                <BackgroundImgContainer>
+                                    <BackgroundImg src={loginImg} />
+                                </BackgroundImgContainer>
+                                <FormContainer>
+                                    <FormTitle>Đăng Ký</FormTitle>
+                                    <Form
+                                        name='login'
+                                        labelCol={{ span: 24 }}
+                                        wrapperCol={{ span: 24 }}
+                                        onFinish={onFinish}
+                                        layout='horizontal'
+                                        autoComplete='off'
+                                        form={form}
                                     >
-                                        <Input placeholder='Tên đăng nhập' />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Họ và tên"
-                                        name="fullname"
-                                        rules={[
-                                            { required: true, message: 'Vui lòng nhập Họ và tên!' },
-                                            { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' }
-                                        ]}
-                                    >
-                                        <Input placeholder='Họ và tên' />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Email"
-                                        name="email"
-                                        rules={[
-                                            { required: true, message: 'Vui lòng nhập Email!' },
-                                            { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' },
-                                            { type: 'email' }
-                                        ]}
-                                    >
-                                        <Input placeholder='Email' type='email' />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Số điện thoại"
-                                        name="phone"
-                                        rules={[
-                                            { required: true, message: 'Vui lòng nhập Số điện thoại!' },
-                                            { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' }
-                                        ]}
-                                    >
-                                        <Input placeholder='Số điện thoại' />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Mật khẩu"
-                                        name="password"
-                                        rules={[
-                                            { required: true, message: 'Vui lòng nhập Mật khẩu!' },
-                                            { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' }
-                                        ]}
-                                    >
-                                        <Input.Password placeholder='Mật khẩu' />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Xác nhận mật khẩu"
-                                        name="confirmPasswrod"
-                                        rules={[
-                                            { required: true, message: 'Vui lòng nhập Xác nhận mật khẩu!' },
-                                            { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' },
-                                            ({ getFieldValue }) => ({
-                                                validator(_, value) {
-                                                    if (!value || getFieldValue('password') === value) {
-                                                        return Promise.resolve()
+                                        <FormTitle>Thông tin tài khoản</FormTitle>
+                                        <Form.Item
+                                            label="Tên đăng nhập"
+                                            name="username"
+                                            rules={[
+                                                { required: true, message: 'Vui lòng nhập tên tài khoản!' },
+                                                { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' }
+                                            ]}
+                                        >
+                                            <Input placeholder='Tên đăng nhập' />
+                                        </Form.Item>
+                                        <Form.Item
+                                            label="Họ và tên"
+                                            name="fullname"
+                                            rules={[
+                                                { required: true, message: 'Vui lòng nhập Họ và tên!' },
+                                                { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' }
+                                            ]}
+                                        >
+                                            <Input placeholder='Họ và tên' />
+                                        </Form.Item>
+                                        <Form.Item
+                                            label="Email"
+                                            name="email"
+                                            rules={[
+                                                { required: true, message: 'Vui lòng nhập Email!' },
+                                                { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' },
+                                                { type: 'email' }
+                                            ]}
+                                        >
+                                            <Input placeholder='Email' type='email' />
+                                        </Form.Item>
+                                        <Form.Item
+                                            label="Số điện thoại"
+                                            name="phone"
+                                            rules={[
+                                                { required: true, message: 'Vui lòng nhập Số điện thoại!' },
+                                                { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' }
+                                            ]}
+                                        >
+                                            <Input placeholder='Số điện thoại' />
+                                        </Form.Item>
+                                        <Form.Item
+                                            label="Mật khẩu"
+                                            name="password"
+                                            rules={[
+                                                { required: true, message: 'Vui lòng nhập Mật khẩu!' },
+                                                { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' }
+                                            ]}
+                                        >
+                                            <Input.Password placeholder='Mật khẩu' />
+                                        </Form.Item>
+                                        <Form.Item
+                                            label="Xác nhận mật khẩu"
+                                            name="confirmPasswrod"
+                                            rules={[
+                                                { required: true, message: 'Vui lòng nhập Xác nhận mật khẩu!' },
+                                                { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' },
+                                                ({ getFieldValue }) => ({
+                                                    validator(_, value) {
+                                                        if (!value || getFieldValue('password') === value) {
+                                                            return Promise.resolve()
+                                                        }
+                                                        return Promise.reject('Xác nhận mật khẩu không trùng khớp!')
                                                     }
-                                                    return Promise.reject('Xác nhận mật khẩu không trùng khớp!')
+                                                })
+                                            ]}
+                                        >
+                                            <Input.Password placeholder='Nhập lại mật khẩu' />
+                                        </Form.Item>
+                                        <FormTitle>Địa chỉ giao hàng</FormTitle>
+                                        <Form.Item
+                                            label="Tỉnh/Thành Phố"
+                                            name="cityId"
+                                            hasFeedback
+                                            rules={[
+                                                { required: true, message: 'Vui lòng chọn Tỉnh/Thành Phố!' }
+                                            ]}
+                                        >
+                                            <Select
+                                                onChange={onChangeCity}
+                                                placeholder="Tỉnh/Thành"
+                                            >
+                                                {
+                                                    data.map((item, index) => (
+                                                        <Select.Option key={item.id} value={item.id}>{item.title}</Select.Option>
+                                                    ))
                                                 }
-                                            })
-                                        ]}
-                                    >
-                                        <Input.Password placeholder='Nhập lại mật khẩu' />
-                                    </Form.Item>
-                                    <FormTitle>Địa chỉ giao hàng</FormTitle>
-                                    <Form.Item
-                                        label="Tỉnh/Thành Phố"
-                                        name="cityId"
-                                        hasFeedback
-                                        rules={[
-                                            { required: true, message: 'Vui lòng chọn Tỉnh/Thành Phố!' }
-                                        ]}
-                                    >
-                                        <Select
-                                            onChange={onChangeCity}
-                                            placeholder="Tỉnh/Thành"
+                                            </Select>
+                                        </Form.Item>
+                                        <Form.Item
+                                            label="Quận/Huyện"
+                                            name="districtId"
+                                            hasFeedback
+                                            rules={[
+                                                { required: true, message: 'Vui lòng chọn Quận/Huyện' }
+                                            ]}
                                         >
-                                            {
-                                                data.map((item, index) => (
-                                                    <Select.Option key={item.id} value={item.id}>{item.title}</Select.Option>
-                                                ))
-                                            }
-                                        </Select>
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Quận/Huyện"
-                                        name="districtId"
-                                        hasFeedback
-                                        rules={[
-                                            { required: true, message: 'Vui lòng chọn Quận/Huyện' }
-                                        ]}
-                                    >
-                                        <Select placeholder="Quận/Huyện" disabled={!selectedData.cityId}
-                                            onChange={onChangeDistrict}
-                                        >
-                                            {
-                                                selectedData.cityId ?
-                                                    (
-                                                        <>
-                                                            {
-                                                                (data.find(item => item.id === selectedData.cityId)).districts.map(item => (
-                                                                    <Select.Option value={item.id} key={item.id} >{item.title}</Select.Option>
-                                                                ))
-                                                            }
-                                                        </>
-                                                    )
-                                                    :
-                                                    (
-                                                        <>
+                                            <Select placeholder="Quận/Huyện" disabled={!selectedData.cityId}
+                                                onChange={onChangeDistrict}
+                                            >
+                                                {
+                                                    selectedData.cityId ?
+                                                        (
+                                                            <>
+                                                                {
+                                                                    (data.find(item => item.id === selectedData.cityId)).districts.map(item => (
+                                                                        <Select.Option value={item.id} key={item.id} >{item.title}</Select.Option>
+                                                                    ))
+                                                                }
+                                                            </>
+                                                        )
+                                                        :
+                                                        (
+                                                            <>
 
-                                                        </>
-                                                    )
-                                            }
-                                        </Select>
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Phường/Xã"
-                                        name="wardId"
-                                        hasFeedback
-                                        rules={[
-                                            { required: true, message: 'Vui lòng chọn Phường/Xã!' }
-                                        ]}
-                                    >
-                                        <Select disabled={!selectedData.districtId}
-                                            onChange={onChangeWard}
-                                            placeholder="Phường/Xã"
+                                                            </>
+                                                        )
+                                                }
+                                            </Select>
+                                        </Form.Item>
+                                        <Form.Item
+                                            label="Phường/Xã"
+                                            name="wardId"
+                                            hasFeedback
+                                            rules={[
+                                                { required: true, message: 'Vui lòng chọn Phường/Xã!' }
+                                            ]}
                                         >
-                                            {
-                                                selectedData.cityId && selectedData.districtId ?
-                                                    (
-                                                        <>
-                                                            {
-                                                                ((data.find(item => item.id === selectedData.cityId)).districts.find(item => item.id === selectedData.districtId)).wards.map(item => (
-                                                                    <Select.Option value={item.id} key={item.id} >{item.title}</Select.Option>
-                                                                ))
-                                                            }
-                                                        </>
-                                                    )
-                                                    :
-                                                    (
-                                                        <>
+                                            <Select disabled={!selectedData.districtId}
+                                                onChange={onChangeWard}
+                                                placeholder="Phường/Xã"
+                                            >
+                                                {
+                                                    selectedData.cityId && selectedData.districtId ?
+                                                        (
+                                                            <>
+                                                                {
+                                                                    ((data.find(item => item.id === selectedData.cityId)).districts.find(item => item.id === selectedData.districtId)).wards.map(item => (
+                                                                        <Select.Option value={item.id} key={item.id} >{item.title}</Select.Option>
+                                                                    ))
+                                                                }
+                                                            </>
+                                                        )
+                                                        :
+                                                        (
+                                                            <>
 
-                                                        </>
-                                                    )
-                                            }
-                                        </Select>
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Địa chỉ"
-                                        name="location"
-                                        hasFeedback
-                                        rules={[
-                                            { required: true, message: 'Vui lòng nhập địa chỉ!' },
-                                            { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' }
-                                        ]}
-                                    >
-                                        <Input />
-                                    </Form.Item>
-                                    <Form.Item
-                                    >
-                                        <Button type='submit'>Đăng Ký</Button>
-                                    </Form.Item>
-                                    <Form.Item>
-                                        Đã có tài khoản. <Link to="/login">Đăng nhập ngay</Link>
-                                    </Form.Item>
-                                </Form>
-                            </FormContainer>
-                        </Wrapper>
-                    </Container>
+                                                            </>
+                                                        )
+                                                }
+                                            </Select>
+                                        </Form.Item>
+                                        <Form.Item
+                                            label="Địa chỉ"
+                                            name="location"
+                                            hasFeedback
+                                            rules={[
+                                                { required: true, message: 'Vui lòng nhập địa chỉ!' },
+                                                { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' }
+                                            ]}
+                                        >
+                                            <Input />
+                                        </Form.Item>
+                                        <Form.Item
+                                        >
+                                            <Button type='submit'>Đăng Ký</Button>
+                                        </Form.Item>
+                                        <Form.Item>
+                                            Đã có tài khoản. <Link to="/login">Đăng nhập ngay</Link>
+                                        </Form.Item>
+                                    </Form>
+                                </FormContainer>
+                            </Wrapper>
+                        </Container>
+                    </Helmet>
                 )
             }
 

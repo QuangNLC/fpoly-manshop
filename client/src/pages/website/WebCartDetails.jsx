@@ -15,6 +15,7 @@ import { CHANGE_CART_ITEM_QUANTITY, DELETE_CART_ITEM } from '../../redux/types'
 import CustomerInfoForm from '../../components/CustomerInfoForm'
 import addressAPI from '../../api/addressAPI'
 import feeAPI from '../../api/feeAPI'
+import { ghnCityData } from '../../data'
 
 const Container = styled.div`
     width: 100%;
@@ -513,27 +514,52 @@ const WebCartDetails = () => {
         //         }
         //     })
         //     .catch(err => console.log(err))
-        addressAPI.getCityData()
-            .then(res => {
-                if (!res.status) {
-                    console.log(res)
-                } else {
-                    console.log(res)
-                }
-            })
-            .catch(err => console.log(err))
-        feeAPI.getCityData()
-            .then(response => {
-                if (response.status && (response.status === 200)) {
-                    setCityData(response.data.data.map((item, index) => {
-                        return ({
-                            id: item?.ProvinceID,
-                            title: item?.ProvinceName
-                        })
-                    }))
-                }
-            })
-            .catch(err => console.log(err))
+        // addressAPI.getCityData()
+        //     .then(res => {
+        //         if (!res.status) {
+        //             console.log(res)
+        //         } else {
+        //             console.log(res)
+        //         }
+        //     })
+        //     .catch(err => console.log(err))
+        // feeAPI.getCityData()
+        //     .then(response => {
+        //         if (response.status && (response.status === 200)) {
+        //             setCityData(response.data.data.map((item, index) => {
+        //                 return ({
+        //                     id: item?.ProvinceID,
+        //                     title: item?.ProvinceName
+        //                 })
+        //             }))
+        //         }
+        //     })
+        //     .catch(err => console.log(err))
+        ghnCityData.forEach(city => {
+            if (city.id <= 205)
+                feeAPI.getDistrictData({ "province_id": city.id })
+                    .then(res => {
+                        console.log(
+                            {
+                                ...city,
+                                districts: [...res.data.data.map((item, index) => {
+                                    return ({
+                                        id: item?.DistrictID,
+                                        title: item?.DistrictName
+                                    })
+                                })]
+                            })
+                        console.log(res.data.data.map((item, index) => {
+                            return ({
+                                id: item?.DistrictID,
+                                title: item?.DistrictName
+                            })
+                        }))
+                    })
+                    .catch(err => console.log(err))
+        })
+
+
     }, [])
 
     useEffect(() => {
@@ -578,7 +604,10 @@ const WebCartDetails = () => {
         } else {
             setShipFee(0)
         }
+
+
     }, [selectedData])
+
 
     return (
         <Helmet

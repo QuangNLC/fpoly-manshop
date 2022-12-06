@@ -3,6 +3,7 @@ package com.example.ManShop.Controller;
 import com.example.ManShop.DTOS.AdmOrderNotiDTO;
 import com.example.ManShop.DTOS.OrderRequestDTO;
 import com.example.ManShop.DTOS.PageOrderRespone;
+import com.example.ManShop.DTOS.UpDateStatusOrderDTO;
 import com.example.ManShop.Entitys.*;
 import com.example.ManShop.JPAs.*;
 import org.slf4j.Logger;
@@ -45,7 +46,8 @@ public class OrderContoller {
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
 
-
+    @Autowired
+    private OrderDetailStatusJPA orderDetailStatusJPA;
     @Autowired
     private CitysJPA citysJPA;
     @Autowired
@@ -134,13 +136,20 @@ public class OrderContoller {
         }
         StatusOrder sttOrder = new StatusOrder();
         sttOrder.setId(1);
-        newOrder.setStatusOrders(sttOrder);
-        newOrder.setUsers(user);
         newOrder.setTotal_price(orderRequest.getTotal_price());
         newOrder.setOrder_date(new Date());
         newOrder.setCreatedDate(new Date());
+        newOrder.setUsers(user);
         newOrder.setOrderDetail(orderRequest.getOrderDetail());
         Orders responseOrder = orderJPA.save(newOrder);
+        StatusDetail sttdetail = new StatusDetail();
+        sttdetail.setFinish(false);
+        sttdetail.setTimeDate(new Date());
+        sttdetail.setStatusOrder(sttOrder);
+        sttdetail.setUsersUpdate(userJPA.findById("admin").get());
+        sttdetail.setDescription("chờ xác nhận đặt hàng");
+        sttdetail.setOrders(responseOrder);
+        orderDetailStatusJPA.save(sttdetail);
         Orders orderForDetail = new Orders();
         orderForDetail.setId(responseOrder.getId());
         List<OrderDetail> orderDetails = orderRequest.getOrderDetail();
@@ -188,17 +197,23 @@ public class OrderContoller {
         return ResponseEntity.ok(resList);
     }
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> updateOrder(@PathVariable("id") Integer id, @RequestBody Orders orders){
+    public ResponseEntity<?> updateOrder(@PathVariable("id") Integer id, @RequestBody UpDateStatusOrderDTO DTO){
         log.info("Cập nhập đơn hàng với số đơn hàng (id)= "+ id);
+         String check ="Hoàn Tất";
         if(!orderJPA.existsById(id)){
             return ResponseEntity.badRequest().body("Không tìm thấy đơn hàng với id()"+id);
         }else {
             try {
-                orders.setId(id);
-                orderJPA.save(orders);
-                System.out.println(orders);
-                int checkorder =orders.getStatusOrders().getId();
-                if(checkorder == 4){
+                    Orders orders = orderJPA.findById(id).get();
+                    StatusDetail statusDetail = new StatusDetail();
+                    statusDetail.setOrders(orders);
+                    statusDetail.setDescription(DTO.getDescriptionOder());
+                    statusDetail.setFinish(DTO.getIsFinish());
+                    statusDetail.setTimeDate(new Date());
+                    statusDetail.setStatusOrder(statusOrderJPA.findByTitle(DTO.getStatusOrder()));
+                    statusDetail.setUsersUpdate(DTO.getUsers());
+                    orderDetailStatusJPA.save(statusDetail);
+                if(DTO.getStatusOrder().equals(check)){
                     log.info("Đơn hàng với (id)= "+ id +" đã được kết thúc!");
                     List<OrderDetail> orderDetaillist = orders.getOrderDetail();
                     System.out.println("chua check");
@@ -254,10 +269,10 @@ public class OrderContoller {
     }
 
 
-    @GetMapping("/info-list-order-update")
-    public ResponseEntity<?> getlistOrderToUpdate(){
-        return ResponseEntity.ok(orderJPA.findlistOrderId());
-    }
+//    @GetMapping("/info-list-order-update")
+//    public ResponseEntity<?> getlistOrderToUpdate(){
+//        return ResponseEntity.ok(orderJPA.findlistOrderId());
+//    }
 
 
     @PutMapping("/update/list-order")
@@ -269,11 +284,11 @@ public class OrderContoller {
             // List<Orders> ordersListbystatus = orderJPA.findlistOrderId(listOrder.getIntegerList());
             //System.out.println(listOrder.getIntegerList().size());
             try {
-                for (int i =0; i< listOrder.getIntegerList().size();i++){
-                    Orders ordersUpdte = orderJPA.findById(listOrder.getIntegerList().get(i)).get();
-                    ordersUpdte.setStatusOrders(statusOrderJPA.findById(listOrder.getStstusOrder()).get());
-                    orderJPA.save(ordersUpdte);
-                }
+//                for (int i =0; i< listOrder.getIntegerList().size();i++){
+//                    Orders ordersUpdte = orderJPA.findById(listOrder.getIntegerList().get(i)).get();
+//                    ordersUpdte.setStatusOrders(statusOrderJPA.findById(listOrder.getStstusOrder()).get());
+//                    orderJPA.save(ordersUpdte);
+//                }
             }catch (Exception e){
                 e.printStackTrace();
                 return ResponseEntity.notFound().build();
@@ -303,15 +318,6 @@ public class OrderContoller {
         return ResponseEntity.ok("Seen noti");
     }
 
-    //    @PostMapping("/create-wating-order")
-//    public ResponseEntity<?> createWatingOrder(){
-//        Orders newOrder = new Orders();
-//        newOrder.setCreatedDate(new Date());
-//        StatusOrder stt = new StatusOrder();
-//        stt.setId(5);
-//        newOrder.setStatusOrders(stt);
-//
-//    }
     @PostMapping("/checkout/waiting")
 //@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_STAFF')")
     public ResponseEntity<?> waiting(@RequestBody OrderRequestDTO orderRequestDTO){
@@ -320,15 +326,16 @@ public class OrderContoller {
         Users user = new Users();
         user.setUsername(orderRequestDTO.getUsers().getUsername());
         try {
-            newOrder.setUsers(user);
-            StatusOrder sttOrder = new StatusOrder();
-            sttOrder.setId(5);
-            newOrder.setStatusOrders(sttOrder);
-            newOrder.setCustomers(customerJPA.findById(1).get());
-            newOrder.setOrder_date(new Date());
-            newOrder.setCreatedDate(new Date());
-           Orders savedOrder = orderJPA.save(newOrder);
-            return ResponseEntity.ok().body(savedOrder);
+//            newOrder.setUsers(user);
+//            StatusOrder sttOrder = new StatusOrder();
+//            sttOrder.setId(5);
+//            newOrder.setStatusOrders(sttOrder);
+//            newOrder.setCustomers(customerJPA.findById(1).get());
+//            newOrder.setOrder_date(new Date());
+//            newOrder.setCreatedDate(new Date());
+//            orderJPA.save(newOrder);
+//            return ResponseEntity.ok().body(newOrder.getId());
+            return null;
         }catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.notFound().build();
@@ -339,7 +346,7 @@ public class OrderContoller {
     @PutMapping("/update/waiting/{id}")
     public ResponseEntity<?> updateCheckoutWt(@RequestBody OrderRequestDTO orderRequestDTO,@PathVariable("id")Integer id){
         Orders  newOrder = orderJPA.findById(id).get();
-        newOrder.setStatusOrders(orderRequestDTO.getStatusOrders());
+      //  newOrder.setStatusOrders(orderRequestDTO.getStatusOrders());
         log.info("Gọi vào hàm update đơn hàng ");
         if (!orderJPA.existsById(id)){
             return ResponseEntity.status(404).body("lỗi : không tìm thấy đơn hàng với (id)= " +id);
@@ -351,12 +358,6 @@ public class OrderContoller {
                     Citys city = citysJPA.findById(orderRequestDTO.getCityId()).get();
                     Districts district = districtsJPA.findById(orderRequestDTO.getDistrictId()).get();
                     Wards ward = wardsJPA.findById(orderRequestDTO.getWardId()).get();
-//                    Citys city = new Citys();
-//                    Districts district = new Districts();
-//                    Wards ward = new Wards();
-//                    city.setId(orderRequestDTO.getCityId());
-//                    district.setId(orderRequestDTO.getDistrictId());
-//                    ward.setId(orderRequestDTO.getWardId());
                     address.setCity(city);
                     address.setDistrict(district);
                     address.setWard(ward);
@@ -389,8 +390,8 @@ public class OrderContoller {
         }
     }
 
-    @GetMapping("/wating-order")
-    public ResponseEntity<?> getWatingOrder(){
-        return  ResponseEntity.ok(orderJPA.findWaitingOrders());
-    }
+//    @GetMapping("/wating-order")
+//    public ResponseEntity<?> getWatingOrder(){
+//        return  ResponseEntity.ok(orderJPA.findWaitingOrders());
+//    }
 }

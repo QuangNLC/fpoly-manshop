@@ -9,6 +9,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import loginImg from '../../assets/imgs/login-img.jpg'
 import { Form, Input, notification } from 'antd';
 import { useForm } from 'antd/es/form/Form';
+import Helmet from '../../components/Helmet';
 
 
 const Container = styled.div`
@@ -196,6 +197,9 @@ const WebLogin = () => {
                 )
                 :
                 (
+                    <Helmet
+                        title="Đăng Nhập"
+                    >
                     <Container>
                         <Wrapper>
                             <BackgroundImgContainer>
@@ -250,6 +254,7 @@ const WebLogin = () => {
                             </FormContainer>
                         </Wrapper>
                     </Container>
+                    </Helmet>
                 )
             }
 

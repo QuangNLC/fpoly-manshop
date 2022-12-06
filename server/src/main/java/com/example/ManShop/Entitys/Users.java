@@ -51,6 +51,9 @@ public class Users {
     @OneToMany(mappedBy = "users")
     private List<Promotions> promotions;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "usersUpdate")
+    private List<StatusDetail> statusDetails;
 
     @JsonIgnore
     @OneToMany(mappedBy = "createdby")
@@ -67,5 +70,8 @@ public class Users {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address", referencedColumnName = "id")
     private Address address;
+
+//    @OneToMany(mappedBy = "usersUpdate")
+//    private List<StatusDetail> statusDetail;
 
 }

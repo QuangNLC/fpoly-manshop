@@ -153,10 +153,10 @@ const OrderSummaryDetail = styled.div`
 var moment = require('moment');
 
 const Order = ({ order }) => {
-
+    console.log(order?.statusDetail.length)
     return (
         <OrderContainer>
-            <Badge.Ribbon text={order.statusOrders.title}>
+            <Badge.Ribbon text={order?.statusDetail[order?.statusDetail.length - 1].statusOrder.title}>
                 <Card title={`Đặt hàng lúc : ${moment(order.order_date).format('DD/MM/YYYY, H:mm:ss')}     ||     ${order.orderDetail.reduce(((total, item) => (total + item.quantity)), 0)} sản phẩm`} size="small">
                     <OrderDetails>
                         {
@@ -188,12 +188,6 @@ const Order = ({ order }) => {
                     </OrderSummary>
                 </Card>
             </Badge.Ribbon>
-            <Timeline>
-                <Timeline.Item>Create a services site 2015-09-01</Timeline.Item>
-                <Timeline.Item>Solve initial network problems 2015-09-01</Timeline.Item>
-                <Timeline.Item>Technical testing 2015-09-01</Timeline.Item>
-                <Timeline.Item>Network problems being solved 2015-09-01</Timeline.Item>
-            </Timeline>
         </OrderContainer>
     )
 
@@ -215,13 +209,14 @@ const WebMyOrders = () => {
     const filterOrdersByStatus = (arr, id) => {
         let resArr = [];
         if (id > 0) {
-            resArr = arr.filter(item => item.statusOrders.id === id)
+            resArr = arr.filter(item => item?.statusDetail[item?.statusDetail.length -1]?.statusOrder.id === id)
             return resArr;
         } else if (id === 0) {
             return arr;
         } else {
             return [];
         }
+        return []
     };
 
     useEffect(() => {

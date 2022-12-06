@@ -22,6 +22,7 @@ public class Orders {
     private int id;
     @Column(name = "createDate")
     private Date createdDate;
+    @JsonIgnore
     @ManyToOne @JoinColumn(name = "username")
     private Users users;
 
@@ -37,8 +38,12 @@ public class Orders {
     @OneToMany(mappedBy = "orders")
     private List<OrderDetail> orderDetail;
 
-    @ManyToOne
-    @JoinColumn(name = "statusOrder")
-    private StatusOrder statusOrders;
+//    @ManyToOne
+//    @JsonIgnore
+//    @JoinColumn(name = "statusOrder")
+//    private StatusOrder statusOrders;
+
+    @OneToMany(mappedBy = "orders")
+    private List<StatusDetail> statusDetail;
 
 }
