@@ -4,6 +4,7 @@ import AdmChart from '../../components/AdmChart';
 import AdmFeaturedInfo from '../../components/AdmFeaturedInfo';
 import { userStatsData } from '../../assets/data/data';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import AdmPieChart from '../../components/AdmPieChart';
 
 const Container = styled.div`
     width: 100%;
@@ -126,7 +127,8 @@ const AdmDashboard = () => {
     return (
         <Container>
             <AdmFeaturedInfo />
-            <AdmChart title={"Users Activated"} data={userStatsData} dataKey={"activeUser"} grid />
+            <AdmChart title={"Lượng Người Dùng"} data={userStatsData} dataKey={"activeUser"} grid />
+            <AdmPieChart />
             <WidgetsContainer>
                 <WidgetSm>
                     <WidgetSmTitle>New Join Members</WidgetSmTitle>

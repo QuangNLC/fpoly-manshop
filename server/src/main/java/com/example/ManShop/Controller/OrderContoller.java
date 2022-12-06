@@ -196,23 +196,63 @@ public class OrderContoller {
         List<Orders> resList = orderJPA.findByUsers_Username(pagedefault,username).stream().collect(Collectors.toList());
         return ResponseEntity.ok(resList);
     }
+    @Transactional
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateOrder(@PathVariable("id") Integer id, @RequestBody UpDateStatusOrderDTO DTO){
         log.info("Cập nhập đơn hàng với số đơn hàng (id)= "+ id);
-         String check ="Hoàn Tất";
+        String check ="Hoàn Tất";
+        Integer[] statusList = {2,3,4};
+
+//        Integer checklistSttus = statusOrderJPA.findByTitle(DTO.getStatusOrder()).getId();
         if(!orderJPA.existsById(id)){
             return ResponseEntity.badRequest().body("Không tìm thấy đơn hàng với id()"+id);
-        }else {
+        }
+        else {
+//            for (Integer sdsd:statusList){
+//                if(sdsd == checklistSttus){
+//                    return ResponseEntity.status(404).body("Đơn hàng có trạng tháu này r");
+//                }
+//            }
             try {
-                    Orders orders = orderJPA.findById(id).get();
-                    StatusDetail statusDetail = new StatusDetail();
-                    statusDetail.setOrders(orders);
-                    statusDetail.setDescription(DTO.getDescriptionOder());
-                    statusDetail.setFinish(DTO.getIsFinish());
-                    statusDetail.setTimeDate(new Date());
-                    statusDetail.setStatusOrder(statusOrderJPA.findByTitle(DTO.getStatusOrder()));
-                    statusDetail.setUsersUpdate(DTO.getUsers());
-                    orderDetailStatusJPA.save(statusDetail);
+                Orders orders = orderJPA.findById(id).get();
+                if (DTO.getStatusOrder().equals("Đang chờ") || DTO.getStatusOrder().equals("Chờ Xác Nhận")){
+                    if(DTO.getCustomers() != null){
+                        Customers customers  = new Customers();
+                        Address address = new Address();
+                        Citys city = citysJPA.findById(DTO.getCityId()).get();
+                        Districts district = districtsJPA.findById(DTO.getDistrictId()).get();
+                        Wards ward = wardsJPA.findById(DTO.getWardId()).get();
+                        address.setCity(city);
+                        address.setDistrict(district);
+                        address.setWard(ward);
+                        address.setLocation(DTO.getLocation());
+                        Address savedAddress = addressJPA.save(address);
+                        customers.setAddress(savedAddress);
+                        customers.setPhone(DTO.getCustomers().getPhone());
+                        customers.setName(DTO.getCustomers().getName());
+                        customers.setUser(DTO.getUsers());
+                        customerJPA.save(customers);
+                        orders.setCustomers(customers);
+                    }
+                    orders.setTotal_price(DTO.getTotal_price());
+                    orderJPA.save(orders);
+                    orderDetailJPA.deletelistOrderdetail(orders.getId());
+                    Orders orderForDetail = new Orders();
+                    orderForDetail.setId(id);
+                    List<OrderDetail> orderDetails = DTO.getOrderDetail();
+                    orderDetails.forEach(detail -> {
+                        detail.setOrders(orderForDetail);
+                        orderDetailJPA.save(detail);
+                    });
+                }
+                StatusDetail statusDetail = new StatusDetail();
+                statusDetail.setOrders(orders);
+                statusDetail.setDescription(DTO.getDescriptionOder());
+                statusDetail.setFinish(DTO.getIsFinish());
+                statusDetail.setTimeDate(new Date());
+                statusDetail.setStatusOrder(statusOrderJPA.findByTitle(DTO.getStatusOrder()));
+                statusDetail.setUsersUpdate(DTO.getUsers());
+                orderDetailStatusJPA.save(statusDetail);
                 if(DTO.getStatusOrder().equals(check)){
                     log.info("Đơn hàng với (id)= "+ id +" đã được kết thúc!");
                     List<OrderDetail> orderDetaillist = orders.getOrderDetail();
@@ -240,7 +280,9 @@ public class OrderContoller {
                 return ResponseEntity.notFound().build();
             }
 
-        }        return ResponseEntity.ok("cập nhập thành công order với (id)= " +id);
+        }
+//        return ResponseEntity.ok("cập nhập thành công order với (id)= " +id);
+        return ResponseEntity.ok(orderJPA.findById(id).get());
     }
     @PutMapping()
     private int check(String b) {
@@ -318,14 +360,14 @@ public class OrderContoller {
         return ResponseEntity.ok("Seen noti");
     }
 
-    @PostMapping("/checkout/waiting")
+//    @PostMapping("/checkout/waiting")
 //@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_STAFF')")
-    public ResponseEntity<?> waiting(@RequestBody OrderRequestDTO orderRequestDTO){
-        log.info("Tạo 1 hóa đơn chờ  ");
-        Orders newOrder = new Orders();
-        Users user = new Users();
-        user.setUsername(orderRequestDTO.getUsers().getUsername());
-        try {
+//    public ResponseEntity<?> waiting(@RequestBody OrderRequestDTO orderRequestDTO){
+//        log.info("Tạo 1 hóa đơn chờ  ");
+//        Orders newOrder = new Orders();
+//        Users user = new Users();
+//        user.setUsername(orderRequestDTO.getUsers().getUsername());
+//        try {
 //            newOrder.setUsers(user);
 //            StatusOrder sttOrder = new StatusOrder();
 //            sttOrder.setId(5);
@@ -335,7 +377,36 @@ public class OrderContoller {
 //            newOrder.setCreatedDate(new Date());
 //            orderJPA.save(newOrder);
 //            return ResponseEntity.ok().body(newOrder.getId());
-            return null;
+//            return null;
+//        }catch (Exception e) {
+//            e.printStackTrace();
+//            return ResponseEntity.notFound().build();
+//        }
+//    }
+
+
+    @PostMapping("/checkout/waiting")
+//@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_STAFF')")
+    public ResponseEntity<?> waiting(@RequestBody UpDateStatusOrderDTO DTO){
+        log.info("Tạo 1 hóa đơn chờ  ");
+        Orders newOrder = new Orders();
+        Users user = new Users();
+        user.setUsername(DTO.getUsers().getUsername());
+        try {
+            newOrder.setUsers(user);
+            newOrder.setCustomers(customerJPA.findById(1).get());
+            newOrder.setOrder_date(new Date());
+            newOrder.setCreatedDate(new Date());
+            orderJPA.save(newOrder);
+            StatusDetail statusDetail = new StatusDetail();
+            statusDetail.setOrders(newOrder);
+            statusDetail.setDescription("hóa đơn tạo tại quầy");
+            statusDetail.setFinish(false);
+            statusDetail.setTimeDate(new Date());
+            statusDetail.setStatusOrder(statusOrderJPA.findByTitle(DTO.getStatusOrder()));
+            statusDetail.setUsersUpdate(DTO.getUsers());
+            orderDetailStatusJPA.save(statusDetail);
+            return ResponseEntity.ok().body(newOrder.getId());
         }catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.notFound().build();
@@ -346,7 +417,7 @@ public class OrderContoller {
     @PutMapping("/update/waiting/{id}")
     public ResponseEntity<?> updateCheckoutWt(@RequestBody OrderRequestDTO orderRequestDTO,@PathVariable("id")Integer id){
         Orders  newOrder = orderJPA.findById(id).get();
-      //  newOrder.setStatusOrders(orderRequestDTO.getStatusOrders());
+        //  newOrder.setStatusOrders(orderRequestDTO.getStatusOrders());
         log.info("Gọi vào hàm update đơn hàng ");
         if (!orderJPA.existsById(id)){
             return ResponseEntity.status(404).body("lỗi : không tìm thấy đơn hàng với (id)= " +id);

@@ -185,7 +185,7 @@ const WebHomePage = () => {
 
   return (
     <Helmet title={"Trang Chủ"}>
-      <Announcement />
+      {/* <Announcement /> */}
       <Slider items={sliderData} />
 
       {/* Fill data from .json file to sql server data */}

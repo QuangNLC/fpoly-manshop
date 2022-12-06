@@ -3,10 +3,12 @@ import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom'
 import Helmet from '../../components/Helmet';
 import styled from 'styled-components';
-import { List, Spin, Steps, Tag, Typography, Select, Button, Skeleton, Modal, notification } from 'antd';
+import { List, Spin, Steps, Tag, Typography, Select, Button, Skeleton, Modal, notification, Table, Input } from 'antd';
 import ordersAPI from '../../api/ordersAPI';
 import { formatter } from '../../utils';
 import AdmWatingOrder from './AdmWatingOrder';
+import moment from 'moment';
+import { useSelector } from 'react-redux';
 
 const Container = styled.div`
     width: 100%;
@@ -27,6 +29,16 @@ const StepsContainer = styled.div`
     background-color: white;
     margin-bottom: 20px;
 `
+const StepsWrapper = styled.div`
+    width: 100%;
+`
+const StepsActionsContainer = styled.div`
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+`
+
 
 const CustomerInfoContainer = styled.div`
     width: 100%;
@@ -217,24 +229,33 @@ const UpdateStatusButton = ({ item, onClickUpdate }) => {
         },
         {
             id: 4,
-            title: 'Hoàn Thành'
+            title: 'Hoàn Tất'
         }
     ])
     const handleUpdateItemStatus = () => {
+
         if (item && nextStatus) {
-            Modal.confirm({
-                title: "Hộp Thoại Xác Nhận",
-                content: modalContent,
-                okText: "Xác Nhận",
-                cancelText: "Hủy Bỏ",
-                onOk: () => { onClickUpdate({ ...item, statusOrders: nextStatus }) }
-            })
+            let payload = {
+                id: item.id,
+                DescriptionOder: 'test des',
+                statusOrder: nextStatus.title,
+                isFinish: true,
+                orderDetail: item.orderDetail
+            }
+            // Modal.confirm({
+            //     title: "Hộp Thoại Xác Nhận",
+            //     content: modalContent,
+            //     okText: "Xác Nhận",
+            //     cancelText: "Hủy Bỏ",
+            //     onOk: () => { onClickUpdate(payload) }
+            // })
+            onClickUpdate(payload)
         }
     }
 
 
     useEffect(() => {
-        switch (item?.statusOrders?.id) {
+        switch (item?.statusDetail[item?.statusDetail.length - 1].statusOrder?.id) {
             case (1): {
                 setBtnText('Xác Nhận')
                 setNextStatus(statusList[1])
@@ -269,7 +290,7 @@ const UpdateStatusButton = ({ item, onClickUpdate }) => {
             )
             :
             (
-                <Button style={{ borderRadius: "20px" }} onClick={handleUpdateItemStatus}>{btnText}</Button >
+                <Button style={{ borderRadius: "20px" }} onClick={handleUpdateItemStatus} type='primary'>{btnText}</Button >
             )
     )
 }
@@ -281,44 +302,91 @@ const openNotificationWithIcon = (type, title, des) => {
     });
 };
 
+const findStepIndex = (arr, sttId) => {
+    let result = -1;
+    if (arr) {
+        arr.forEach((item, index) => {
+            if (item.statusOrder.id === sttId) {
+                result = index
+            }
+        });
+    }
+
+    return result;
+}
+
+
 const AdmOrderInfo = () => {
 
     const { id } = useParams();
     const [info, setInfo] = useState(undefined)
     const [IsLoadingInfo, setIsLoadingInfo] = useState(true)
+    const [isModalStatus, setIsModalStatus] = useState(false)
+    const [isModalDesc, setIsModalDesc] = useState(false)
+    const [editingOrderItem, setEdittingOrderItem] = useState(undefined)
+    const [updateSttDesc, setUpdateSttDesc] = useState('')
+    const auth = useSelector(state => state.auth.auth);
     const [steps, setSteps] = useState([
         { id: 5, title: "Đang Chờ" },
         { id: 1, title: "Chờ Xác Nhận" },
         { id: 2, title: "Đã Xác Nhận" },
         { id: 3, title: "Đang Giao" },
-        { id: 4, title: "Hoàn Thành" }
+        { id: 4, title: "Hoàn Tất" }
 
     ])
     const navigate = useNavigate();
 
+    const statusModalColumns = [
+        {
+            title: '',
+            render: (record) => {
+                return (
+                    <>
+                        {record?.statusOrder?.title}
+                    </>
+                )
+            }
+        },
+        {
+            title: 'Thời Gian',
+            render: (record) => {
+                return (
+                    <>
+                        {moment(record?.timeDate).format('DD/MM/YYYY, H:mm:ss')}
+                    </>
+                )
+            }
+        },
+        {
+            title: 'Người Xác Nhận',
+            render: (record) => {
+                return (
+                    <>
+                        {record?.usersUpdate?.username}
+                    </>
+                )
+            }
+        },
+        {
+            title: 'Ghi Chú',
+            render: (record) => {
+                console.log(record)
+                return (
+                    <>
+                        {record?.description}
+                    </>
+                )
+            }
+        }
+    ]
+
+
     const onClickUpdateWatingOrder = (item) => {
         ordersAPI.updateWatingOrder(item)
-        .then(res => {
-            if (!res.status) {
-                console.log(res)
-                setInfo({ ...res })
-                Modal.success({
-                    title: "Hộp Thoại Thông Báo",
-                    content: "Cập nhật trạng thái đơn hàng thành công!"
-                })
-            } else {
-                console.log(res)
-            }
-        })
-        .catch(err => console.log(err))
-    }
-
-    const onClickUpdateStatus = (item) => {
-        ordersAPI.updateOrderStatus(item)
             .then(res => {
                 if (!res.status) {
-                    setInfo({ ...item })
                     console.log(res)
+                    setInfo({ ...res })
                     Modal.success({
                         title: "Hộp Thoại Thông Báo",
                         content: "Cập nhật trạng thái đơn hàng thành công!"
@@ -330,22 +398,69 @@ const AdmOrderInfo = () => {
             .catch(err => console.log(err))
     }
 
+    const onClickUpdateStatus = (item) => {
+        if (auth) {
+            let payload = {
+                ...item,
+                users: {
+                    username: auth?.info?.username
+                }
+            }
+            setEdittingOrderItem(payload)
+            setIsModalDesc(true)
+
+        }
+    }
+
+    const handleUpdateStatus = () => {
+        if (editingOrderItem) {
+            let payload = {
+                ...editingOrderItem,
+                DescriptionOder: updateSttDesc
+            }
+            console.log(payload)
+            ordersAPI.updateOrderStatus(payload)
+                .then(res => {
+                    if (!res.status) {
+                        setInfo({ ...res })
+                        console.log(res)
+                        Modal.success({
+                            title: "Hộp Thoại Thông Báo",
+                            content: "Cập nhật trạng thái đơn hàng thành công!"
+                        })
+                        onCloseModalDesc()
+                    } else {
+                        console.log(res)
+                    }
+                })
+                .catch(err => console.log(err))
+        }
+
+    }
+
+    const onCloseModalDesc = () => {
+        setEdittingOrderItem(undefined);
+        setUpdateSttDesc('');
+        setIsModalDesc(false)
+    }
+
     useEffect(() => {
         ordersAPI.getOrderInfo(id)
             .then(res => {
                 if (!res.status) {
                     setInfo(res)
+                    console.log(res)
                     setIsLoadingInfo(false)
-                    // ordersAPI.getAllOrderStatus()
-                    //     .then(stepsRes => {
-                    //         if (!stepsRes.status) {
-                    //             setSteps(stepsRes)
-                    //         } else {
-                    //             console.log(stepsRes)
-                    //         }
-                    //     }).then(() => {
-                    //     })
-                    //     .catch(err => console.log(err))
+                    ordersAPI.getAllOrderStatus()
+                        .then(stepsRes => {
+                            if (!stepsRes.status) {
+                                setSteps(stepsRes)
+                            } else {
+                                console.log(stepsRes)
+                            }
+                        }).then(() => {
+                        })
+                        .catch(err => console.log(err))
                 } else {
                     console.log(res)
                 }
@@ -376,16 +491,32 @@ const AdmOrderInfo = () => {
                             (<Container>
                                 <Wrapper>
                                     <StepsContainer>
-                                        {
-                                            steps && steps.length > 0 &&
-                                            <Steps current={steps.findIndex((item) => item.id === info?.statusOrders?.id)}>
-                                                {steps.map(item => (
-                                                    <Steps.Step title={item.title} key={item.id} />
-                                                ))}
-                                            </Steps>
-                                        }
-                                        <br />
-                                        <UpdateStatusButton item={info} onClickUpdate={onClickUpdateStatus} />
+                                        <StepsWrapper>
+                                            {
+                                                steps && steps.length > 0 &&
+                                                <Steps current={steps.findIndex((item) => item.id === info?.statusDetail[info?.statusDetail.length - 1]?.statusOrder.id)}>
+                                                    {steps.map(item => {
+                                                        console.log(item)
+                                                        let checkDesc = findStepIndex(info?.statusDetail, item.id)
+                                                        let des = checkDesc === -1 ? '' : info?.statusDetail[checkDesc]?.timeDate
+                                                        return (
+                                                            (
+                                                                <Steps.Step
+                                                                    title={item.title}
+                                                                    key={item.id}
+                                                                    description={des !== '' ? moment(des).format('DD/MM/YYYY, H:mm:ss') : ''}
+                                                                />
+                                                            )
+                                                        )
+                                                    })}
+                                                </Steps>
+                                            }
+                                            <br />
+                                        </StepsWrapper>
+                                        <StepsActionsContainer>
+                                            <UpdateStatusButton item={info} onClickUpdate={onClickUpdateStatus} />
+                                            <Button style={{ borderRadius: "20px" }} onClick={() => { setIsModalStatus(true) }}>Chi Tiết</Button>
+                                        </StepsActionsContainer>
                                     </StepsContainer>
                                     <CustomerInfoContainer>
                                         <Title>thông tin đơn hàng</Title>
@@ -393,7 +524,7 @@ const AdmOrderInfo = () => {
                                             <CustomerInfoItem>
                                                 <CustomerInfoItemLabel>trạng thái</CustomerInfoItemLabel>
                                                 <CustomerInfoItemContent>
-                                                    <StatusBadge status={info?.statusOrders} />
+                                                    <StatusBadge status={info?.statusDetail[info?.statusDetail.length - 1]?.statusOrder} />
                                                 </CustomerInfoItemContent>
                                             </CustomerInfoItem>
                                             <CustomerInfoItem>
@@ -473,10 +604,30 @@ const AdmOrderInfo = () => {
                                         </CartDetails>
                                     </CartContainer>
                                 </Wrapper >
+                                <Modal
+                                    open={isModalStatus}
+                                    centered
+                                    okText={false}
+                                    cancelText={"Đóng"}
+                                    onCancel={() => setIsModalStatus(false)}
+                                    width={1000}
+                                >
+                                    <Table columns={statusModalColumns} dataSource={info?.statusDetail} pagination={false} />
+                                </Modal>
+                                <Modal
+                                    open={isModalDesc}
+                                    centered
+                                    okText="Xác Nhận"
+                                    cancelText="Huỷ Bỏ"
+                                    onCancel={onCloseModalDesc}
+                                    onOk={handleUpdateStatus}
+                                >
+                                    <Typography.Title level={5}>Ghi Chú</Typography.Title>
+                                    <Input.TextArea value={updateSttDesc} onChange={(e) => { setUpdateSttDesc(e.target.value) }} placeholder="Ghi chú" />
+                                </Modal>
                             </Container >
+
                             )
-
-
                     )
             }
         </Helmet >

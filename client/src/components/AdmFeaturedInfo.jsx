@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-
+import { formatter } from '../utils/index'
 
 const Wrapper = styled.div`
     width: 100%;
@@ -17,6 +17,7 @@ const Featured = styled.div`
     cursor: pointer;
     -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
     box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+    background-color: white;
 `
 const Title = styled.span`
     font-size: 20px;
@@ -45,34 +46,26 @@ const AdmFeaturedInfo = () => {
     return (
         <Wrapper>
             <Featured>
-                <Title>Revanue</Title>
+                <Title>Hôm Nay</Title>
                 <MoneyContainer>
-                    <Money>$2,415</Money>
-                    <MoneyRate negative>
-                        -11.4 <ArrowDownwardIcon />
-                    </MoneyRate>
+                    <Money>0 Đơn Hàng</Money>
                 </MoneyContainer>
-                <Sub>Compared to last month.</Sub>
             </Featured>
             <Featured>
-                <Title>Sales</Title>
+                <Title>Hàng Bán Được Tháng Này</Title>
                 <MoneyContainer>
-                    <Money>$5,415</Money>
-                    <MoneyRate negative>
-                        -11.4 <ArrowDownwardIcon />
-                    </MoneyRate>
+                    <Money>15 Sản Phẩm</Money>
                 </MoneyContainer>
-                <Sub>Compared to last month.</Sub>
             </Featured>
             <Featured>
-                <Title>Cost</Title>
+                <Title>Doanh Số Tháng Này</Title>
                 <MoneyContainer>
-                    <Money>$2,288</Money>
-                    <MoneyRate>
+                    <Money>{formatter.format(180000)}</Money>
+                    {/* <MoneyRate>
                         +2.4 <ArrowUpwardIcon />
-                    </MoneyRate>
+                    </MoneyRate> */}
                 </MoneyContainer>
-                <Sub>Compared to last month.</Sub>
+                {/* <Sub>Compared to last month.</Sub> */}
             </Featured>
         </Wrapper>
     )

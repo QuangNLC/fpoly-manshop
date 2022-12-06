@@ -11,6 +11,7 @@ const Wrapper = styled.div`
     padding: 20px;
     -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
     box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+    background-color: white;
 `
 const Title = styled.h3``
 

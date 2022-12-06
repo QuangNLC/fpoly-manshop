@@ -13,27 +13,36 @@ const Container = styled.div`
   position: fixed;
   top: 0;
   width: 100%;
-  min-height: 80px;
-  max-height: 80px;
   overflow: hidden;
   background-color: white;
   color: white;
+  z-index: 10;
+`;
+const TopWrapper = styled.div`
+  width: 100%;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  z-index: 10;
-  box-shadow: 1px 3px 3px 1px rgba(0,0,0,0.35);
-  -webkit-box-shadow: 1px 3px 3px 1px rgba(0,0,0,0.35);
-  -moz-box-shadow: 1px 3px 3px 1px rgba(0,0,0,0.35);
-`;
+  height: 80px;
+`
+const NavigationWrapper = styled.div`
+  width: 100%;
+  background-color: black;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justity-content: flex-start;
+  padding-left: 120px;
+`
+
 const Left = styled.div``;
 const Logo = styled.h1`
   text-transform: uppercase;
-  font-size: 20px;
+  font-size: 30px;
   letter-spacing:4px;
   color: bladck;
-  width: 120px;
+  width: 240px;
   text-align: center;
   text-shadow: 0 1px 0 hsl(174, 5%, 80%), 0 2px 0 hsl(174, 5%, 75%),
     0 3px 0 hsl(174, 5%, 70%), 0 4px 0 hsl(174, 5%, 66%),
@@ -47,25 +56,26 @@ const Right = styled.div`
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
 `;
 const Navigation = styled.ul`
-  flex: 1;
+  width: 100%;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
+  margin-bottom: 0;
 `;
 const NavItem = styled.li`
   padding: 5px 10px;
   font-size: 18px;
-  font-weight: ${(props) => (props.active ? "600" : "400")};
-  color: ${(props) => (props.active ? "red" : "black")};
+  font-weight: ${(props) => (props.active ? "400" : "300")};
+  color: ${(props) => (props.active ? "red" : "white")};
+  text-transform: uppercase;
   border-radius: 5px;
   margin: 0px 5px;
   transition: all 0.25s ease-in;
   cursor: pointer;
   &:hover {
     color: red;
-    font-weight: 600;
   }
 `;
 
@@ -144,7 +154,7 @@ const AvatarContainer = ({ auth }) => {
     navigate("/")
     dispatch(logOutAction())
   };
-  
+
   return (
     <>
       <AvatarImg src={`http://localhost:8080/api/file/images/${auth.info.photo}`} onClick={handleClick} />
@@ -156,12 +166,12 @@ const AvatarContainer = ({ auth }) => {
 
       >
         <MenuItem onClick={handleClose}>
-          <Link to="my-account" style={{color: 'black'}}>
+          <Link to="my-account" style={{ color: 'black' }}>
             Tài Khoản Của Tôi
           </Link>
         </MenuItem>
         <MenuItem onClick={handleClose}>
-          <Link to="my-orders" style={{color: 'black'}}>
+          <Link to="my-orders" style={{ color: 'black' }}>
             Đơn Hàng Của Tôi
           </Link>
         </MenuItem>
@@ -181,12 +191,52 @@ const Header = () => {
 
   return (
     <Container>
-      <Left>
-        <Link to="/">
-          <Logo> man shop</Logo>
-        </Link>
-      </Left>
-      <Right>
+      <TopWrapper>
+        <Left>
+          <Link to="/">
+            <Logo> man shop</Logo>
+          </Link>
+        </Left>
+        <Right>
+          <BuyMenu>
+            <CartContainer>
+              {/* <CartIcon style={{ fontSize: "20px" }} /> */}
+              <Link to="/cart">
+                {
+                  cartReducer.cart ? (
+                    <Badge badgeContent={cartReducer.cart.length} color="primary">
+                      <LocalMallOutlinedIcon color="action" />
+                    </Badge>
+                  )
+                    :
+                    (
+                      <Badge badgeContent={0} color="primary">
+                        <LocalMallOutlinedIcon color="action" />
+                      </Badge>
+                    )
+                }
+
+              </Link>
+            </CartContainer>
+            <AuthContainer>
+              {isAuth ? (
+                <AvatarContainer auth={{ ...auth }}>
+                </AvatarContainer>
+              ) : (
+                <>
+                  <Link to="/login">
+                    <Button>Đăng Nhập</Button>
+                  </Link>
+                  <Link to="/register">
+                    <Button>Đăng Ký</Button>
+                  </Link>
+                </>
+              )}
+            </AuthContainer>
+          </BuyMenu>
+        </Right>
+      </TopWrapper>
+      <NavigationWrapper>
         <Navigation>
           <Link to="/" className="">
             <NavItem active={location.pathname === "/"}>Trang chủ</NavItem>
@@ -201,43 +251,7 @@ const Header = () => {
             <NavItem active={location.pathname === "/contact"}>Liên hệ</NavItem>
           </Link>
         </Navigation>
-        <BuyMenu>
-          <CartContainer>
-            {/* <CartIcon style={{ fontSize: "20px" }} /> */}
-            <Link to="/cart">
-              {
-                cartReducer.cart ? (
-                  <Badge badgeContent={cartReducer.cart.length} color="primary">
-                    <LocalMallOutlinedIcon color="action" />
-                  </Badge>
-                )
-                  :
-                  (
-                    <Badge badgeContent={0} color="primary">
-                      <LocalMallOutlinedIcon color="action" />
-                    </Badge>
-                  )
-              }
-
-            </Link>
-          </CartContainer>
-          <AuthContainer>
-            {isAuth ? (
-              <AvatarContainer auth={{ ...auth }}>
-              </AvatarContainer>
-            ) : (
-              <>
-                <Link to="/login">
-                  <Button>Đăng Nhập</Button>
-                </Link>
-                <Link to="/register">
-                  <Button>Đăng Ký</Button>
-                </Link>
-              </>
-            )}
-          </AuthContainer>
-        </BuyMenu>
-      </Right>
+      </NavigationWrapper>
     </Container >
   );
 };

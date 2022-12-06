@@ -166,51 +166,51 @@ export const productData = [
 export const userStatsData = [
 
     {
-      name: 'January',
+      name: 'Tháng 1',
       activeUser: 2400,
     },
     {
-      name: 'Februay',
+      name: 'Tháng 2',
       activeUser: 1398,
     },
     {
-      name: 'March',
+      name: 'Tháng 3',
       activeUser: 2800,
     },
     {
-      name: 'April',
+      name: 'Tháng 4',
       activeUser: 3908,
     },
     {
-      name: 'May',
+      name: 'Tháng 5',
       activeUser: 4800,
     },
     {
-      name: 'June',
+      name: 'Tháng 6',
       activeUser: 3800,
     },
     {
-      name: 'July',
+      name: 'Tháng 7',
       activeUser: 4300,
     },
     {
-      name: 'August',
+      name: 'Tháng 8',
       activeUser: 5208,
     },
     {
-      name: 'September',
+      name: 'Tháng 9',
       activeUser: 5337,
     },
     {
-      name: 'October',
+      name: 'Tháng 10',
       activeUser: 5340,
     },
     {
-      name: 'November',
+      name: 'Tháng 11',
       activeUser: 5559,
     },
     {
-      name: 'December',
+      name: 'Tháng 12',
       activeUser: 6110,
     }
   ];

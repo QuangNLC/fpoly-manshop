@@ -560,9 +560,9 @@ const AdmOrderList = () => {
                                     ...item,
                                     key: item.id,
                                     createdDate: moment(item.createdDate).format('DD/MM/YYYY, H:mm:ss'),
-                                    username: item.users.username,
+                                    username: item.customers.name,
                                     totalQuantity: item?.orderDetail.reduce((total, curr) => (total + curr.quantity), 0),
-                                    status: item.statusOrders
+                                    status: item?.statusDetail[item?.statusDetail.length - 1].statusOrder
                                 }))]);
                             } else {
                                 console.log(res)
