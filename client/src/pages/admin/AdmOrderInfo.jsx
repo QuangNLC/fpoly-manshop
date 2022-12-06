@@ -185,6 +185,14 @@ const FormContainer = styled.div`
     display: flex;
 `
 
+const ActionContainer = styled.div`
+    width: 100%;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+`
+
 
 const StatusBadge = (props) => {
 
@@ -552,6 +560,9 @@ const AdmOrderInfo = () => {
                             :
                             (<Container>
                                 <Wrapper>
+                                    <ActionContainer>
+                                        <Button type='primary' onClick={() => { navigate("/admin/order-list") }}>Danh Sách</Button>
+                                    </ActionContainer>
                                     <StepsContainer>
                                         <StepsWrapper>
                                             {
@@ -585,7 +596,7 @@ const AdmOrderInfo = () => {
                                         <CustomerInfoActions>
                                             <Button
                                                 style={{ borderRadius: "20px" }}
-                                                disabled={info?.statusDetail[info?.statusDetail.length - 1]?.statusOrder?.id > 2}
+                                                disabled={info?.statusDetail[info?.statusDetail.length - 1]?.statusOrder?.id >= 2}
                                                 onClick={() => { onClickUpdateCustomerInfo() }}
                                             >
                                                 Cập Nhật

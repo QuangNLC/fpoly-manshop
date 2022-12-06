@@ -848,6 +848,10 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
         <Helmet title={"Quản Lý Hóa Đơn"}>
             <Container>
                 <Wrapper>
+
+                    <ActionContainer>
+                        <Button type='primary' onClick={() => { navigate("/admin/order-list") }}>Danh Sách</Button>
+                    </ActionContainer>
                     <StepContainer>
                         {
                             steps && steps.length > 0 &&
@@ -874,10 +878,6 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
                             </Steps>
                         }
                     </StepContainer>
-                    <ActionContainer>
-                        <Button type='primary' onClick={() => { navigate("/admin/order-list") }}>Danh Sách</Button>
-                        {/* <Button type='primary' onClick={() => { handleSaveWatingOrder() }}>Lưu Đơn Chờ</Button> */}
-                    </ActionContainer>
                     <CartContainer>
                         {
                             cart.length > 0 ?

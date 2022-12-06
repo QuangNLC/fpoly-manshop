@@ -202,6 +202,10 @@ const StatusBadge = (props) => {
                     setColor('blue')
                     break;
                 }
+                case(5):{
+                    setColor('#abad6f')
+                    break;
+                }
                 default: {
                     setColor('blue')
                     break;
@@ -249,7 +253,7 @@ const AdmOrderList = () => {
                     value: 3,
                 },
                 {
-                    text: 'Hoàn Thành',
+                    text: 'Hoàn Tất',
                     value: 4,
                 },
             ],

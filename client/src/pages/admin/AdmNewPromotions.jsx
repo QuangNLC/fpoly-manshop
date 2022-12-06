@@ -305,6 +305,7 @@ const AdmNewPromotions = () => {
                         key: item.id,
                         ...item
                     })))
+                    console.log(res)
                 }else{
                     console.log(res)
                 }
