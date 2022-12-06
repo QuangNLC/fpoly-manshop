@@ -115,6 +115,9 @@ public class PromotionsController {
     @GetMapping("/product-to-promotions")
     public ResponseEntity<?> getProduct(){
         try {
+            if(productJPA.findListInteger().size() <= 0){
+                return ResponseEntity.ok(productJPA.findAll());
+            }
             List<Product> productList = productJPA.findByPromotionActive(productJPA.findListInteger());
             System.out.println(productList.size());
             return ResponseEntity.ok(productList);

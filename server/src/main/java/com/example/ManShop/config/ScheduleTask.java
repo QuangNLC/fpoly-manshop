@@ -30,13 +30,13 @@ public class ScheduleTask {
         this.promotionJPA = promotionJPA;
     }
 
-//    @Scheduled(cron = "59 * * * * *")
-//    @Async
-//    @Bean
-//    public void reportCurrentTime() {
-//        log.info("The time is now {}", dateFormat.format(new Date()));
+    @Scheduled(cron = "59 * * * * *")
+    @Async
+    @Bean
+    public void reportCurrentTime() {
+        log.info("The time is now {}", dateFormat.format(new Date()));
 //        Promotions pr =promotionJPA.findById(2).get();
-//        System.out.println(pr.getDate_befor());
-//
-//    }
+        System.out.println("he e");
+
+    }
 }

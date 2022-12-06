@@ -9,7 +9,7 @@ import productAPI from "../../api/productsAPI";
 import styled from 'styled-components'
 import Helmet from "../../components/Helmet";
 import DialogHOC from "../../hoc/DialogHOC";
-import { Popconfirm, Pagination, Spin, Select, Tooltip } from 'antd'
+import { Popconfirm, Pagination, Spin, Select, Tooltip, Typography } from 'antd'
 
 const Container = styled.div`
   width: 100%;
@@ -19,9 +19,20 @@ const Wrapper = styled.div`
   display: flex;
   position: relative;
 `
+const FiltersContainer = styled.div`
+  width: 20%;
+  padding: 20px;
+`
+const FilterItem = styled.div`
+  width: 100%;
+`
+
+const FilterItemTitle = styled.div`
+  width: 100%;
+`
 const ProductListContainer = styled.div`
   padding: 20px;
-  width: 75%;
+  width: 80%;
 `
 const ProductListWrrapper = styled.div`
   width: 100%;
@@ -30,6 +41,7 @@ const ProductFilterContainer = styled.div`
   width: 100%;
   padding: 10px;
   display: flex;
+  justify-content: flex-start;
 `
 
 const ProductFilerItem = styled.div`
@@ -55,7 +67,22 @@ const WebProductList = (props) => {
   const [currPage, setCurrPage] = useState(1)
   const [categories, setCategories] = useState([])
   const [sizes, setSizes] = useState([])
+  const [payloadOption, setPayloadOption] = useState({
+    categoryId: 0,
+    page: 1,
+    sort: {
+      by: 'name',
+      order: 'asc'
+    },
+    sizeId: []
+  })
 
+
+  useEffect(() => {
+    if (sizes) {
+      console.log(sizes)
+    }
+  }, [sizes])
 
   useEffect(() => {
     productAPI.getAll()
@@ -71,8 +98,9 @@ const WebProductList = (props) => {
     productAPI.getFilterInfo()
       .then(res => {
         if (!res.status) {
+          console.log(res)
           setCategories(res.categories)
-          setSizes(res.sizes)
+          setSizes([...res.sizes])
         } else {
           console.log(res);
         }
@@ -86,6 +114,13 @@ const WebProductList = (props) => {
     >
       <Container>
         <Wrapper>
+          <FiltersContainer>
+            <FilterItem>
+              <FilterItemTitle>
+                <Typography.Title level={4}>Size</Typography.Title>
+              </FilterItemTitle>
+            </FilterItem>
+          </FiltersContainer>
           <ProductListContainer>
             {
               isLoading ?
@@ -101,11 +136,11 @@ const WebProductList = (props) => {
                       <ProductFilerItem>
                         <Select style={{ width: 120 }} defaultValue={0}>
                           <Select.Option value={0}>
-                              Tất Cả
+                            Tất Cả
                           </Select.Option>
                           {
                             categories.map(item => (
-                              <Select.Option value={item.id}>
+                              <Select.Option value={item.id} key={item.id}>
                                 {item.title}
                               </Select.Option>
                             ))
@@ -116,7 +151,7 @@ const WebProductList = (props) => {
                         <Select style={{ width: 120 }} defaultValue={1}>
                           {
                             sortOption.map(item => (
-                              <Select.Option value={item.id}>
+                              <Select.Option value={item.id} key={item.id}>
                                 {item.title}
                               </Select.Option>
                             ))
