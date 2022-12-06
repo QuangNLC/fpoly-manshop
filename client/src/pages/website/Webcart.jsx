@@ -269,35 +269,6 @@ const Webcart = () => {
 
     const onFinish = (value) => {
         console.log('checkout', value)
-
-        // const checkoutPayload = {
-        //     "users": {
-        //         "username": auth.info.username
-        //     },
-        //     "total_price": data.reduce((total, item) => { return total + item.quantity * item.price }, 0) * 1.1,
-        //     "customers": {
-        //         "phone": value.phone,
-        //         "name": value.name,
-        //         "note": value.note ? value.note : '',
-        //         "user": {
-        //             "username": auth.info.username
-        //         },
-        //         "orderDetail": [
-        //             ...data.map((item) => ({
-        //                 product: {
-        //                     id: item.product.id
-        //                 },
-        //                 size: item.selectedSize.size.title,
-        //                 quantity: item.quantity,
-        //                 total_price: item.price * item.quantity
-        //             }))
-        //         ],
-        //         cityId: value.cityId,
-        //         distictId: value.distictId,
-        //         wardId: value.wardId,
-        //         location: value.location
-        //     },
-        // }
         if (data && data.length > 0) {
             Modal.confirm({
                 title: "Hộp Thoại Xác Nhận",

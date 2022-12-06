@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom'
+import { Form, useNavigate, useParams } from 'react-router-dom'
 import Helmet from '../../components/Helmet';
 import styled from 'styled-components';
 import { List, Spin, Steps, Tag, Typography, Select, Button, Skeleton, Modal, notification, Table, Input } from 'antd';
@@ -74,6 +74,14 @@ const CustomerInfoItemLabel = styled.div`
 `
 const CustomerInfoItemContent = styled.div`
     color: #666;
+`
+
+const CustomerInfoActions = styled.div`
+    width: 100%;
+    margin: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
 `
 const CartContainer = styled.div`
     width: 100%;
@@ -172,6 +180,11 @@ const ProductAction = styled.div`
     align-items: center;
 `
 
+const FormContainer = styled.div`
+    width: 100%;
+    display: flex;
+`
+
 
 const StatusBadge = (props) => {
 
@@ -242,13 +255,6 @@ const UpdateStatusButton = ({ item, onClickUpdate }) => {
                 isFinish: true,
                 orderDetail: item.orderDetail
             }
-            // Modal.confirm({
-            //     title: "Hộp Thoại Xác Nhận",
-            //     content: modalContent,
-            //     okText: "Xác Nhận",
-            //     cancelText: "Hủy Bỏ",
-            //     onOk: () => { onClickUpdate(payload) }
-            // })
             onClickUpdate(payload)
         }
     }
@@ -323,16 +329,17 @@ const AdmOrderInfo = () => {
     const [IsLoadingInfo, setIsLoadingInfo] = useState(true)
     const [isModalStatus, setIsModalStatus] = useState(false)
     const [isModalDesc, setIsModalDesc] = useState(false)
+    const [isModalCustomerInfo, setIsModalCustomerInfo] = useState(false)
+    const [editingCustomerInfo, setEditingCustomerInfo] = useState(undefined)
     const [editingOrderItem, setEdittingOrderItem] = useState(undefined)
     const [updateSttDesc, setUpdateSttDesc] = useState('')
     const auth = useSelector(state => state.auth.auth);
     const [steps, setSteps] = useState([
-        { id: 5, title: "Đang Chờ" },
-        { id: 1, title: "Chờ Xác Nhận" },
-        { id: 2, title: "Đã Xác Nhận" },
-        { id: 3, title: "Đang Giao" },
-        { id: 4, title: "Hoàn Tất" }
-
+        { index: 1, id: 5, title: "Đang Chờ" },
+        { index: 2, id: 1, title: "Chờ Xác Nhận" },
+        { index: 3, id: 2, title: "Đã Xác Nhận" },
+        { index: 4, id: 3, title: "Đang Giao" },
+        { index: 5, id: 4, title: "Hoàn Tất" }
     ])
     const navigate = useNavigate();
 
@@ -382,7 +389,13 @@ const AdmOrderInfo = () => {
 
 
     const onClickUpdateWatingOrder = (item) => {
-        ordersAPI.updateWatingOrder(item)
+        ordersAPI.updateOrderStatus({
+            ...item,
+            users: {
+                username: auth?.info?.username
+            },
+            isFinish: true
+        })
             .then(res => {
                 if (!res.status) {
                     console.log(res)
@@ -396,6 +409,10 @@ const AdmOrderInfo = () => {
                 }
             })
             .catch(err => console.log(err))
+        console.log(item)
+        let payload = {
+
+        }
     }
 
     const onClickUpdateStatus = (item) => {
@@ -435,7 +452,16 @@ const AdmOrderInfo = () => {
                 })
                 .catch(err => console.log(err))
         }
+    }
 
+    const onClickUpdateCustomerInfo = () => {
+        setEditingCustomerInfo(info?.customers);
+        setIsModalCustomerInfo(true)
+    }
+
+    const onCloseModalCustomerInfo = () => {
+        setEditingCustomerInfo(undefined);
+        setIsModalCustomerInfo(false)
     }
 
     const onCloseModalDesc = () => {
@@ -444,6 +470,42 @@ const AdmOrderInfo = () => {
         setIsModalDesc(false)
     }
 
+    const onChangeCity = (value) => {
+        // form.setFieldValue('districtId', null)
+        // form.setFieldValue('wardId', null)
+        setSelectedData({
+            cityId: value,
+            districtId: null,
+            wardId: null
+        })
+    }
+
+    const onChangeDistrict = (value) => {
+        // form.setFieldValue('wardId', null)
+        setSelectedData({
+            ...selectedData,
+            districtId: value,
+            wardId: null
+        })
+    }
+
+    const onChangeWard = (value) => {
+        setSelectedData({
+            ...selectedData,
+            wardId: value
+        })
+    }
+
+    const [cityData, setCityData] = useState([])
+    const [selectedData, setSelectedData] = useState({
+        cityId: null,
+        districtId: null,
+        wardId: null
+    })
+
+
+
+
     useEffect(() => {
         ordersAPI.getOrderInfo(id)
             .then(res => {
@@ -451,23 +513,23 @@ const AdmOrderInfo = () => {
                     setInfo(res)
                     console.log(res)
                     setIsLoadingInfo(false)
-                    ordersAPI.getAllOrderStatus()
-                        .then(stepsRes => {
-                            if (!stepsRes.status) {
-                                setSteps(stepsRes)
-                            } else {
-                                console.log(stepsRes)
-                            }
-                        }).then(() => {
-                        })
-                        .catch(err => console.log(err))
+                    // ordersAPI.getAllOrderStatus()
+                    //     .then(stepsRes => {
+                    //         if (!stepsRes.status) {
+                    //             setSteps(stepsRes)
+                    //         } else {
+                    //             console.log(stepsRes)
+                    //         }
+                    //     }).then(() => {
+                    //     })
+                    //     .catch(err => console.log(err))
                 } else {
                     console.log(res)
                 }
             })
             .catch(err => console.log(err))
     }, [id])
-
+    console.log(steps[0])
     return (
         <Helmet
             title={"Quản Lý Đơn Hàng"}
@@ -483,7 +545,7 @@ const AdmOrderInfo = () => {
                     )
                     :
                     (
-                        info?.statusOrders?.id === 5 ?
+                        info?.statusDetail[info?.statusDetail.length - 1].statusOrder?.id === 5 ?
                             (
                                 <AdmWatingOrder id={info?.id} info={info} onClickUpdateStatus={onClickUpdateWatingOrder} />
                             )
@@ -496,7 +558,6 @@ const AdmOrderInfo = () => {
                                                 steps && steps.length > 0 &&
                                                 <Steps current={steps.findIndex((item) => item.id === info?.statusDetail[info?.statusDetail.length - 1]?.statusOrder.id)}>
                                                     {steps.map(item => {
-                                                        console.log(item)
                                                         let checkDesc = findStepIndex(info?.statusDetail, item.id)
                                                         let des = checkDesc === -1 ? '' : info?.statusDetail[checkDesc]?.timeDate
                                                         return (
@@ -508,7 +569,8 @@ const AdmOrderInfo = () => {
                                                                 />
                                                             )
                                                         )
-                                                    })}
+                                                    }
+                                                    )}
                                                 </Steps>
                                             }
                                             <br />
@@ -520,6 +582,15 @@ const AdmOrderInfo = () => {
                                     </StepsContainer>
                                     <CustomerInfoContainer>
                                         <Title>thông tin đơn hàng</Title>
+                                        <CustomerInfoActions>
+                                            <Button
+                                                style={{ borderRadius: "20px" }}
+                                                disabled={info?.statusDetail[info?.statusDetail.length - 1]?.statusOrder?.id > 2}
+                                                onClick={() => { onClickUpdateCustomerInfo() }}
+                                            >
+                                                Cập Nhật
+                                            </Button>
+                                        </CustomerInfoActions>
                                         <CustomerInfo>
                                             <CustomerInfoItem>
                                                 <CustomerInfoItemLabel>trạng thái</CustomerInfoItemLabel>
@@ -624,6 +695,16 @@ const AdmOrderInfo = () => {
                                 >
                                     <Typography.Title level={5}>Ghi Chú</Typography.Title>
                                     <Input.TextArea value={updateSttDesc} onChange={(e) => { setUpdateSttDesc(e.target.value) }} placeholder="Ghi chú" />
+                                </Modal>
+
+                                <Modal
+                                    open={isModalCustomerInfo}
+                                    centered
+                                    okText="Xác Nhận"
+                                    cancelText="Hủy Bỏ"
+                                    onCancel={() => onCloseModalCustomerInfo()}
+                                >
+
                                 </Modal>
                             </Container >
 

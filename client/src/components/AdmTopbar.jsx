@@ -21,13 +21,7 @@ import ordersAPI from '../api/ordersAPI';
 const Container = styled.div`
     width: 100%;
     height:50px;
-    background-color: white;
-    position: sticky;
-    top: 0;
-    z-index: 99;
-    box-shadow: 3px 1px 6px 3px rgba(181,175,175,0.75);
-    -webkit-box-shadow: 3px 1px 6px 3px rgba(181,175,175,0.75);
-    -moz-box-shadow: 3px 1px 6px 3px rgba(181,175,175,0.75);
+    margin-bottom: 20px;
 `
 const Wrapper = styled.div`
     height: 100%;
@@ -170,9 +164,9 @@ const AdmTopbar = () => {
         <Container>
             <Wrapper>
                 <Left>
-                    <Link to="/">
+                    {/* <Link to="/">
                         <Logo>Mnc 4 Man</Logo>
-                    </Link>
+                    </Link> */}
                 </Left>
                 <Right>
                     <IconContainer>

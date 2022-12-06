@@ -3,7 +3,7 @@ import Helmet from '../../components/Helmet'
 import styled from 'styled-components'
 import productAPI from '../../api/productsAPI'
 import { useState } from 'react'
-import { Button, notification, Table, Tag } from 'antd'
+import { Button, notification, Table, Tag, Typography } from 'antd'
 import { formatter } from '../../utils'
 import ordersAPI from '../../api/ordersAPI'
 import { useNavigate } from 'react-router-dom'
@@ -88,7 +88,6 @@ const AdmBills = () => {
     const auth = useSelector(state => state.auth.auth);
     const handleCreateNewBill = () => {
         if (auth) {
-            console.log(`Bearer ${JSON.parse(localStorage.getItem("AUTH"))?.token}`)
             ordersAPI.createWatingOrder({ users: { username: auth?.info?.username }, orderDetail: [] })
                 .then(res => {
                     if (!res.status) {
@@ -167,21 +166,22 @@ const AdmBills = () => {
         }
     ];
     useEffect(() => {
-        ordersAPI.getWatingOrderList()
-            .then(res => {
-                if (!res.status) {
-                    setData(res.map((item, index) => ({ index: index + 1, key: item.id, ...item, totalQuantity: item.orderDetail.length })))
-                    console.log(res)
-                } else {
-                    console.log(res)
-                }
-            })
-            .catch(err => console.log(err))
+        // ordersAPI.getWatingOrderList()
+        //     .then(res => {
+        //         if (!res.status) {
+        //             setData(res.map((item, index) => ({ index: index + 1, key: item.id, ...item, totalQuantity: item.orderDetail.length })))
+        //             console.log(res)
+        //         } else {
+        //             console.log(res)
+        //         }
+        //     })
+        //     .catch(err => console.log(err))
     }, [])
     return (
         <Helmet title="Hoá Đơn">
             <Container>
                 <Wrapper>
+                    <Typography.Title level={5}>Danh Sách Đơn Chờ</Typography.Title>
                     <ActionContainer>
                         <Button style={{ borderRadius: "20px" }} type='primary' onClick={handleCreateNewBill}>Tạo Đơn Hàng</Button>
                     </ActionContainer>

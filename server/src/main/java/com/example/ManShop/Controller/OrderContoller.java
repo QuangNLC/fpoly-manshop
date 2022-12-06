@@ -403,10 +403,12 @@ public class OrderContoller {
             statusDetail.setDescription("hóa đơn tạo tại quầy");
             statusDetail.setFinish(false);
             statusDetail.setTimeDate(new Date());
-            statusDetail.setStatusOrder(statusOrderJPA.findByTitle(DTO.getStatusOrder()));
-            statusDetail.setUsersUpdate(DTO.getUsers());
+//            statusDetail.setStatusOrder(statusOrderJPA.findByTitle(DTO.getStatusOrder()));
+//            statusDetail.setUsersUpdate(DTO.getUsers());
+            statusDetail.setStatusOrder(statusOrderJPA.findById(5).get());
+            statusDetail.setUsersUpdate(user);
             orderDetailStatusJPA.save(statusDetail);
-            return ResponseEntity.ok().body(newOrder.getId());
+            return ResponseEntity.ok().body(orderJPA.findById(newOrder.getId()).get());
         }catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.notFound().build();

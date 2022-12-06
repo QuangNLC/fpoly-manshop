@@ -21,10 +21,10 @@ const AdminLayout = () => {
 
     return (
         <Container>
-            <AdmTopbar />
             <Wrapper>
                 <AdmSidebar />
                 <ContentContainer>
+                    <AdmTopbar />
                     <Outlet />
                 </ContentContainer>
             </Wrapper>

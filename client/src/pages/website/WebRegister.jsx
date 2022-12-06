@@ -237,7 +237,16 @@ const WebRegister = () => {
                                             name="phone"
                                             rules={[
                                                 { required: true, message: 'Vui lòng nhập Số điện thoại!' },
-                                                { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' }
+                                                { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' },
+                                                ({ getFieldValue }) => ({
+                                                    validator(_, value) {
+                                                        let vnf_regex = /((09|03|07|08|05)+([0-9]{8})\b)/g;
+                                                        if (!value || vnf_regex.test(value)) {
+                                                            return Promise.resolve()
+                                                        }
+                                                        return Promise.reject('Vui lòng nhập đúng định dạng số điện thoại!')
+                                                    }
+                                                })
                                             ]}
                                         >
                                             <Input placeholder='Số điện thoại' />

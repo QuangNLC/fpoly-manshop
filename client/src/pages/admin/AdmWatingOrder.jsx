@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react'
 import Helmet from '../../components/Helmet'
 import styled from 'styled-components'
-import { Button, Empty, Select, Table, List, notification, Modal, Form, InputNumber, Switch, Typography, Input, Space, Steps } from 'antd'
+import { Button, Empty, Select, Table, List, notification, Modal, Form, InputNumber, Switch, Typography, Input, Space, Steps, Spin, Tag } from 'antd'
 import { SearchOutlined } from '@ant-design/icons';
 import { useEffect } from 'react'
 import productAPI from '../../api/productsAPI'
@@ -14,6 +14,7 @@ import addressAPI from '../../api/addressAPI'
 import Highlighter from 'react-highlight-words';
 import { useSelector } from 'react-redux';
 import ordersAPI from '../../api/ordersAPI';
+import moment from 'moment';
 
 const Container = styled.div`
     width: 100%;
@@ -225,13 +226,26 @@ const openNotificationWithIcon = (type, title, des) => {
 };
 
 
+const findStepIndex = (arr, sttId) => {
+    let result = -1;
+    if (arr) {
+        arr.forEach((item, index) => {
+            if (item.statusOrder.id === sttId) {
+                result = index
+            }
+        });
+    }
+    return result;
+}
+
+
 const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
     const [steps, setSteps] = useState([
         { id: 5, title: "Đang Chờ" },
         { id: 1, title: "Chờ Xác Nhận" },
         { id: 2, title: "Đã Xác Nhận" },
         { id: 3, title: "Đang Giao" },
-        { id: 4, title: "Hoàn Thành" }
+        { id: 4, title: "Hoàn Tất" }
 
     ])
     const [cart, setCart] = useState([])
@@ -241,6 +255,7 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
     const [addingProduct, setAddingProduct] = useState(undefined)
     const [form] = useForm()
     const [isDefaultCustomer, setIsDefaultCustomer] = useState(true)
+    const [cartLoading, setCartLoading] = useState(false)
     const onChangeCity = (value) => {
         form.setFieldValue('districtId', null)
         form.setFieldValue('wardId', null)
@@ -279,28 +294,11 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
 
     }
 
-    const handleAddToCart = (item) => {
-        const index = findByProductIdAndSizeId(cart, item.id, item?.productsizes[0]?.id)
-        if (index === -1) {
-            cart.push({ item, selectedSize: item?.productsizes[0], quantity: 1 })
-            setCart([...cart])
-            openNotificationWithIcon('success', 'Thêm Sản Phẩm Vào Giỏ Hàng', 'Đã thêm sản phẩm vào giỏ hàng')
-        } else {
-
-            if (cart[index].quantity + 1 > cart[index].selectedSize.quantity) {
-                cart[index].quantity = cart[index].selectedSize.quantity;
-                openNotificationWithIcon('warning', 'Thông Báo', `Hiện chỉ còn ${cart[index].selectedSize.quantity} sản phẩm trong kho!`)
-            } else {
-                cart[index].quantity += 1;
-            }
-            setCart([...cart])
-        }
-    }
-
     const handleChangeCartItemSize = (item, newSizeId, currIndex) => {
         const newSize = item?.item?.productsizes.find((size) => size.id === newSizeId)
 
         const index = findByProductIdAndSizeId(cart, item?.item?.id, newSize.id)
+        setCartLoading(true)
         if (index !== -1) {
             cart[index] = {
                 ...cart[index],
@@ -309,25 +307,80 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
             }
             cart.splice(currIndex, 1)
             setCart([...cart])
-            openNotificationWithIcon('success', 'Thêm Sản Phẩm Vào Giỏ Hàng', 'Thay đổi size thành công!')
         } else {
             cart.splice(currIndex, 1)
             cart.push({ item: item.item, selectedSize: newSize, quantity: 1 })
             setCart([...cart])
-            openNotificationWithIcon('success', 'Thêm Sản Phẩm Vào Giỏ Hàng', 'Thay đổi size thành công!')
         }
+        let payload = {
+            users: {
+                username: auth?.info?.username
+            },
+            id,
+            orderDetail: [
+                ...cart.map((item, index) => ({
+                    product: { id: item?.item?.id },
+                    quantity: item?.quantity,
+                    size: item?.selectedSize?.size?.title,
+                    total_price: item?.item?.export_price * item?.quantity
+                }))
+            ],
+            statusOrders: ({ id: 5, title: 'Đang Chờ' })
+        }
+        ordersAPI.updateWatingOrder(payload)
+            .then(res => {
+                if (!res.status) {
+                    openNotificationWithIcon('success', 'Thêm Sản Phẩm Vào Giỏ Hàng', 'Thay đổi size thành công!')
+                    setCartLoading(false)
+                }
+            }
+            )
+            .catch(err => {
+                openNotificationWithIcon('error', 'Lỗi ', err)
+                setCartLoading(true)
+                console.log(err)
+            })
     }
 
     const handleClickUpdateCartItemQuantity = (item, newQuantity, currIndex) => {
+
         if (newQuantity <= 0) {
             handleDeleteCartItem(currIndex);
         } else {
             if (newQuantity > item.selectedSize.quantity) {
                 openNotificationWithIcon('warning', 'Thông báo', `Trong kho hiện  còn lại ${item.selectedSize.quantity}  sản phẩm!`);
             } else {
+                setCartLoading(true)
                 cart[currIndex].quantity = newQuantity
                 setCart([...cart])
-
+                let payload = {
+                    users: {
+                        username: auth?.info?.username
+                    },
+                    id,
+                    orderDetail: [
+                        ...cart.map((item, index) => ({
+                            product: { id: item?.item?.id },
+                            quantity: item?.quantity,
+                            size: item?.selectedSize?.size?.title,
+                            total_price: item?.item?.export_price * item?.quantity
+                        }))
+                    ],
+                    statusOrders: ({ id: 5, title: 'Đang Chờ' })
+                }
+                ordersAPI.updateWatingOrder(payload)
+                    .then(res => {
+                        if (!res.status) {
+                            openNotificationWithIcon('success', 'Thêm Sản Phẩm Vào Giỏ Hàng', 'Thay đổi size thành công!')
+                            setCartLoading(false)
+                        }
+                    }
+                    )
+                    .catch(err => {
+                        openNotificationWithIcon('error', 'Lỗi ', err)
+                        setCartLoading(true)
+                        console.log(err)
+                    })
             }
 
         }
@@ -339,11 +392,11 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
     const onSelectSizeAndQuantityFinish = (value) => {
         const selectedSize = addingProduct.productsizes.find(size => size.id === value.sizeId)
         const index = findByProductIdAndSizeId(cart, addingProduct.id, selectedSize.id)
-        console.log({ addingProduct, selectedSize, quantity: (value.quantity > selectedSize.id ? selectedSize.id : value.quantity) })
+        setCartLoading(true)
         if (index === -1) {
             cart.push({ item: addingProduct, selectedSize, quantity: (value.quantity > selectedSize.id ? selectedSize.quantity : value.quantity) })
             setCart([...cart])
-            openNotificationWithIcon('success', 'Thêm Sản Phẩm Vào Giỏ Hàng', 'Đã thêm sản phẩm vào giỏ hàng')
+
         } else {
             if (cart[index].quantity + 1 > cart[index].selectedSize.quantity) {
                 cart[index].quantity = cart[index].selectedSize.quantity;
@@ -352,7 +405,38 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
                 cart[index].quantity += 1;
             }
             setCart([...cart])
+
         }
+        let payload = {
+            users: {
+                username: auth?.info?.username
+            },
+            id,
+            orderDetail: [
+                ...cart.map((item, index) => ({
+                    product: { id: item?.item?.id },
+                    quantity: item?.quantity,
+                    size: item?.selectedSize?.size?.title,
+                    total_price: item?.item?.export_price * item?.quantity
+                }))
+            ],
+            statusOrders: ({ id: 5, title: 'Đang Chờ' })
+        }
+        ordersAPI.updateWatingOrder(payload)
+            .then(res => {
+                if (!res.status) {
+                    // openNotificationWithIcon('success', 'Lưu Đơn Hàng', 'Lưu đơn chờ thành công');
+                    // navigate('/admin/order-list')
+                    openNotificationWithIcon('success', 'Thêm Sản Phẩm Vào Giỏ Hàng', 'Đã thêm sản phẩm vào giỏ hàng')
+                    setCartLoading(false)
+                }
+            }
+            )
+            .catch(err => {
+                openNotificationWithIcon('error', 'Lỗi ', err)
+                setCartLoading(true)
+                console.log(err)
+            })
         setAddingProduct(undefined)
     }
 
@@ -516,9 +600,38 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
                 okText: "Xác Nhận",
                 cancelText: "Hủy Bỏ",
                 onOk: () => {
+                    setCartLoading(true)
                     cart.splice(index, 1)
                     setCart([...cart])
-                    openNotificationWithIcon('info', 'Xóa Sản Phẩm Khỏi Giỏ Hàng', 'Đã xóa sản phẩm khỏi giỏ hàng')
+                    // openNotificationWithIcon('info', 'Xóa Sản Phẩm Khỏi Giỏ Hàng', 'Đã xóa sản phẩm khỏi giỏ hàng')
+                    let payload = {
+                        users: {
+                            username: auth?.info?.username
+                        },
+                        id,
+                        orderDetail: [
+                            ...cart.map((item, index) => ({
+                                product: { id: item?.item?.id },
+                                quantity: item?.quantity,
+                                size: item?.selectedSize?.size?.title,
+                                total_price: item?.item?.export_price * item?.quantity
+                            }))
+                        ],
+                        statusOrders: ({ id: 5, title: 'Đang Chờ' })
+                    }
+                    ordersAPI.updateWatingOrder(payload)
+                        .then(res => {
+                            if (!res.status) {
+                                openNotificationWithIcon('info', 'Xóa Sản Phẩm Khỏi Giỏ Hàng', 'Đã xóa sản phẩm khỏi giỏ hàng')
+                                setCartLoading(false)
+                            }
+                        }
+                        )
+                        .catch(err => {
+                            openNotificationWithIcon('error', 'Lỗi ', err)
+                            setCartLoading(true)
+                            console.log(err)
+                        })
                 }
             })
         }
@@ -529,6 +642,7 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
         if (index !== -1) {
             cart[index].quantity = e.target.value;
             setCart([...cart])
+
         }
     }
 
@@ -564,39 +678,64 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
 
     const handleSaveWatingOrder = () => {
         if (auth && id) {
-            Modal.confirm({
-                title: "Hộp Thoại Xác Nhận",
-                content: "Bạn có muốn lưu đơn chờ không",
-                okText: "Xác Nhận",
-                cancelText: "Hủy Bỏ",
-                onOk: () => {
-                    let payload = {
-                        users: {
-                            username: auth?.info?.username
-                        },
-                        id,
-                        orderDetail: [
-                            ...cart.map((item, index) => ({
-                                product: { id: item?.item?.id },
-                                quantity: item?.quantity,
-                                size: item?.selectedSize?.size?.title,
-                                total_price: item?.item?.export_price * item?.quantity
-                            }))
-                        ],
-                        statusOrders:({ id: 5, title: 'Đang Chờ' })
+            // Modal.confirm({
+            //     title: "Hộp Thoại Xác Nhận",
+            //     content: "Bạn có muốn lưu đơn chờ không",
+            //     okText: "Xác Nhận",
+            //     cancelText: "Hủy Bỏ",
+            //     onOk: () => {
+            //         let payload = {
+            //             users: {
+            //                 username: auth?.info?.username
+            //             },
+            //             id,
+            //             orderDetail: [
+            //                 ...cart.map((item, index) => ({
+            //                     product: { id: item?.item?.id },
+            //                     quantity: item?.quantity,
+            //                     size: item?.selectedSize?.size?.title,
+            //                     total_price: item?.item?.export_price * item?.quantity
+            //                 }))
+            //             ],
+            //             statusOrders: ({ id: 5, title: 'Đang Chờ' })
+            //         }
+            //         console.log(payload)
+            //         ordersAPI.updateWatingOrder(payload)
+            //             .then(res => {
+            //                 if (!res.status) {
+            //                     openNotificationWithIcon('success', 'Lưu Đơn Hàng', 'Lưu đơn chờ thàn công');
+            //                     // navigate('/admin/order-list')
+            //                 }
+            //             }
+            //             )
+            //             .catch(err => console.log(err))
+            //     }
+            // })
+            let payload = {
+                users: {
+                    username: auth?.info?.username
+                },
+                id,
+                orderDetail: [
+                    ...cart.map((item, index) => ({
+                        product: { id: item?.item?.id },
+                        quantity: item?.quantity,
+                        size: item?.selectedSize?.size?.title,
+                        total_price: item?.item?.export_price * item?.quantity
+                    }))
+                ],
+                statusOrders: ({ id: 5, title: 'Đang Chờ' })
+            }
+            console.log(payload)
+            ordersAPI.updateWatingOrder(payload)
+                .then(res => {
+                    if (!res.status) {
+                        openNotificationWithIcon('success', 'Lưu Đơn Hàng', 'Lưu đơn chờ thành công');
+                        // navigate('/admin/order-list')
                     }
-                    console.log(payload)
-                    ordersAPI.updateWatingOrder(payload)
-                        .then(res => {
-                            if (!res.status) {
-                                openNotificationWithIcon('success', 'Lưu Đơn Hàng', 'Lưu đơn chờ thàn công');
-                                navigate('/admin/bills')
-                            }
-                        }
-                        )
-                        .catch(err => console.log(err))
                 }
-            })
+                )
+                .catch(err => console.log(err))
         }
     }
 
@@ -617,7 +756,7 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
                             total_price: item?.item?.export_price * item?.quantity
                         }))
                     ],
-                    statusOrders: isDefaultCustomer ? ({ id: 4, title: 'Hoàn Thành' }) : ({ id: 3, title: 'Đã Xác Nhận' }),
+                    statusOrder: isDefaultCustomer ? ('Hoàn Tất') : ('Đã Xác Nhận'),
                     customers: isDefaultCustomer ? null : {
                         "phone": value?.phone,
                         "name": value?.name,
@@ -651,7 +790,6 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
         clearFilters();
         setSearchText('');
     };
-
 
     useEffect(() => {
         if (addingProduct) {
@@ -713,16 +851,32 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
                     <StepContainer>
                         {
                             steps && steps.length > 0 &&
-                            <Steps current={steps.findIndex((item) => item.id === info?.statusOrders?.id)}>
-                                {steps.map(item => (
-                                    <Steps.Step title={item.title} key={item.id} />
-                                ))}
+                            // <Steps current={steps.findIndex((item) => item.id === info?.statusOrders?.id)}>
+                            //     {steps.map(item => (
+                            //         <Steps.Step title={item.title} key={item.id} />
+                            //     ))}
+                            // </Steps>
+                            <Steps current={steps.findIndex((item) => item.id === info?.statusDetail[info?.statusDetail.length - 1]?.statusOrder.id)}>
+                                {steps.map(item => {
+                                    let checkDesc = findStepIndex(info?.statusDetail, item.id)
+                                    let des = checkDesc === -1 ? '' : info?.statusDetail[checkDesc]?.timeDate
+                                    return (
+                                        (
+                                            <Steps.Step
+                                                title={item.title}
+                                                key={item.id}
+                                                description={des !== '' ? moment(des).format('DD/MM/YYYY, H:mm:ss') : ''}
+                                            />
+                                        )
+                                    )
+                                }
+                                )}
                             </Steps>
                         }
                     </StepContainer>
                     <ActionContainer>
-                        <Button type='primary' onClick={() => { navigate("/admin/bills") }}>Danh Sách</Button>
-                        <Button type='primary' onClick={() => { handleSaveWatingOrder() }}>Lưu Đơn Chờ</Button>
+                        <Button type='primary' onClick={() => { navigate("/admin/order-list") }}>Danh Sách</Button>
+                        {/* <Button type='primary' onClick={() => { handleSaveWatingOrder() }}>Lưu Đơn Chờ</Button> */}
                     </ActionContainer>
                     <CartContainer>
                         {
@@ -731,62 +885,73 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
                                     <>
                                         <CartDetails>
                                             <CartBody>
-                                                <List
-                                                    bordered
-                                                    dataSource={cart}
-                                                    style={{
-                                                        width: '100%',
-                                                        height: '100%',
-                                                        backgroundColor: 'white'
-                                                    }}
-                                                    renderItem={(item, index) => (
-                                                        <List.Item>
-                                                            <Product key={item.item.id}>
-                                                                <ProductDetail>
-                                                                    <Image src={item.item.images && `http://localhost:8080/api/file/images/${item.item.images[0].photo}`} />
-                                                                    <Details style={{}}>
-                                                                        <ProductName style={{ textDecoration: "none" }} onClick={() => { navigate(`/product/${item.item.id}`) }}>
-                                                                            <b>Tên sản phẩm:</b> {item.item?.name}
-                                                                        </ProductName>
-                                                                        <ProductId>
-                                                                            <b>Mã sản phẩm: </b> {item.item.id}
-                                                                        </ProductId>
-                                                                        <ProductSize >
-                                                                            <Select value={item.selectedSize.id} onChange={(e) => { handleChangeCartItemSize(item, e, index) }}>
-                                                                                {item.item?.productsizes.map(size => (
-                                                                                    <Select.Option value={size.id}>{size.size.title}</Select.Option>
-                                                                                ))}
-                                                                            </Select>
-                                                                        </ProductSize>
-                                                                    </Details>
-                                                                </ProductDetail>
-                                                                <PriceDetail>
-                                                                    <ProductAmountContainer >
-                                                                        <QuantityButton onClick={() => { handleClickUpdateCartItemQuantity(item, item.quantity + 1, index) }}>
-                                                                            <Add />
-                                                                        </QuantityButton>
-                                                                        <ProductAmount>
-                                                                            <AmountInput style={{ textAlign: "center" }}
-                                                                                type='text'
-                                                                                value={item.quantity}
-                                                                                onChange={(e) => { handleChangeCartItemQuantity(e, item) }}
-                                                                                onBlur={(e) => { handleBlurCartItemQuantityInput(e, item) }}
-                                                                            />
-                                                                        </ProductAmount>
-                                                                        <QuantityButton>
-                                                                            <Remove onClick={() => { handleClickUpdateCartItemQuantity(item, item.quantity - 1, index) }} />
-                                                                        </QuantityButton>
+                                                {cartLoading ?
+                                                    (
+                                                        <>
+                                                            <Spin />
+                                                        </>
+                                                    )
+                                                    :
+                                                    (
+                                                        <List
+                                                            bordered
+                                                            dataSource={cart}
+                                                            style={{
+                                                                width: '100%',
+                                                                height: '100%',
+                                                                backgroundColor: 'white'
+                                                            }}
+                                                            renderItem={(item, index) => (
+                                                                <List.Item>
+                                                                    <Product key={item.item.id}>
+                                                                        <ProductDetail>
+                                                                            <Image src={item.item.images && `http://localhost:8080/api/file/images/${item.item.images[0].photo}`} />
+                                                                            <Details style={{}}>
+                                                                                <ProductName style={{ textDecoration: "none" }} onClick={() => { navigate(`/product/${item.item.id}`) }}>
+                                                                                    <b>Tên sản phẩm:</b> {item.item?.name}
+                                                                                </ProductName>
+                                                                                <ProductId>
+                                                                                    <b>Mã sản phẩm: </b> {item.item.id}
+                                                                                </ProductId>
+                                                                                <ProductSize >
+                                                                                    <Select value={item.selectedSize.id} onChange={(e) => { handleChangeCartItemSize(item, e, index) }}>
+                                                                                        {item.item?.productsizes.map(size => (
+                                                                                            <Select.Option value={size.id}>{size.size.title}</Select.Option>
+                                                                                        ))}
+                                                                                    </Select>
+                                                                                </ProductSize>
+                                                                            </Details>
+                                                                        </ProductDetail>
+                                                                        <PriceDetail>
+                                                                            <ProductAmountContainer >
+                                                                                <QuantityButton onClick={() => { handleClickUpdateCartItemQuantity(item, item.quantity + 1, index) }}>
+                                                                                    <Add />
+                                                                                </QuantityButton>
+                                                                                <ProductAmount>
+                                                                                    <AmountInput style={{ textAlign: "center" }}
+                                                                                        type='text'
+                                                                                        value={item.quantity}
+                                                                                        onChange={(e) => { handleChangeCartItemQuantity(e, item) }}
+                                                                                        onBlur={(e) => { handleBlurCartItemQuantityInput(e, item) }}
+                                                                                    />
+                                                                                </ProductAmount>
+                                                                                <QuantityButton>
+                                                                                    <Remove onClick={() => { handleClickUpdateCartItemQuantity(item, item.quantity - 1, index) }} />
+                                                                                </QuantityButton>
 
-                                                                    </ProductAmountContainer>
-                                                                    <ProductPrice>{formatter.format(item.quantity * item.item.export_price)}</ProductPrice>
-                                                                </PriceDetail>
-                                                                <ProductAction>
-                                                                    <Button danger onClick={() => { handleDeleteCartItem(index) }}>Xoá Sản Phẩm</Button>
-                                                                </ProductAction>
-                                                            </Product>
-                                                        </List.Item>
-                                                    )}
-                                                />
+                                                                            </ProductAmountContainer>
+                                                                            <ProductPrice>{formatter.format(item.quantity * item.item.export_price)}</ProductPrice>
+                                                                        </PriceDetail>
+                                                                        <ProductAction>
+                                                                            <Button danger onClick={() => { handleDeleteCartItem(index) }}>Xoá Sản Phẩm</Button>
+                                                                        </ProductAction>
+                                                                    </Product>
+                                                                </List.Item>
+                                                            )}
+                                                        />
+                                                    )
+                                                }
+
                                             </CartBody>
                                         </CartDetails>
                                         <PayDetails>
@@ -801,6 +966,13 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
                                                         <FormContainer>
                                                             <PayContainer>
                                                                 <PayTitle>Thông tin thanh toán</PayTitle>
+                                                                {isDefaultCustomer && (
+                                                                    <PayItem>
+                                                                        <PayItemTitle>
+                                                                            <Tag color="geekblue">Khách Lẻ</Tag>
+                                                                        </PayItemTitle>
+                                                                    </PayItem>
+                                                                )}
                                                                 <PayItem>
                                                                     <PayItemTitle>
                                                                         Giao Hàng

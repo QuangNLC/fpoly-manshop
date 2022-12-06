@@ -22,7 +22,6 @@ const Container = styled.div`
 const Wrapper = styled.div`
     width: 100%;
     min-height: 100vh;
-    background-color: rgba(0,0,0, 0.075);
     padding: 50px;
 `
 const Title = styled.h2`
@@ -425,8 +424,7 @@ const AdmOrderList = () => {
 
     const handleCreateNewBill = () => {
         if (auth) {
-            console.log(`Bearer ${JSON.parse(localStorage.getItem("AUTH"))?.token}`)
-            ordersAPI.createWatingOrder({ users: { username: auth?.info?.username }, orderDetail: [] })
+            ordersAPI.createWatingOrder({ users: { username: auth?.info?.username }, orderDetail: [], statusOrder: "Đang Chờ" })
                 .then(res => {
                     if (!res.status) {
                         openNotificationWithIcon('success', 'Tạo Đơn Chờ', 'Tạo đơn chờ thành công')
@@ -436,26 +434,20 @@ const AdmOrderList = () => {
                             [...data,
                             {
                                 key: res.id,
+                                id: res.id,
                                 createdDate: moment(res.createdDate).format('DD/MM/YYYY, H:mm:ss'),
-                                username: res.users.username,
+                                username: res?.customers?.name,
                                 totalQuantity: 0,
                                 status: { id: 5, title: 'Đang Chờ' }
                             }
                             ]
                         )
-                        // [...res.map((item, index) => ({
-                        //     ...item,
-                        //     key: item.id,
-                        //     createdDate: moment(item.createdDate).format('DD/MM/YYYY, H:mm:ss'),
-                        //     username: item.users.username,
-                        //     totalQuantity: item?.orderDetail.reduce((total, curr) => (total + curr.quantity), 0),
-                        //     status: item.statusOrders
-                        // }))]);
                     } else {
                         console.log(res)
                     }
                 })
                 .catch(err => console.log(err))
+            // navigate('/admin/bills')
         }
     }
 
@@ -471,17 +463,7 @@ const AdmOrderList = () => {
         setSelectedItem(undefined);
     }
 
-    const handleDeleteOrder = (item) => {
-        Modal.confirm({
-            title: "Hộp Thoại Xác Nhận",
-            content: "Bạn có muốn xóa đơn hàng này không?",
-            okText: "Xác Nhận",
-            cancelText: "Hủy Bỏ",
-            onOk: () => {
-                console.log('delete order', item)
-            }
-        })
-    }
+
 
 
     const handleClickUpdateStatus = (item) => {
