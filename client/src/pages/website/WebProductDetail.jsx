@@ -31,7 +31,9 @@ const InfoContainer = styled.div`
     padding: 0 50px;
 `
 const Title = styled.h1`
-    font-weight: 200;
+    font-weight: 400;
+    font-size: 36px;
+    
 `
 const Rating = styled.div``
 

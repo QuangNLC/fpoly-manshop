@@ -24,6 +24,13 @@ const Wrapper = styled.div`
     padding: 20px;
     width: 100%;
 `
+const DeleteCartWrapper = styled.div`
+    width:100%;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+`
 const Title = styled.h1`
     font-weight: 300;
     text-align: center;
@@ -542,6 +549,9 @@ const Webcart = () => {
         >
             <Container>
                 <Wrapper>
+                    <DeleteCartWrapper>
+                        <Button onClick={handleClearCart}>Xóa Giỏ Hàng</Button>
+                    </DeleteCartWrapper>
                     <CartDetails>
                         <CartBody>
                             <List

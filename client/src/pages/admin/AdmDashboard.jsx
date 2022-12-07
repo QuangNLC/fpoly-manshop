@@ -8,9 +8,34 @@ import AdmPieChart from '../../components/AdmPieChart';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import reportAPI from '../../api/reportAPI';
+import AdmBarChart from '../../components/AdmBarChart';
+import { Select, Spin } from 'antd';
+import { formatter } from '../../utils';
 
 const Container = styled.div`
     width: 100%;
+`
+const BarChartContainer = styled.div`
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 20px;
+    padding: 20px;
+`
+const BarChartSelectYear = styled.div`
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+`
+const BarCharWrapper = styled.div`
+    width: 100%;
+    padding: 0 20px;
+    background-color: white;
+    -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+    box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+    
 `
 const WidgetsContainer = styled.div`
     padding: 20px;
@@ -128,26 +153,92 @@ const WidgetLgButton = styled.button`
 
 const AdmDashboard = () => {
     const [chartData, setChartData] = useState([])
-    
+
+    const [barChartData, setBarChartData] = useState([])
+    const [barChartLoading, setbarChartLoading] = useState(true)
+    const [barChartYear, setBarChartYear] = useState(2022)
+    const onChangeBarChartYear = (value) => {
+        console.log(value)
+        setBarChartYear(value)
+    }
+
 
     useEffect(() => {
+        if (barChartYear) {
+            reportAPI.getChartData(barChartYear)
+                .then((res) => {
+                    if (!res.status) {
+                        setBarChartData(res.map((item, index) => {
+                            return ({
+                                month: `Tháng ${item.month}`,
+                                turnover: item.turnover
+                            })
+                        }))
+                        setbarChartLoading(false)
+                        console.log(res)
+                    } else {
+                        console.log(res)
+                    }
+                })
+                .catch(err => console.log(err))
+        }
+    }, [barChartYear])
+
+
+    useEffect(() => {
+        setbarChartLoading(true)
         reportAPI.getChartData(2022)
-        .then((res) => {
-            if(!res.status){
-                console.log(res)
-            }else{
-                console.log(res)
-            }
-        })
-        .catch( err => console.log(err))
-    },[])
+            .then((res) => {
+                if (!res.status) {
+                    setBarChartData(res.map((item, index) => {
+                        return ({
+                            month: `Tháng ${item.month}`,
+                            turnover: item.turnover
+                        })
+                    }))
+                    setbarChartLoading(false)
+                    console.log(res)
+                } else {
+                    console.log(res)
+                }
+            })
+            .catch(err => console.log(err))
+    }, [])
 
 
 
     return (
         <Container>
             <AdmFeaturedInfo />
-            <AdmChart title={"Lượng Người Dùng"} data={userStatsData} dataKey={"activeUser"} grid />
+            {/* <AdmChart title={"Lượng Người Dùng"} data={userStatsData} dataKey={"activeUser"} grid /> */}
+            <BarChartContainer>
+                <BarChartSelectYear>
+                    Năm:
+                    <Select value={barChartYear} onChange={onChangeBarChartYear}>
+                        <Select.Option value={2021}>
+                            2021
+                        </Select.Option>
+                        <Select.Option value={2022}>
+                            2022
+                        </Select.Option>
+                        <Select.Option value={2023}>
+                            2023
+                        </Select.Option>
+                    </Select>
+                </BarChartSelectYear>
+                <BarCharWrapper>
+                    {
+                        barChartLoading ?
+                            (
+                                <Spin />
+                            )
+                            :
+                            (
+                                <AdmBarChart title={"Doanh Thu"} data={barChartData} dataKey={"turnover"} grid />
+                            )
+                    }
+                </BarCharWrapper>
+            </BarChartContainer>
             <AdmPieChart />
             {/* <WidgetsContainer>
                 <WidgetSm>
