@@ -96,7 +96,8 @@ const WebProductList = (props) => {
         return (
           {
             ...curr,
-            sizeId: checkSizeExist(curr.sizeId, item.id) ? [...curr.sizeId] : [item.id, ...curr.sizeId]
+            sizeId: checkSizeExist(curr.sizeId, item.id) ? [...curr.sizeId] : [item.id, ...curr.sizeId],
+            page: 1
           }
         )
       })
@@ -106,9 +107,9 @@ const WebProductList = (props) => {
           let index = curr.sizeId.findIndex(i => i ===item.id)
           let newSizes = curr.sizeId
           newSizes.splice(index, 1)
-          return {...curr, sizeId: [...newSizes]}
+          return {...curr, sizeId: [...newSizes], page: 1}
         }else{
-          return {...curr}
+          return {...curr, page: 1}
         }
       })
     }
@@ -118,7 +119,8 @@ const WebProductList = (props) => {
     setPayloadOption(
       {
         ...payloadOption,
-        categoryId: value
+        categoryId: value,
+        page: 1
       }
     )
   }
@@ -127,9 +129,17 @@ const WebProductList = (props) => {
     setPayloadOption(
       {
         ...payloadOption,
-        sortId: value
+        sortId: value,
+        page: 1
       }
     )
+  }
+
+  const onChangePage = (value) => {
+    setPayloadOption({
+      ...payloadOption,
+      page: value
+    })
   }
 
   useEffect(() => {
@@ -145,7 +155,9 @@ const WebProductList = (props) => {
       if(!res.status){
         console.log(res)
         setShowProducts(res.list)
+        setFilterSize(res.totalItem)
         setIsLoading(false)
+        document.documentElement.scrollTop = 0
       }else{
         console.log(res)
       }
@@ -154,17 +166,15 @@ const WebProductList = (props) => {
   }, [payloadOption])
 
   useEffect(() => {
-    // productAPI.getAll()
-    //   .then(res => {
-    //     if (!res.status) {
-    //       console.log(res)
-    //       setProducts(res)
-    //       setIsLoading(false)
-    //     } else {
-    //       console.log(res)
-    //     }
-    //   })
-    //   .catch(err => console.log(err))
+    productAPI.getAll()
+      .then(res => {
+        if (!res.status) {
+          setFilterSize(res.length)
+        } else {
+          console.log(res)
+        }
+      })
+      .catch(err => console.log(err))
     productAPI.getFilterInfo()
       .then(res => {
         if (!res.status) {
@@ -243,6 +253,7 @@ const WebProductList = (props) => {
                       </ProductFilerItem>
                     </ProductFilterContainer>
                     <Products items={showProducts} />
+                    <Pagination current={payloadOption.page} total={filterSize} showSizeChanger={false} onChange={onChangePage} pageSize={15}/>
                   </ProductListWrrapper>
                 )
             }

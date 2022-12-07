@@ -321,13 +321,13 @@ public class ProductController {
         if(lastfilter.getCategoryId() != 0){
             List<Product> responseList = productJPA.findByCategory_IdAndSizeList(lastfilter.getCategoryId(),lastfilter.getSizes(), lastfilter.getMinPrice(), lastfilter.getMaxPrice(), setpage).stream().collect(Collectors.toList());
             Integer responseTotalPage = productJPA.findByCategory_IdAndSizeList(lastfilter.getCategoryId(),lastfilter.getSizes(), lastfilter.getMinPrice(), lastfilter.getMaxPrice(), setpage).stream().collect(Collectors.toList()).size() % limit == 0 ? productJPA.findByCategory_IdAndSizeList(lastfilter.getCategoryId(),lastfilter.getSizes(), lastfilter.getMinPrice(), lastfilter.getMaxPrice(), setpage).stream().collect(Collectors.toList()).size() / limit : productJPA.findByCategory_IdAndSizeList(lastfilter.getCategoryId(),lastfilter.getSizes(), lastfilter.getMinPrice(), lastfilter.getMaxPrice(), setpage).stream().collect(Collectors.toList()).size() / limit + 1;
-            Integer resTotalItem = productJPA.findByCategory_IdAndSizeList(lastfilter.getCategoryId(),lastfilter.getSizes(), lastfilter.getMinPrice(), lastfilter.getMaxPrice(), setpage).stream().collect(Collectors.toList()).size();
+            Integer resTotalItem = productJPA.findByCategory_IdAndSizeList(lastfilter.getCategoryId(),lastfilter.getSizes(), lastfilter.getMinPrice(), lastfilter.getMaxPrice(), pagedefalut).stream().collect(Collectors.toList()).size();
             PagePaginationResponeDTO response = new PagePaginationResponeDTO(responseList, limit, page, responseTotalPage, resTotalItem);
             return ResponseEntity.ok(response);
         }else{
             List<Product> responseList = productJPA.findByListSize(lastfilter.getSizes(), lastfilter.getMinPrice(), lastfilter.getMaxPrice(), setpage).stream().collect(Collectors.toList());
             Integer responseTotalPage = productJPA.findByListSize(lastfilter.getSizes(), lastfilter.getMinPrice(), lastfilter.getMaxPrice(), setpage).stream().collect(Collectors.toList()).size() % limit == 0 ? productJPA.findByListSize(lastfilter.getSizes(), lastfilter.getMinPrice(), lastfilter.getMaxPrice(), setpage).stream().collect(Collectors.toList()).size() / limit : productJPA.findByListSize(lastfilter.getSizes(), lastfilter.getMinPrice(), lastfilter.getMaxPrice(), setpage).stream().collect(Collectors.toList()).size() / limit + 1;
-            Integer resTotalItem = productJPA.findByListSize(lastfilter.getSizes(), lastfilter.getMinPrice(), lastfilter.getMaxPrice(), setpage).stream().collect(Collectors.toList()).size();
+            Integer resTotalItem = productJPA.findByListSize(lastfilter.getSizes(), lastfilter.getMinPrice(), lastfilter.getMaxPrice(), pagedefalut).stream().collect(Collectors.toList()).size();
             PagePaginationResponeDTO response = new PagePaginationResponeDTO(responseList, limit, page,responseTotalPage, resTotalItem);
             return ResponseEntity.ok(response);
         }
