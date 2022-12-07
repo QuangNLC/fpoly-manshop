@@ -171,17 +171,6 @@ const WebHomePage = () => {
   }
 
 
-  useEffect(() => {
-    productAPI.getNewProducts()
-      .then(res => {
-        if (!res.status) {
-          setNewProducts(res)
-        } else {
-          console.log(res)
-        }
-      })
-      .catch(err => console.log(err))
-  }, [])
 
   return (
     <Helmet title={"Trang Chủ"}>

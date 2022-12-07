@@ -9,7 +9,8 @@ import productAPI from "../../api/productsAPI";
 import styled from 'styled-components'
 import Helmet from "../../components/Helmet";
 import DialogHOC from "../../hoc/DialogHOC";
-import { Popconfirm, Pagination, Spin, Select, Tooltip, Typography, Checkbox } from 'antd'
+import { Popconfirm, Pagination, Spin, Select, Tooltip, Typography, Checkbox, Empty, Button } from 'antd'
+import { useNavigate, useParams } from "react-router-dom";
 
 const Container = styled.div`
   width: 100%;
@@ -74,7 +75,7 @@ const checkSizeExist = (arr, id) => {
 
 const WebProductList = (props) => {
 
-
+  const navigate = useNavigate()
   const [products, setProducts] = useState([])
   const [showProducts, setShowProducts] = useState([])
   const [isLoading, setIsLoading] = useState(true)
@@ -86,8 +87,10 @@ const WebProductList = (props) => {
     categoryId: 0,
     page: 1,
     sortId: 1,
-    sizeId: []
+    sizeId: [],
+    name: ''
   })
+  const { searchText } = useParams()
 
   const onChangeSizesOption = (e, item) => {
     console.log(e.target.checked, item)
@@ -101,15 +104,15 @@ const WebProductList = (props) => {
           }
         )
       })
-    }else{
+    } else {
       setPayloadOption((curr) => {
-        if(checkSizeExist(curr.sizeId, item.id)){
-          let index = curr.sizeId.findIndex(i => i ===item.id)
+        if (checkSizeExist(curr.sizeId, item.id)) {
+          let index = curr.sizeId.findIndex(i => i === item.id)
           let newSizes = curr.sizeId
           newSizes.splice(index, 1)
-          return {...curr, sizeId: [...newSizes], page: 1}
-        }else{
-          return {...curr, page: 1}
+          return { ...curr, sizeId: [...newSizes], page: 1 }
+        } else {
+          return { ...curr, page: 1 }
         }
       })
     }
@@ -142,39 +145,87 @@ const WebProductList = (props) => {
     })
   }
 
+  const onClickClearPayloadOption = () => {
+    if (!searchText) {
+      setPayloadOption({
+        categoryId: 0,
+        page: 1,
+        sortId: 1,
+        sizeId: [],
+        name: ''
+      })
+    } else {
+      setPayloadOption({
+        categoryId: 0,
+        page: 1,
+        sortId: 1,
+        sizeId: [],
+        name: ''
+      })
+      navigate('/products')
+    }
+  }
+
   useEffect(() => {
-    console.log(payloadOption)
     const payloadFilter = {
       categoryId: payloadOption.categoryId,
       sizes: payloadOption.sizeId,
-      sortId: payloadOption.sortId
+      sortId: payloadOption.sortId,
+      name: ''
     }
+    if (searchText) {
+      if (searchText.trim() !== '') {
+        payloadFilter.name = searchText
+      }
+    }
+    console.log(payloadFilter)
     setIsLoading(true)
     productAPI.testFilter(payloadFilter, payloadOption.page)
-    .then(res => {
-      if(!res.status){
-        console.log(res)
-        setShowProducts(res.list)
-        setFilterSize(res.totalItem)
-        setIsLoading(false)
-        document.documentElement.scrollTop = 0
-      }else{
-        console.log(res)
-      }
-    })
-    .catch(err => console.log(err))
-  }, [payloadOption])
-
-  useEffect(() => {
-    productAPI.getAll()
       .then(res => {
         if (!res.status) {
-          setFilterSize(res.length)
+          console.log(res)
+          setShowProducts(res.list)
+          setFilterSize(res.totalItem)
+          setIsLoading(false)
+          document.documentElement.scrollTop = 0
         } else {
           console.log(res)
         }
       })
       .catch(err => console.log(err))
+  }, [payloadOption, searchText])
+
+  // useEffect(() => {
+  //   if (searchText) {
+  //     if (searchText.trim() !== '') {
+  //       setPayloadOption({
+  //         ...payloadOption,
+  //         name: searchText
+  //       })
+  //     } else {
+  //       setPayloadOption({
+  //         ...payloadOption,
+  //         name: ''
+  //       })
+  //     }
+  //   } else {
+  //     setPayloadOption({
+  //       ...payloadOption,
+  //       name: ''
+  //     })
+  //   }
+  // }, [searchText])
+
+  useEffect(() => {
+    // productAPI.getAll()
+    //   .then(res => {
+    //     if (!res.status) {
+    //       setFilterSize(res.length)
+    //     } else {
+    //       console.log(res)
+    //     }
+    //   })
+    //   .catch(err => console.log(err))
     productAPI.getFilterInfo()
       .then(res => {
         if (!res.status) {
@@ -212,6 +263,15 @@ const WebProductList = (props) => {
                   }
                 </SizesWrapper>
               </FilterItemTitle>
+            </FilterItem>
+            <FilterItem>
+              {
+                searchText &&
+                <>
+                  <Typography.Title level={5}>Tìm Kiếm: </Typography.Title>
+                  <Typography.Text>{searchText}</Typography.Text>
+                </>
+              }
             </FilterItem>
           </FiltersContainer>
           <ProductListContainer>
@@ -251,9 +311,27 @@ const WebProductList = (props) => {
                           }
                         </Select>
                       </ProductFilerItem>
+                      <ProductFilerItem>
+                        <Button
+                          onClick={onClickClearPayloadOption}
+                        >
+                          Xóa Bộ Lọc
+                        </Button>
+                      </ProductFilerItem>
                     </ProductFilterContainer>
-                    <Products items={showProducts} />
-                    <Pagination current={payloadOption.page} total={filterSize} showSizeChanger={false} onChange={onChangePage} pageSize={15}/>
+                    {
+                      showProducts.length > 0 ?
+                        (
+                          <>
+                            <Products items={showProducts} />
+                            <Pagination current={payloadOption.page} total={filterSize} showSizeChanger={false} onChange={onChangePage} pageSize={15} />
+                          </>
+                        )
+                        :
+                        (
+                          <Empty description="Không có sản phẩm" />
+                        )
+                    }
                   </ProductListWrrapper>
                 )
             }

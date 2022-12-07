@@ -47,6 +47,9 @@ const Wrapper = styled.div`
     width: 100%;
     height: 100%;
     position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 0.5px solid rgba(0, 0,0 ,.2);
 `
 const DiscountWrapper = styled.div`
     position: absolute;
@@ -88,7 +91,7 @@ const HoverOption = styled.div`
 const DetailContainer = styled.div`
     background-color: white;
     padding: 20px;
-    border: 0.5px solid #999;
+    border-top: 1px solid teal;
 `
 const Title = styled.h2`
     height: 35px;

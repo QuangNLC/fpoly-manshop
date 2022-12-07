@@ -44,7 +44,6 @@ public class ScheduleTask {
         }
         log.info("__________________End check Start________________");
     }
-    //@Scheduled(cron = "57 58 23 * * *")
     @Scheduled(cron = "59 * * * * *")
     @Async
     @Bean

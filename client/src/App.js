@@ -43,6 +43,7 @@ import AdmUpdatePromotion from "./pages/admin/AdmUpdatePromotion";
 import WebCartDetails from "./pages/website/WebCartDetails";
 import WebTestProductList from "./pages/website/WebTestProductList";
 import ProtectedAdminLayout from "./layout/ProtectedAdminLayout";
+import WebAdmLogin from "./pages/website/WebAdmLogin";
 function App() {
   const store = createStore(rootReducer);
 
@@ -59,8 +60,7 @@ function App() {
             {/* <Route path="register" element={<Register />} /> */}
 
             <Route path="products" element={<WebProductList />} />
-            <Route path="list-product/page=:page" element={<WebTestProductList />} />
-            <Route path="list-product/categorryId=:categoryId/page=:page" element={<WebTestProductList />} />
+            <Route path="products/search=:searchText" element={<WebProductList />} />
             <Route path="cart" element={<Webcart />} />
             {/* <Route path="cart" element={<WebCartDetails />} /> */}
             <Route path="my-orders" element={<WebMyOrders />} />
@@ -71,6 +71,7 @@ function App() {
             <Route path="/register" element={<WebRegister />} />
             <Route path="product/:id" element={<ProductDetailPage />} />
             <Route path="login" element={<WebLogin />} />
+            <Route path="adm-login" element={<WebAdmLogin />} />
             <Route path="message" element={<WebMessage />} />
             <Route path="*" element={<div>Trang khong ton tai</div>} />
           </Route>

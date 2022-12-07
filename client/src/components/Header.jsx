@@ -9,6 +9,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { logOutAction } from "../redux/actions/AuthReducerAction";
 import { clearCartAction } from "../redux/actions/CartReducerAtion";
+import { Input } from 'antd';
 
 const Container = styled.div`
   position: fixed;
@@ -54,7 +55,6 @@ const Logo = styled.h1`
     0 10px 10px rgba(0, 0, 0, 0.2), 0 20px 20px rgba(0, 0, 0, 0.3);
 `;
 const Right = styled.div`
-  width: 100%;
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -83,20 +83,12 @@ const NavItem = styled.li`
 const BuyMenu = styled.div`
   display: flex;
 `;
-
 const SearchContainer = styled.div`
+  margin-right: 20px;
+  width: 100%;
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 50%;
-  position: relative;
-`;
-const Input = styled.input`
-  padding: 10px;
-  border: none;
-  outline: none;
-  width: 100%;
-`;
+`
 const CartContainer = styled.div`
   width: 80px;
   height: 80px;
@@ -134,7 +126,6 @@ const Button = styled.div`
 
   &:hover {
     background-color: #333333;
-    font-weight: 500;
     color: white;
   }
 `;
@@ -156,6 +147,8 @@ const AvatarContainer = ({ auth }) => {
     dispatch(clearCartAction())
     dispatch(logOutAction())
   };
+
+
 
   return (
     <>
@@ -197,7 +190,14 @@ const Header = () => {
   const auth = useSelector(state => state.auth.auth);
   const cartReducer = useSelector(state => state.cartReducer);
   const location = useLocation();
-
+  const navigate = useNavigate();
+  const onSearch = (value) => {
+    if(value.trim() !== ''){
+      navigate(`/products/search=${value}`)
+    }else{
+      navigate('/products')
+    }
+  }
   return (
     <Container>
       <TopWrapper>
@@ -208,6 +208,15 @@ const Header = () => {
         </Left>
         <Right>
           <BuyMenu>
+            <SearchContainer>
+              <Input.Search
+                placeholder="Tìm kiếm"
+                onSearch={onSearch}
+                style={{
+                  width: 200,
+                }}
+              />
+            </SearchContainer>
             <CartContainer>
               {/* <CartIcon style={{ fontSize: "20px" }} /> */}
               <Link to="/cart">

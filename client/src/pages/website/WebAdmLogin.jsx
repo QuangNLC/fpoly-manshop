@@ -88,7 +88,7 @@ const openNotificationWithIcon = (type, title, des) => {
     });
 };
 
-const WebLogin = () => {
+const WebAdmLogin = () => {
 
     const auth = useSelector(state => state.auth.auth);
     const isAuth = useSelector(state => state.auth.isAuth);
@@ -118,8 +118,12 @@ const WebLogin = () => {
                             .then(res => {
                                 if (!res.status) {
                                     auth = { ...auth, info: res };
-                                    dispatch(setAuthAction(auth));
-                                    navigate('/')
+                                    if (res.roles.rolename === "ROLE_ADMIN") {
+                                        dispatch(setAuthAction(auth));
+                                        navigate('/admin')
+                                    } else {
+                                        openNotificationWithIcon('error', 'Đăng Nhập Thất Bại', 'Thông tin đăng nhập không chính xác.')
+                                    }
                                 } else {
                                     console.log(res)
                                 }
@@ -159,9 +163,13 @@ const WebLogin = () => {
                                 if (!res.status) {
                                     console.log(res)
                                     auth = { ...auth, info: res };
-                                    dispatch(setAuthAction(auth));
-                                    openNotificationWithIcon('success', 'Đăng nhập thành công!', 'Đăng nhập thành công!');
-                                    navigate('/')
+                                    if (res.roles.rolename === "ROLE_ADMIN") {
+                                        dispatch(setAuthAction(auth));
+                                        openNotificationWithIcon('success', 'Đăng nhập thành công!', 'Đăng nhập thành công!');
+                                        navigate('/admin')
+                                    } else {
+                                        openNotificationWithIcon('error', 'Đăng Nhập Thất Bại', 'Thông tin đăng nhập không chính xác.')
+                                    }
                                 } else {
                                     console.log(res)
                                 }
@@ -185,11 +193,10 @@ const WebLogin = () => {
     useEffect(() => {
         if (isAuth) {
             setCheckingAuth(true)
-            if(auth && auth.info ){
-                console.log(auth)
-                if( auth?.info?.roles?.rolename === "ROLE_USER"){
+            if (auth && auth.info) {
+                if (auth?.info?.roles?.rolename === "ROLE_USER") {
                     navigate("/")
-                }else if( auth?.info?.roles?.rolename === "ROLE_ADMIN"){
+                } else {
                     navigate("/admin")
                 }
             }
@@ -206,62 +213,62 @@ const WebLogin = () => {
                 :
                 (
                     <Helmet
-                        title="Đăng Nhập"
+                        title="Đăng Nhập Quản Trị"
                     >
-                    <Container>
-                        <Wrapper>
-                            <BackgroundImgContainer>
-                                <BackgroundImg src={loginImg} />
-                            </BackgroundImgContainer>
-                            <FormContainer>
-                                <FormTitle>Đăng Nhập</FormTitle>
-                                <Form
-                                    name='login'
-                                    labelCol={{ span: 24 }}
-                                    wrapperCol={{ span: 24 }}
-                                    onFinish={onFinish}
-                                    layout='horizontal'
-                                    autoComplete='off'
-                                    form={form}
-                                >
-                                    <Form.Item
-                                        label="Tên đăng nhập"
-                                        name="username"
-                                        rules={[
-                                            { required: true, message: 'Vui lòng nhập tên tài khoản!' },
-                                            { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' }
-                                        ]}
+                        <Container>
+                            <Wrapper>
+                                <BackgroundImgContainer>
+                                    <BackgroundImg src={loginImg} />
+                                </BackgroundImgContainer>
+                                <FormContainer>
+                                    <FormTitle>Đăng Nhập Trình Quản Trị</FormTitle>
+                                    <Form
+                                        name='login'
+                                        labelCol={{ span: 24 }}
+                                        wrapperCol={{ span: 24 }}
+                                        onFinish={onFinish}
+                                        layout='horizontal'
+                                        autoComplete='off'
+                                        form={form}
                                     >
-                                        <Input placeholder='Tên đăng nhập' />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Mật khẩu"
-                                        name="password"
-                                        rules={[
-                                            { required: true, message: 'Vui lòng nhập mật khẩu!' },
-                                            { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' }
-                                        ]}
-                                    >
-                                        <Input.Password placeholder='Mật khẩu' ref={inputPasswordRefElement} />
-                                    </Form.Item>
-                                    <Form.Item
-                                    >
-                                        <Button type='submit'>Đăng Nhập</Button>
-                                    </Form.Item>
-                                    <Form.Item>
-                                        Chưa có tài khoản. <Link to="/register">Đăng ký ngay</Link>
-                                    </Form.Item>
-                                    <Form.Item>
-                                        <p className="text-noti" style={{ paddingTop: "0px" }}>
-                                            Nếu Quý khách có vấn đề gì thắc mắc hoặc cần hỗ trợ gì thêm có thể
-                                            liên hệ : <br /> Hotline: 0346.410.666 để được hỗ trợ một cách
-                                            nhanh nhất.{" "}
-                                        </p>
-                                    </Form.Item>
-                                </Form>
-                            </FormContainer>
-                        </Wrapper>
-                    </Container>
+                                        <Form.Item
+                                            label="Tên đăng nhập"
+                                            name="username"
+                                            rules={[
+                                                { required: true, message: 'Vui lòng nhập tên tài khoản!' },
+                                                { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' }
+                                            ]}
+                                        >
+                                            <Input placeholder='Tên đăng nhập' />
+                                        </Form.Item>
+                                        <Form.Item
+                                            label="Mật khẩu"
+                                            name="password"
+                                            rules={[
+                                                { required: true, message: 'Vui lòng nhập mật khẩu!' },
+                                                { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' }
+                                            ]}
+                                        >
+                                            <Input.Password placeholder='Mật khẩu' ref={inputPasswordRefElement} />
+                                        </Form.Item>
+                                        <Form.Item
+                                        >
+                                            <Button type='submit'>Đăng Nhập</Button>
+                                        </Form.Item>
+                                        {/* <Form.Item>
+                                            Chưa có tài khoản. <Link to="/register">Đăng ký ngay</Link>
+                                        </Form.Item>
+                                        <Form.Item>
+                                            <p className="text-noti" style={{ paddingTop: "0px" }}>
+                                                Nếu Quý khách có vấn đề gì thắc mắc hoặc cần hỗ trợ gì thêm có thể
+                                                liên hệ : <br /> Hotline: 0346.410.666 để được hỗ trợ một cách
+                                                nhanh nhất.{" "}
+                                            </p>
+                                        </Form.Item> */}
+                                    </Form>
+                                </FormContainer>
+                            </Wrapper>
+                        </Container>
                     </Helmet>
                 )
             }
@@ -270,4 +277,4 @@ const WebLogin = () => {
     )
 }
 
-export default WebLogin
+export default WebAdmLogin
