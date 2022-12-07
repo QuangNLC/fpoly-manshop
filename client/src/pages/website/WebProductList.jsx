@@ -9,7 +9,7 @@ import productAPI from "../../api/productsAPI";
 import styled from 'styled-components'
 import Helmet from "../../components/Helmet";
 import DialogHOC from "../../hoc/DialogHOC";
-import { Popconfirm, Pagination, Spin, Select, Tooltip, Typography } from 'antd'
+import { Popconfirm, Pagination, Spin, Select, Tooltip, Typography, Checkbox } from 'antd'
 
 const Container = styled.div`
   width: 100%;
@@ -25,11 +25,14 @@ const FiltersContainer = styled.div`
 `
 const FilterItem = styled.div`
   width: 100%;
+  padding 20px;
 `
 
 const FilterItemTitle = styled.div`
   width: 100%;
 `
+const SizesWrapper = styled.div``
+const SizeItem = styled.div``
 const ProductListContainer = styled.div`
   padding: 20px;
   width: 80%;
@@ -58,6 +61,17 @@ const sortOption = [
   { id: 6, by: 'createdAt', sort: 'desc', byTitle: 'Theo Ngày Ra Mắt', title: 'Cũ nhất' }
 ]
 
+const checkSizeExist = (arr, id) => {
+  let result = false;
+  if (arr && arr.length > 0) {
+    let index = arr.findIndex(item => item === id);
+    if (index !== -1) {
+      result = true;
+    }
+  }
+  return result;
+}
+
 const WebProductList = (props) => {
 
 
@@ -67,35 +81,90 @@ const WebProductList = (props) => {
   const [currPage, setCurrPage] = useState(1)
   const [categories, setCategories] = useState([])
   const [sizes, setSizes] = useState([])
+  const [filterSize, setFilterSize] = useState(undefined)
   const [payloadOption, setPayloadOption] = useState({
     categoryId: 0,
     page: 1,
-    sort: {
-      by: 'name',
-      order: 'asc'
-    },
+    sortId: 1,
     sizeId: []
   })
 
-
-  useEffect(() => {
-    if (sizes) {
-      console.log(sizes)
-    }
-  }, [sizes])
-
-  useEffect(() => {
-    productAPI.getAll()
-      .then(res => {
-        if (!res.status) {
-          console.log(res)
-          setProducts(res)
-          setIsLoading(false)
-        } else {
-          console.log(res)
+  const onChangeSizesOption = (e, item) => {
+    console.log(e.target.checked, item)
+    if (e.target.checked) {
+      setPayloadOption((curr) => {
+        return (
+          {
+            ...curr,
+            sizeId: checkSizeExist(curr.sizeId, item.id) ? [...curr.sizeId] : [item.id, ...curr.sizeId]
+          }
+        )
+      })
+    }else{
+      setPayloadOption((curr) => {
+        if(checkSizeExist(curr.sizeId, item.id)){
+          let index = curr.sizeId.findIndex(i => i ===item.id)
+          let newSizes = curr.sizeId
+          newSizes.splice(index, 1)
+          return {...curr, sizeId: [...newSizes]}
+        }else{
+          return {...curr}
         }
       })
-      .catch(err => console.log(err))
+    }
+  }
+
+  const onChangeCategoryOption = (value) => {
+    setPayloadOption(
+      {
+        ...payloadOption,
+        categoryId: value
+      }
+    )
+  }
+
+  const onChangeSortOption = (value) => {
+    setPayloadOption(
+      {
+        ...payloadOption,
+        sortId: value
+      }
+    )
+  }
+
+  useEffect(() => {
+    console.log(payloadOption)
+    const payloadFilter = {
+      categoryId: payloadOption.categoryId,
+      sizes: payloadOption.sizeId,
+      sortId: payloadOption.sortId
+    }
+    setIsLoading(true)
+    productAPI.testFilter(payloadFilter, payloadOption.page)
+    .then(res => {
+      if(!res.status){
+        console.log(res)
+        setShowProducts(res.list)
+        setIsLoading(false)
+      }else{
+        console.log(res)
+      }
+    })
+    .catch(err => console.log(err))
+  }, [payloadOption])
+
+  useEffect(() => {
+    // productAPI.getAll()
+    //   .then(res => {
+    //     if (!res.status) {
+    //       console.log(res)
+    //       setProducts(res)
+    //       setIsLoading(false)
+    //     } else {
+    //       console.log(res)
+    //     }
+    //   })
+    //   .catch(err => console.log(err))
     productAPI.getFilterInfo()
       .then(res => {
         if (!res.status) {
@@ -118,7 +187,20 @@ const WebProductList = (props) => {
           <FiltersContainer>
             <FilterItem>
               <FilterItemTitle>
-                <Typography.Title level={4}>Size</Typography.Title>
+                <Typography.Title level={3}>Size</Typography.Title>
+                <SizesWrapper>
+                  {
+                    sizes.map((item, index) => {
+                      return (
+                        <SizeItem key={item.id}>
+                          <Checkbox onChange={(e) => onChangeSizesOption(e, item)} checked={checkSizeExist(payloadOption?.sizeId, item.id)}>
+                            {item.title}
+                          </Checkbox>
+                        </SizeItem>
+                      )
+                    })
+                  }
+                </SizesWrapper>
               </FilterItemTitle>
             </FilterItem>
           </FiltersContainer>
@@ -135,7 +217,7 @@ const WebProductList = (props) => {
                   <ProductListWrrapper>
                     <ProductFilterContainer>
                       <ProductFilerItem>
-                        <Select style={{ width: 120 }} defaultValue={0}>
+                        <Select style={{ width: 120 }} defaultValue={0} value={payloadOption.categoryId} onChange={onChangeCategoryOption}>
                           <Select.Option value={0}>
                             Tất Cả
                           </Select.Option>
@@ -149,7 +231,7 @@ const WebProductList = (props) => {
                         </Select>
                       </ProductFilerItem>
                       <ProductFilerItem>
-                        <Select style={{ width: 120 }} defaultValue={1}>
+                        <Select style={{ width: 120 }} defaultValue={1} value={payloadOption.sortId} onChange={onChangeSortOption}>
                           {
                             sortOption.map(item => (
                               <Select.Option value={item.id} key={item.id}>
@@ -160,7 +242,7 @@ const WebProductList = (props) => {
                         </Select>
                       </ProductFilerItem>
                     </ProductFilterContainer>
-                    <Products items={products} />
+                    <Products items={showProducts} />
                   </ProductListWrrapper>
                 )
             }

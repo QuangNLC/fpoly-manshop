@@ -13,6 +13,7 @@ import java.util.List;
 public class FilterRequestDTO {
     private Integer categoryId;
     private List<Integer> sizes;
+    private Integer sortId;
     private double minPrice;
     private double maxPrice;
     private  String sortname;

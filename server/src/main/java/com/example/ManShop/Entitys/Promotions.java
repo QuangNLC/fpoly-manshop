@@ -25,7 +25,7 @@ public class Promotions {
     private Date date_after;
     @Column(name = "dateBefor")
     private Date date_befor;
-    @Column(name = "title")
+    @Column(name = "title", columnDefinition = "NVARCHAR(300)")
     private String title;
     @ManyToOne @JoinColumn(name = "username")
     private Users users;

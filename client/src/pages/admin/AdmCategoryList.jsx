@@ -30,6 +30,7 @@ const FormWrapper = styled.div`
     -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.55);
     box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.55);
     border-radius: 10px;
+    background-color: white;
 `
 const FormTitle = styled.div`
     width: 100%;

@@ -35,8 +35,8 @@ const productAPI = {
         const url  =`/product/byFilter?page=${page}&limit=${limit}`;
         return  axiosClient.post(url,  filter);
     },
-    testFilter  :  (filter, page, limit) =>  {
-        const url  =`/product/testFilter?page=${page}&limit=${limit}`;
+    testFilter  :  (filter, page) =>  {
+        const url  =`product/byFilterAndSort?page=${page}&limit=15`;
         return  axiosClient.post(url, filter);
     },
     getFilterInfo: () => {

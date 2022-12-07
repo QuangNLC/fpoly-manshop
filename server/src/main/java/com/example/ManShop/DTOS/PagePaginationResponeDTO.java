@@ -13,5 +13,6 @@ public class PagePaginationResponeDTO {
     private List<Product> list;
     private Integer limit;
     private Integer currentPage;
-    private Integer totalItems;
+    private Integer totalPage;
+    private Integer totalItem;
 }
