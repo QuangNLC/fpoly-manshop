@@ -42,6 +42,7 @@ import AdmNewPromotions from "./pages/admin/AdmNewPromotions";
 import AdmUpdatePromotion from "./pages/admin/AdmUpdatePromotion";
 import WebCartDetails from "./pages/website/WebCartDetails";
 import WebTestProductList from "./pages/website/WebTestProductList";
+import ProtectedAdminLayout from "./layout/ProtectedAdminLayout";
 function App() {
   const store = createStore(rootReducer);
 
@@ -73,7 +74,7 @@ function App() {
             <Route path="message" element={<WebMessage />} />
             <Route path="*" element={<div>Trang khong ton tai</div>} />
           </Route>
-          <Route path="/admin" element={<AdminLayout />}>
+          <Route path="/admin" element={<ProtectedAdminLayout><AdminLayout /></ProtectedAdminLayout>}>
             <Route index element={<AdmDashboard />} />
             <Route path="user-list" element={<AdmUserList />} />
             <Route path="new-user" element={<AdmNewUser />} />

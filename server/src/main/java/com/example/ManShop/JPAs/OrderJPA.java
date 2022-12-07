@@ -1,5 +1,6 @@
 package com.example.ManShop.JPAs;
 
+import com.example.ManShop.DTOS.RevenueStatisticsResponeDTO;
 import com.example.ManShop.Entitys.Orders;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,4 +17,7 @@ public interface OrderJPA extends JpaRepository<Orders,Integer> {
 //
 //    @Query("Select o from Orders o where o.statusOrders.id in(5)")
 //    List<Orders> findWaitingOrders();
+@Query(nativeQuery = true)
+List<RevenueStatisticsResponeDTO> getTest(Integer yr);
+
 }

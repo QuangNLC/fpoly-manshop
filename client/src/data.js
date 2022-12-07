@@ -69,7 +69,6 @@ export const ghnCityData = [
   {
     "id": 269,
     "title": "Lào Cai",
-    
   },
   {
     "id": 268,

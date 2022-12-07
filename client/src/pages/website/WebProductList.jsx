@@ -88,6 +88,7 @@ const WebProductList = (props) => {
     productAPI.getAll()
       .then(res => {
         if (!res.status) {
+          console.log(res)
           setProducts(res)
           setIsLoading(false)
         } else {

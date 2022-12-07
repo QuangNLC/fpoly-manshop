@@ -175,6 +175,13 @@ const AvatarContainer = ({ auth }) => {
             Đơn Hàng Của Tôi
           </Link>
         </MenuItem>
+        {auth?.info?.roles?.rolename && (auth?.info?.roles?.rolename === "ROLE_ADMIN") &&
+          <MenuItem onClick={handleClose}>
+            <Link to="/admin" style={{ color: 'black' }}>
+              Trang Quản Trị
+            </Link>
+          </MenuItem>
+        }
         <MenuItem onClick={handleClickLogOut}>
           Đăng Xuất
         </MenuItem>

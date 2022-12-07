@@ -5,6 +5,9 @@ import AdmFeaturedInfo from '../../components/AdmFeaturedInfo';
 import { userStatsData } from '../../assets/data/data';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import AdmPieChart from '../../components/AdmPieChart';
+import { useEffect } from 'react';
+import { useState } from 'react';
+import reportAPI from '../../api/reportAPI';
 
 const Container = styled.div`
     width: 100%;
@@ -124,6 +127,23 @@ const WidgetLgButton = styled.button`
 
 
 const AdmDashboard = () => {
+    const [chartData, setChartData] = useState([])
+    
+
+    useEffect(() => {
+        reportAPI.getChartData(2022)
+        .then((res) => {
+            if(!res.status){
+                console.log(res)
+            }else{
+                console.log(res)
+            }
+        })
+        .catch( err => console.log(err))
+    },[])
+
+
+
     return (
         <Container>
             <AdmFeaturedInfo />
