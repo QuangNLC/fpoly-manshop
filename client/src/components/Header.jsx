@@ -8,6 +8,7 @@ import Badge from '@mui/material/Badge';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { logOutAction } from "../redux/actions/AuthReducerAction";
+import { clearCartAction } from "../redux/actions/CartReducerAtion";
 
 const Container = styled.div`
   position: fixed;
@@ -152,6 +153,7 @@ const AvatarContainer = ({ auth }) => {
 
   const handleClickLogOut = () => {
     navigate("/")
+    dispatch(clearCartAction())
     dispatch(logOutAction())
   };
 

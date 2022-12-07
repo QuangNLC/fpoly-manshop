@@ -9,7 +9,7 @@ import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined
 import DialogHOC from '../../hoc/DialogHOC';
 import { Link, useNavigate } from 'react-router-dom'
 import { changeCartItemQuantity, changeCartItemQuantityAction, changeCartItemSizeAction, clearCartAction } from '../../redux/actions/CartReducerAtion'
-import { notification, Drawer, Typography, Modal, Select, message, List, Button, Form, Input } from 'antd';
+import { notification, Drawer, Typography, Modal, Select, message, List, Button, Form, Input, Tag } from 'antd';
 import { useForm } from 'antd/lib/form/Form'
 import { CHANGE_CART_ITEM_QUANTITY, DELETE_CART_ITEM } from '../../redux/types'
 import CustomerInfoForm from '../../components/CustomerInfoForm'
@@ -179,6 +179,27 @@ const openNotificationWithIcon = (type, title, des) => {
     });
 };
 
+const checkPr = (product) => {
+    let result = false;
+    let now = new Date();
+    if (product && product.promotions) {
+        if (product.promotions.length > 0) {
+            if (product.promotions[0]?.promition.isactive) {
+                result = (now >= new Date(product.promotions[0]?.promition.date_after) && now <= new Date(product.promotions[0]?.promition.date_befor))
+            }
+        }
+    }
+
+    return result
+}
+
+const getDiscountPercent = (product) => {
+    let result = 0
+    if (product) {
+        result = product.promotions[0]?.promition?.by_persent
+    }
+    return result
+}
 
 const Webcart = () => {
     const cartReducer = useSelector(state => state.cartReducer);
@@ -222,41 +243,25 @@ const Webcart = () => {
         const province = cityData.find((item) => item.id === selectedData?.cityId)
         const district = province?.districts.find((item) => item.id === value)
         console.log(province, district)
-        if (province && district) {
-            console.log({
-                "pick_province": "Hà Nội",
-                "pick_district": "Quận Nam Từ Liêm",
-                "province": province.title,
-                "district": district.title,
-                "address": "",
-                "weight": 1000,
-                "value": null,
-                "transport": "road",
-                "deliver_option": "none",
-                "tags": []
-            })
-            axios.get(' https://services.giaohangtietkiem.vn/services/shipment/fee', {
-                token: '0F39423929357c68955e79974BFe7e0CB54029E5'
-            })
-            .then(res => console.log(res))
-            .catch(err => console.log(err))
-            // feeAPI.getShippingFeeByGHTK({
-            //     "pick_province": "Hà Nội",
-            //     "pick_district": "Quận Nam Từ Liêm",
-            //     "province": province.title,
-            //     "district": district.title,
-            //     "address": "",
-            //     "weight": 1000,
-            //     "value": null,
-            //     "transport": "road",
-            //     "deliver_option": "none",
-            //     "tags": []
-            // })
-            // .then(res => {
-            //     console.log(res)
-            // })
-            // .catch( err => console.log(err))
-        }
+        // if (province && district) {
+        //     console.log({
+        //         "pick_province": "Hà Nội",
+        //         "pick_district": "Quận Nam Từ Liêm",
+        //         "province": province.title,
+        //         "district": district.title,
+        //         "address": "",
+        //         "weight": 1000,
+        //         "value": null,
+        //         "transport": "road",
+        //         "deliver_option": "none",
+        //         "tags": []
+        //     })
+        //     axios.get(' https://services.giaohangtietkiem.vn/services/shipment/fee', {
+        //         token: '0F39423929357c68955e79974BFe7e0CB54029E5'
+        //     })
+        //     .then(res => console.log(res))
+        //     .catch(err => console.log(err))
+        // }
     }
 
     const onChangeWard = (value) => {
@@ -280,7 +285,14 @@ const Webcart = () => {
                         "users": {
                             "username": auth.info.username
                         },
-                        "total_price": data.reduce((total, item) => { return total + item.quantity * item.price }, 0) * 1.1,
+                        "total_price": data.reduce((total, item) => {
+                            if (checkPr(item.product)) {
+                                return total + item.quantity * (item.price - item.price * (getDiscountPercent(item.product) / 100))
+                            } else {
+
+                                return total + item.quantity * item.price
+                            }
+                        }, 0),
                         "customers": {
                             "phone": value.phone,
                             "name": value.name,
@@ -331,49 +343,6 @@ const Webcart = () => {
     }
 
 
-    const hanldleCheckout = (value) => {
-        if (data && data.length > 0) {
-            let payload = {
-                "users": {
-                    "username": auth.info.username
-                },
-                "total_price": data.reduce((total, item) => { return total + item.quantity * item.price }, 0) * 1.1,
-                "customers": {
-                    "phone": value.phone,
-                    "address": value.adress,
-                    "name": value.name,
-                    "note": value.note,
-                    "user": {
-                        "username": auth.info.username
-                    }
-                },
-                "orderDetail": [
-                    ...data.map((item) => ({
-                        product: {
-                            id: item.product.id
-                        },
-                        size: item.selectedSize.size.title,
-                        quantity: item.quantity,
-                        total_price: item.price * item.quantity
-                    }))
-                ]
-            };
-            checkoutAPI.checkout(payload)
-                .then(res => {
-                    console.log(res);
-                    dispatch(clearCartAction());
-                    Modal.success({
-                        title: "Thành công",
-                        content: "Đơn đặt hàng của bạn đã được tạo thành công. Tự động chuyển trang đến đơn hàng của tôi!"
-                    })
-                    navigate("/my-orders")
-                })
-                .catch(err => {
-                    console.log(err);
-                });
-
-        }
-    }
 
     const hanldeDeleteCartIem = (item) => {
         Modal.confirm({
@@ -646,7 +615,30 @@ const Webcart = () => {
                                                     }
 
                                                 </ProductAmountContainer>
-                                                <ProductPrice>{formatter.format(item.quantity * item.price)}</ProductPrice>
+                                                <ProductPrice>
+                                                    {
+                                                        checkPr(item.product) ?
+                                                            (
+                                                                <div style={{}}>
+                                                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                                        <span style={{ fontSize: '20px', textDecoration: 'line-through', marginRight: 5 }}>
+                                                                            {formatter.format(item.quantity * item.price)}
+                                                                        </span>
+                                                                        <Tag color='magenta' >- {getDiscountPercent(item.product)} %</Tag>
+                                                                    </div>
+                                                                    <div>
+                                                                        {formatter.format(item.quantity * (item.price - item.price * (getDiscountPercent(item.product) / 100)))}
+                                                                    </div>
+                                                                </div>
+                                                            )
+                                                            :
+                                                            (
+                                                                <>
+                                                                    {formatter.format(item.quantity * item.price)}
+                                                                </>
+                                                            )
+                                                    }
+                                                </ProductPrice>
                                             </PriceDetail>
                                             <ProductAction style={{ display: "block" }}>
                                                 <Button style={{ borderRadius: "20px" }} danger onClick={() => { hanldeDeleteCartIem(item) }}>Xoá Sản Phẩm</Button>
@@ -657,7 +649,14 @@ const Webcart = () => {
                             />
                         </CartBody>
                         <CartFooter>
-                            Tổng tiền : <b>{formatter.format(data.reduce((total, item) => { return total + item.quantity * item.price }, 0))}</b>
+                            Tổng tiền : <b>{formatter.format(data.reduce((total, item) => {
+                                if (checkPr(item.product)) {
+                                    return total + item.quantity * (item.price - item.price * (getDiscountPercent(item.product) / 100))
+                                } else {
+
+                                    return total + item.quantity * item.price
+                                }
+                            }, 0))}</b>
                         </CartFooter>
                     </CartDetails>
                     {
@@ -836,15 +835,33 @@ const Webcart = () => {
                                             <Select.Option value="1">Thanh toán khi nhận hàng!</Select.Option>
                                         </Select>
                                     </Form.Item>
-                                    <Summary style={{ height: "230px" }}>
+                                    <Summary>
                                         <SummaryTitle>Thông Tin Hóa Đơn</SummaryTitle>
                                         <SummaryItem>
                                             <SummaryItemText>Tổng tiền</SummaryItemText>
                                             <SummaryItemPrice>{data && formatter.format(data.reduce((total, item) => { return total + item.quantity * item.price }, 0))}</SummaryItemPrice>
                                         </SummaryItem>
+                                        <SummaryItem>
+                                            <SummaryItemText>Giảm Giá</SummaryItemText>
+                                            <SummaryItemPrice>{data && formatter.format(data.reduce((total, item) => {
+                                                if (checkPr(item.product)) {
+                                                    return total + item.quantity * (item.price * (getDiscountPercent(item.product) / 100))
+                                                } else {
+                                                    return total
+                                                }
+                                            }, 0))}</SummaryItemPrice>
+                                        </SummaryItem>
+
                                         <SummaryItem type="total">
                                             <SummaryItemText>Thanh toán</SummaryItemText>
-                                            <SummaryItemPrice>{data && formatter.format(data.reduce((total, item) => { return total + item.quantity * item.price }, 0))}</SummaryItemPrice>
+                                            <SummaryItemPrice>{data && formatter.format(data.reduce((total, item) => {
+                                                if (checkPr(item.product)) {
+                                                    return total + item.quantity * (item.price - item.price * (getDiscountPercent(item.product) / 100))
+                                                } else {
+
+                                                    return total + item.quantity * item.price
+                                                }
+                                            }, 0))}</SummaryItemPrice>
                                         </SummaryItem>
                                     </Summary>
                                     <Form.Item

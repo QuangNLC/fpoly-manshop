@@ -149,7 +149,7 @@ const AdmDashboard = () => {
             <AdmFeaturedInfo />
             <AdmChart title={"Lượng Người Dùng"} data={userStatsData} dataKey={"activeUser"} grid />
             <AdmPieChart />
-            <WidgetsContainer>
+            {/* <WidgetsContainer>
                 <WidgetSm>
                     <WidgetSmTitle>New Join Members</WidgetSmTitle>
                     <WidgetSmList>
@@ -267,7 +267,7 @@ const AdmDashboard = () => {
                         </tbody>
                     </WidgetLgTable>
                 </WidgetLg>
-            </WidgetsContainer>
+            </WidgetsContainer> */}
         </Container>
     )
 }

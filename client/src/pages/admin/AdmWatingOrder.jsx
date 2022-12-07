@@ -325,7 +325,8 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
                     total_price: item?.item?.export_price * item?.quantity
                 }))
             ],
-            statusOrders: ({ id: 5, title: 'Đang Chờ' })
+            statusOrders: ({ id: 5, title: 'Đang Chờ' }),
+            total_price: cart.length > 0 ? (cart.reduce((total, curr) => (total + curr?.quantity*curr?.item?.export_price),0)) : 0
         }
         ordersAPI.updateWatingOrder(payload)
             .then(res => {
@@ -366,7 +367,8 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
                             total_price: item?.item?.export_price * item?.quantity
                         }))
                     ],
-                    statusOrders: ({ id: 5, title: 'Đang Chờ' })
+                    statusOrders: ({ id: 5, title: 'Đang Chờ' }),
+                    total_price: cart.length > 0 ? (cart.reduce((total, curr) => (total + curr?.quantity*curr?.item?.export_price),0)) : 0
                 }
                 ordersAPI.updateWatingOrder(payload)
                     .then(res => {
@@ -420,7 +422,8 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
                     total_price: item?.item?.export_price * item?.quantity
                 }))
             ],
-            statusOrders: ({ id: 5, title: 'Đang Chờ' })
+            statusOrders: ({ id: 5, title: 'Đang Chờ' }),
+            total_price: cart.length > 0 ? (cart.reduce((total, curr) => (total + curr?.quantity*curr?.item?.export_price),0)) : 0
         }
         ordersAPI.updateWatingOrder(payload)
             .then(res => {

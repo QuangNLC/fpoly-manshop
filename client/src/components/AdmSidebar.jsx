@@ -181,7 +181,7 @@ const AdmSidebar = () => {
                 <Menu
                     items={items}
                     mode="inline"
-                    openKeys={['sub1','sub2','sub3']}
+                    defaultOpenKeys={['sub1','sub2','sub3']}
                     selectedKeys={selectedKeys}
                     style={{height: '100%'}}
                     ref={menuRef}

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import AddShoppingCartOutlinedIcon from '@mui/icons-material/AddShoppingCartOutlined';
 import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
@@ -8,7 +8,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '../redux/actions/CartReducerAtion';
 import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
-import { message, Tooltip } from 'antd';
+import { Badge, message, Tooltip } from 'antd';
+import { useEffect } from 'react';
 
 const HoverOptionsContainer = styled.div`
     position:absolute;
@@ -39,12 +40,27 @@ const Container = styled.div`
         z-index: 1;
     }
     &:hover ${Image}{
-        transform: scale(1.025);
+       opacity: 0.75;
     }
 `
 const Wrapper = styled.div`
     width: 100%;
     height: 100%;
+    position: relative;
+`
+const DiscountWrapper = styled.div`
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 30%;
+    height: 30px;
+    background-color: rgba(219, 82, 64, 0.75);
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 600;
 `
 const ImgContainer = styled.div`
     width: 100%;
@@ -93,11 +109,21 @@ const OldPrice = styled.div`
     text-decoration: line-through;
 `
 
+const checkPr = (prm) => {
+    let result = false;
+    let now = new Date();
+    if (prm.isactive) {
+        result = (now >= new Date(prm.date_after) && now <= new Date(prm.date_befor))
+    }
+
+    return result
+}
+
 const Product = ({ item }) => {
     const isAuth = useSelector(state => state.auth.isAuth)
     const dispatch = useDispatch();
-
     const navigate = useNavigate();
+    const [isDiscount, setIsDiscount] = useState(false)
 
     const handleClickAddToCart = (item) => {
         if (isAuth) {
@@ -136,35 +162,90 @@ const Product = ({ item }) => {
         }
     }
 
+    useEffect(() => {
+        if (item && item.promotions) {
+            if (item.promotions.length > 0) {
+                if (checkPr(item.promotions[0].promition)) {
+                    console.log(item.promotions[0])
+                    setIsDiscount(
+                        true
+                    )
+                }
+
+            } else {
+                setIsDiscount(false)
+            }
+        }
+    }, [item])
+
     return (
         <Container>
-            <Wrapper>
-                <ImgContainer>
-                    <Image src={item.images && `http://localhost:8080/api/file/images/${item.images[0].photo}`} />
-                    <HoverOptionsContainer>
-                        <Tooltip title={"Thêm Vào Giỏ Hàng"} >
-                            <HoverOption onClick={() => handleClickAddToCart(item)}>
-                                <AddShoppingCartOutlinedIcon />
-                            </HoverOption>
-                        </Tooltip>
-                        <Tooltip title={"Mua Ngay"}>
-                            <HoverOption onClick={() => handleBuyNow(item)}><ShoppingCartCheckoutIcon /></HoverOption>
-                        </Tooltip>
-                        <Tooltip title={"Thông Tin Sản Phẩm"}>
-                            <Link to={`/product/${item.id}`} style={{ color: 'black' }}>
-                                <HoverOption><SearchOutlinedIcon /></HoverOption>
-                            </Link>
-                        </Tooltip>
-                    </HoverOptionsContainer>
-                </ImgContainer>
-                <DetailContainer>
-                    <Title>{item.name}</Title>
-                    <PriceContainer>
-                        <NewPrice>{formatter.format(item.import_price)}</NewPrice>
-                        <OldPrice>{formatter.format(item.import_price * 1.1)}</OldPrice>
-                    </PriceContainer>
-                </DetailContainer>
-            </Wrapper>
+            {isDiscount ?
+                (
+                    <Badge.Ribbon text={`- ${item?.promotions[0]?.promition?.by_persent}  %`} color="magenta">
+                        <Wrapper>
+                            <ImgContainer>
+                                <Image src={item.images && `http://localhost:8080/api/file/images/${item.images[0].photo}`} />
+                                <HoverOptionsContainer>
+                                    <Tooltip title={"Thêm Vào Giỏ Hàng"} >
+                                        <HoverOption onClick={() => handleClickAddToCart(item)}>
+                                            <AddShoppingCartOutlinedIcon />
+                                        </HoverOption>
+                                    </Tooltip>
+                                    <Tooltip title={"Mua Ngay"}>
+                                        <HoverOption onClick={() => handleBuyNow(item)}><ShoppingCartCheckoutIcon /></HoverOption>
+                                    </Tooltip>
+                                    <Tooltip title={"Thông Tin Sản Phẩm"}>
+                                        <Link to={`/product/${item.id}`} style={{ color: 'black' }}>
+                                            <HoverOption><SearchOutlinedIcon /></HoverOption>
+                                        </Link>
+                                    </Tooltip>
+                                </HoverOptionsContainer>
+                            </ImgContainer>
+                            <DetailContainer>
+                                <Title>{item.name}</Title>
+                                <PriceContainer>
+                                    <NewPrice>{formatter.format(item.export_price - item.export_price * (item?.promotions[0]?.promition?.by_persent / 100))}</NewPrice>
+                                    <OldPrice>{formatter.format(item.export_price)}</OldPrice>
+
+                                </PriceContainer>
+                            </DetailContainer>
+                        </Wrapper>
+                    </Badge.Ribbon>
+                )
+                :
+                (
+                    <Wrapper>
+                        <ImgContainer>
+                            <Image src={item.images && `http://localhost:8080/api/file/images/${item.images[0].photo}`} />
+                            <HoverOptionsContainer>
+                                <Tooltip title={"Thêm Vào Giỏ Hàng"} >
+                                    <HoverOption onClick={() => handleClickAddToCart(item)}>
+                                        <AddShoppingCartOutlinedIcon />
+                                    </HoverOption>
+                                </Tooltip>
+                                <Tooltip title={"Mua Ngay"}>
+                                    <HoverOption onClick={() => handleBuyNow(item)}><ShoppingCartCheckoutIcon /></HoverOption>
+                                </Tooltip>
+                                <Tooltip title={"Thông Tin Sản Phẩm"}>
+                                    <Link to={`/product/${item.id}`} style={{ color: 'black' }}>
+                                        <HoverOption><SearchOutlinedIcon /></HoverOption>
+                                    </Link>
+                                </Tooltip>
+                            </HoverOptionsContainer>
+                        </ImgContainer>
+                        <DetailContainer>
+                            <Title>{item.name}</Title>
+                            <PriceContainer>
+                                <NewPrice>{formatter.format(item.export_price)}</NewPrice>
+
+                            </PriceContainer>
+                        </DetailContainer>
+                    </Wrapper>
+
+                )
+            }
+
         </Container>
     )
 }

@@ -9,7 +9,7 @@ import Avatar from '@mui/material/Avatar';
 import { formatter } from '../../utils'
 import { useDispatch, useSelector } from 'react-redux'
 import { addToCart } from '../../redux/actions/CartReducerAtion'
-import { message, notification } from 'antd';
+import { message, notification, Tag } from 'antd';
 
 const Container = styled.div``
 const Wrapper = styled.div`
@@ -157,10 +157,21 @@ const openNotificationWithIcon = (type, title, des) => {
 };
 
 
+const checkPr = (prm) => {
+    let result = false;
+    let now = new Date();
+    if (prm.isactive) {
+        result = (now >= new Date(prm.date_after) && now <= new Date(prm.date_befor))
+    }
+
+    return result
+}
+
 const ProductDetail = () => {
     const { id } = useParams();
     const [isLoading, setIsLoading] = useState(true);
     const [product, setProduct] = useState(null);
+    const [isDiscount, setIsDiscount] = useState(false);
     const [selectedSizeIndex, setSelectedSizeIndex] = useState(0);
     const [selectedQuantity, setSelectedQuantity] = useState(1);
     const isAuth = useSelector(state => state.auth.isAuth);
@@ -227,6 +238,22 @@ const ProductDetail = () => {
 
 
     useEffect(() => {
+        if (product && product.promotions) {
+            if (product.promotions.length > 0) {
+                if (checkPr(product.promotions[0].promition)) {
+                    console.log(product.promotions[0])
+                    setIsDiscount(
+                        true
+                    )
+                }
+
+            } else {
+                setIsDiscount(false)
+            }
+        }
+    }, [product])
+
+    useEffect(() => {
         setIsLoading(true)
         productAPI.getProduct(id)
             .then((res) => {
@@ -237,6 +264,9 @@ const ProductDetail = () => {
                     setSelectedSizeIndex(0)
                 } else {
                 }
+            })
+            .catch(err => {
+                console.log(err)
             })
     }, [id])
     return (
@@ -280,7 +310,21 @@ const ProductDetail = () => {
 
                                         </Rating>
                                         <Desc>Giới thiệu đến bạn chiếc áo đảm bảo sự thanh lịch mã vẫn đảm bảo được sự vừa vặn và thoải mái, Coolmate đã có những cải tiến để đem đến cho bạn chiếc áo tốt hơn đó chính là với chất liệu Cotton USA chất lượng cao. Đem đến cho bạn chiếc áo với phiên bản cải tiến hơn và trải nghiệm thực sự ổn so với những chiếc áo bạn đang mặc; và chắc chắn đây sẽ là chiếc áo đưa sự thoải mái lên hàng đầu.</Desc>
-                                        <Price>{formatter.format(product?.import_price)}</Price>
+                                                {isDiscount &&  <Tag color="magenta">{`- ${product?.promotions[0]?.promition?.by_persent}  %`}</Tag>}
+                                                {isDiscount &&  <Tag color="orange">{`Khuyến Mại: ${product?.promotions[0]?.promition?.title}`}</Tag>}
+                                        {
+                                            isDiscount ?
+                                                (
+                                                    <div style={{width: '100%', display: 'flex', alignItems: 'center'}}>
+                                                        <Price>{formatter.format(product.export_price - product.export_price *( product?.promotions[0]?.promition?.by_persent / 100))}</Price>
+                                                        <Price style={{marginLeft: 20, textDecoration: 'line-through'}}>{formatter.format(product?.export_price)}</Price>
+                                                    </div>
+                                                )
+                                                :
+                                                (
+                                                    <Price>{formatter.format(product?.export_price)}</Price>
+                                                )
+                                        }
                                         <FilterContainer>
                                             <Filter>
                                                 <FilterTitle>Size</FilterTitle>
@@ -328,7 +372,7 @@ const ProductDetail = () => {
 
                 </Wrapper>
             </Container>
-        </Helmet>
+        </Helmet >
     )
 }
 
