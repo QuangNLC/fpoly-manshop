@@ -35,6 +35,8 @@ public class Promotions {
     private int  by_persent;
     @Column(name = "isactive")
     private boolean isactive;
+    @Column(name = "isauto")
+    private boolean isauto;
     @JsonIgnore
     @OneToMany(mappedBy = "promition")
     private List<PromotionProduct> promotionProducts;

@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.Date;
 import java.util.List;
 
 public interface OrderJPA extends JpaRepository<Orders,Integer> {
@@ -19,5 +20,8 @@ public interface OrderJPA extends JpaRepository<Orders,Integer> {
 //    List<Orders> findWaitingOrders();
 @Query(nativeQuery = true)
 List<RevenueStatisticsResponeDTO> getTest(Integer yr);
+
+@Query(value="select count (*) from oders  where oders.orderdate like :date%", nativeQuery=true)
+Integer today(String date);
 
 }

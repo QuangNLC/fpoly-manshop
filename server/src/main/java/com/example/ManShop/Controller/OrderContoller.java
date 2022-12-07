@@ -263,7 +263,7 @@ public class OrderContoller {
                         int b = element.getProduct().getId();
                         String c = element.getSize();
                         try {
-                            ProductSize update = productsizeJPA.findBySize_IdAndProduct_Id(check(c),b);
+                            ProductSize update = productsizeJPA.findBySize_IdAndProduct_Id(sizeJPA.findByTitle(element.getSize()).getId(),b);
                             update.setId(update.getId());
                             update.setQuantity(update.getQuantity()-a);
                             productsizeJPA.save(update);

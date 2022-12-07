@@ -9,4 +9,7 @@ public interface OrderDetailJPA extends JpaRepository<OrderDetail,Integer> {
     @Modifying
     @Query("delete from OrderDetail p  where p.orders.id=:id")
     void deletelistOrderdetail(Integer id);
+
+    @Query(value = "select sum(order_detail.quantity) from  order_detail  join oders on oders.id= order_detail.orders join status_order_detail on oders.id =status_order_detail.orderid where status_order_detail.statusid=4 and oders.orderdate like :date%",nativeQuery = true)
+    Integer getsll(String date);
 }

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,10 +34,29 @@ public class ScheduleTask {
     @Scheduled(cron = "59 * * * * *")
     @Async
     @Bean
-    public void reportCurrentTime() {
-        log.info("The time is now {}", dateFormat.format(new Date()));
-//        Promotions pr =promotionJPA.findById(2).get();
-        System.out.println("he e");
-
+    public void checkDateStartPromotions(){
+        log.info("__________________Check Date Start---------------");
+        List<Promotions> list = promotionJPA.ListFromStartDate(new Date());
+        for (Promotions p : list) {
+            p.setIsactive(true);
+            promotionJPA.save(p);
+            log.info("bắt đầu  chương trình khuyến mãi (id): "+p.getId());
+        }
+        log.info("__________________End check Start________________");
     }
+    //@Scheduled(cron = "57 58 23 * * *")
+    @Scheduled(cron = "59 * * * * *")
+    @Async
+    @Bean
+    public void checkDateEndPromotions(){
+        log.info("___________________Check Date End_________________");
+        List<Promotions> list = promotionJPA.ListFromEndDate(new Date());
+        for (Promotions p : list) {
+            p.setIsactive(false);
+            promotionJPA.save(p);
+            log.info("đã kết thúc chương trình khuyến mãi (id): "+p.getId());
+        }
+        log.info("__________________End Check Start________________");
+    }
+
 }

@@ -17,4 +17,5 @@ public class FilterRequestDTO {
     private double minPrice;
     private double maxPrice;
     private  String sortname;
+    private String name="";
 }
