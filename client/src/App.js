@@ -21,8 +21,8 @@ import AdmNewUser from "./pages/admin/AdmNewUser";
 import ProductList from "./components/Products/ProductList";
 import AdmUserDetail from "./pages/admin/AdmUserDetail";
 import WebLogin from "./pages/website/WebLogin";
-
-import {data} from './data'
+import AdmMaterialList from "./pages/admin/AdmMaterialList";
+import { data } from './data'
 import WebMyOrders from "./pages/website/WebMyOrders";
 import AdmOrderList from "./pages/admin/AdmOrderList";
 import AdmNewProduct from "./pages/admin/AdmNewProduct";
@@ -82,6 +82,7 @@ function App() {
             <Route path="order-list" element={<AdmOrderList />} />
             <Route path="order/:id" element={<AdmOrderInfo />} />
             <Route path="category-list" element={<AdmCategoryList />} />
+            <Route path="material-list" element={<AdmMaterialList />} />
             <Route path="product-list" element={<AdmProductList />} />
             <Route path="new-product" element={<AdmNewProduct />} />
             <Route path="edit-product/:productId" element={<AdmEditProductDetails />} />

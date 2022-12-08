@@ -15,12 +15,19 @@ const productAPI = {
                     url = url + '/' + limit;
                 };
             };
+            url = url + '/material/' + cate;
+            if (page) {
+                url = url + '/' + page;
+                if (limit) {
+                    url = url + '/' + limit;
+                };
+            };
         } else if (page) {
             url = url + '/' + page;
             if (limit) {
                 url = url + '/' + limit;
             };
-        }else{
+        } else {
             url = url + '/getall';
         }
 
@@ -32,12 +39,12 @@ const productAPI = {
         return axiosClient.post(url, payload);
     },
     getByFilter: (filter, page, limit) => {
-        const url  =`/product/byFilter?page=${page}&limit=${limit}`;
-        return  axiosClient.post(url,  filter);
+        const url = `/product/byFilter?page=${page}&limit=${limit}`;
+        return axiosClient.post(url, filter);
     },
-    testFilter  :  (filter, page) =>  {
-        const url  =`product/byFilterAndSort?page=${page}&limit=15`;
-        return  axiosClient.post(url, filter);
+    testFilter: (filter, page) => {
+        const url = `product/byFilterAndSort?page=${page}&limit=15`;
+        return axiosClient.post(url, filter);
     },
     getFilterInfo: () => {
         const url = '/product/get/filter/info';
@@ -49,23 +56,43 @@ const productAPI = {
     },
     createCategory: (payload) => {
         const url = '/category/create';
-        return axiosClient.post(url, payload);   
+        return axiosClient.post(url, payload);
     },
     getCategoryDetails: (id) => {
-        const url = '/category/details?categoryId='+id;
+        const url = '/category/details?categoryId=' + id;
         return axiosClient.get(url);
     },
     deleteCategory: (id) => {
-        const url = '/category?categoryId='+id;
+        const url = '/category?categoryId=' + id;
         return axiosClient.delete(url);
     },
     updateCategoryDetails: (payload) => {
-        const url = 'category/update?categoryId='+payload.id;
+        const url = 'category/update?categoryId=' + payload.id;
+        return axiosClient.put(url, payload);
+    },
+    getAllMaterial: () => {
+        const url = '/material/getall';
+        return axiosClient.get(url);
+    },
+    createMaterial: (payload) => {
+        const url = '/material/create';
+        return axiosClient.post(url, payload);
+    },
+    getMaterialDetails: (id) => {
+        const url = '/material/details?materialId=' + id;
+        return axiosClient.get(url);
+    },
+    deleteMaterial: (id) => {
+        const url = '/material?materialId=' + id;
+        return axiosClient.delete(url);
+    },
+    updateMaterialDetails: (payload) => {
+        const url = 'material/update?materialId=' + payload.id;
         return axiosClient.put(url, payload);
     },
 
     getNewProducts: () => {
-        const url ='/product/getNewProducts'
+        const url = '/product/getNewProducts'
         return axiosClient.get(url);
     }
 };

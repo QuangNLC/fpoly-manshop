@@ -138,9 +138,9 @@ const AdmProductList = () => {
 
     const columns = [
         {
-            field: 'index', headerName: 'STT', width: 100,
+            field: 'index', headerName: 'STT', width: 50,
         },
-        { field: 'create_date', headerName: 'Ngày Tạo', width: 200 },
+        { field: 'create_date', headerName: 'Ngày Tạo', width: 140 },
         { field: 'name', headerName: 'Tên Sản Phẩm', width: 300, },
         {
             field: 'stock', headerName: 'Số Lượng', width: 100,
@@ -148,10 +148,10 @@ const AdmProductList = () => {
                 <>{params.row.productsizes.reduce((total, item) => { return total + item.quantity }, 0)}</>
             )
         },
-        { field: 'export_price', headerName: "Giá Bán", width: 200 },
-        { field: 'import_price', headerName: "Giá Nhập", width: 200 },
+        { field: 'export_price', headerName: "Giá Bán", width: 130 },
+        { field: 'import_price', headerName: "Giá Nhập", width: 130 },
         {
-            field: 'action', headerName: "Thao Tác", width: 250,
+            field: 'action', headerName: "Thao Tác", width: 200,
             renderCell: (params) => (
                 <ActionContainer>
                     <Link to={"/admin/edit-product/" + params.row.id}>
@@ -202,7 +202,7 @@ const AdmProductList = () => {
             <Wrapper>
                 <Bottom>
                     <TitleContainer>
-                        <Title>DANH SÁCH SẢN </Title>
+                        <Title>DANH SÁCH SẢN PHẨM</Title>
                         <Link to="/admin/new-product">
                             <TitleButton style={{ width: "120px", borderRadius: "20px" }}>Thêm mới</TitleButton>
                         </Link>

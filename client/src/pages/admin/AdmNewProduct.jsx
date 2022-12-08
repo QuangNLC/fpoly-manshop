@@ -300,8 +300,8 @@ const AdmNewProduct = () => {
                                         label="Tên sản phẩm"
                                         name="name"
                                         rules={[
-                                            { required: true },
-                                            { whitespace: true }
+                                            { required: true, message: "Tên sản phẩm không được để trống!" },
+                                            { whitespace: true, message: "Không được nhập khoảng trắng!" }
                                         ]}
                                         hasFeedback
                                     >
@@ -311,8 +311,8 @@ const AdmNewProduct = () => {
                                         label="Thông tin mô tả"
                                         name="title"
                                         rules={[
-                                            { required: true },
-                                            { whitespace: true }
+                                            { required: true, message: "Thông tin mô tả không được để trống!" },
+                                            { whitespace: true, message: "Không được nhập khoảng trắng!" }
                                         ]}
                                         hasFeedback
                                     >
@@ -339,7 +339,7 @@ const AdmNewProduct = () => {
                                         label="Giá bán"
                                         name="export_price"
                                         rules={[
-                                            { required: true },
+                                            { required: true, message: "Giá bán không được để trống !" },
                                             ({ getFieldValue }) => ({
                                                 validator(_, value) {
                                                     if (value && value >= getFieldValue('import_price')) {
@@ -451,7 +451,7 @@ const AdmNewProduct = () => {
                                             label="Số lượng"
                                             name="quantity"
                                             rules={[
-                                                { required: true },
+                                                { required: true, message: "Số lượng không được nhập khoảng trắng!" },
                                                 ({ getFieldValue, setFieldValue }) => ({
                                                     validator(_, value) {
                                                         if (value && value > 0) {
@@ -467,7 +467,7 @@ const AdmNewProduct = () => {
                                             <InputNumber style={{ width: '100%' }} />
                                         </Form.Item>
                                         <Form.Item>
-                                            <Button style={{ borderRadius: "20px" }} htmlType='submit'>Tạo size</Button>
+                                            <Button style={{ borderRadius: "20px" }} htmlType='submit'>Thêm size</Button>
                                             <Button style={{ borderRadius: "20px", marginLeft: "20px" }}>Close</Button>
                                         </Form.Item>
                                     </Form>

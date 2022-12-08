@@ -209,7 +209,7 @@ const AdmCategoryList = () => {
             field: 'id', headerName: 'STT', width: 80,
         },
         {
-            field: 'title', headerName: 'Tên thể loại sản phẩm', width: 320
+            field: 'title', headerName: 'Tên thể loại sản phẩm', width: 260
         },
         {
             field: 'action', headerName: "Thao tác", width: 250,
@@ -294,7 +294,7 @@ const AdmCategoryList = () => {
                 .then(res => {
                     if (!res.status) {
                         setData(data.filter((item, index) => item.id !== id));
-                        openNotificationWithIcon('warning', 'Successfully!', 'Delete category successfully!');
+                        openNotificationWithIcon('warning', 'Thông báo!', 'Xóa thể loại thành công!');
                         haldeCloseForm();
                     } else {
                         console.log(res)
@@ -312,7 +312,7 @@ const AdmCategoryList = () => {
                     if (!res.status) {
                         const newData = [{ ...res }, ...data];
                         setData(newData);
-                        openNotificationWithIcon('success', 'Successfully!', 'Create category successfully!');
+                        openNotificationWithIcon('success', 'Thành công!', 'Tạo thể loại thành công!');
                         haldeCloseForm();
                     } else {
                         console.log(res);
@@ -330,7 +330,7 @@ const AdmCategoryList = () => {
                                 return item;
                             }
                         }));
-                        openNotificationWithIcon('success', 'Success', 'Update category details successfully!')
+                        openNotificationWithIcon('success', 'Thành công', 'Cập nhật thể loại thành công!')
                         haldeCloseForm();
                     } else {
                         console.log(res)
@@ -400,7 +400,7 @@ const AdmCategoryList = () => {
                     isOpenForm &&
                     <FormContainer>
                         <FormWrapper>
-                            <FormTitle>{updatingId ? "Update Category Details" : "Create New Category"}</FormTitle>
+                            <FormTitle>{updatingId ? "Cập nhật" : "Tạo mới"}</FormTitle>
                             <CateFormContainer>
                                 {/* <CateForm>
                                     {
@@ -482,8 +482,8 @@ const AdmCategoryList = () => {
                                                         rules={[
                                                             { required: true, message: 'Không được để trống!' },
                                                             { whitespace: true, message: 'Không nhập ký tự dấu cách!' },
-                                                            { min: 3 },
-                                                            { max: 10 }
+                                                            { min: 3, message: 'Không được nhập ít hơn 3 ký tự!' },
+                                                            { max: 50, message: 'Không được nhập nhiều hơn 50 ký tự!' }
                                                         ]}
                                                         hasFeedback
                                                     >
@@ -500,8 +500,8 @@ const AdmCategoryList = () => {
                                                         rules={[
                                                             { required: true, message: 'Không được để trống!' },
                                                             { whitespace: true, message: 'Không được nhập ký tự dấu cách' },
-                                                            { min: 3 },
-                                                            { max: 10 }
+                                                            { min: 3, message: 'Không được nhập ít hơn 3 ký tự!' },
+                                                            { max: 50, message: 'Không được nhập nhiều hơn 50 ký tự!' }
                                                         ]}
                                                         hasFeedback
                                                     >

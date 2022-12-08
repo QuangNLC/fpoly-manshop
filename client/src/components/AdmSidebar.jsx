@@ -77,16 +77,17 @@ const getItem = (label, key, icon, children, type) => {
 const items = [
     getItem('Chức Năng', 'sub1', <DashboardOutlinedIcon />, [
         getItem('Thống Kê', 'sub1-i1', <Link to="/admin"></Link>),
-        getItem('Tài Khoản', 'sub1-i2', <Link to="/admin/user-list"></Link> )
+        getItem('Tài Khoản', 'sub1-i2', <Link to="/admin/user-list"></Link>)
     ]),
     getItem('Sản Phẩm', 'sub2', <StorefrontOutlinedIcon />, [
         getItem('Thể Loại', 'sub2-i1', <Link to="/admin/category-list"></Link>),
-        getItem('Danh Sách ', 'sub2-i2',<Link to="/admin/product-list"></Link>),
-        getItem('Khuyến Mại', 'sub2-i3',<Link to="/admin/promotions"></Link>)
+        getItem('Chất Liệu ', 'sub2-i4', <Link to="/admin/material-list"></Link>),
+        getItem('Danh Sách ', 'sub2-i2', <Link to="/admin/product-list"></Link>),
+        getItem('Khuyến Mại', 'sub2-i3', <Link to="/admin/promotions"></Link>)
     ]),
     getItem('Hóa Đơn', 'sub3', < EventNoteOutlinedIcon />, [
         // getItem('Tạo Đơn', 'sub3-i1',<Link to="/admin/bills"></Link>),
-        getItem('Danh Sách Hoá Đơn', 'sub3-i2',<Link to="/admin/order-list"></Link>),
+        getItem('Danh Sách Hoá Đơn', 'sub3-i2', <Link to="/admin/order-list"></Link>),
     ]),
     getItem('Hộp Thư Đến', 'sub4', <Link to="/admin/message"><EmailOutlinedIcon /></Link>)
 ];
@@ -119,44 +120,48 @@ const AdmSidebar = () => {
 
     useEffect(() => {
         console.log(location.pathname)
-        switch(location.pathname){
-            case('/admin'):{
+        switch (location.pathname) {
+            case ('/admin'): {
                 setSelectedKeys(['sub1-i1'])
                 break;
             }
-            case('/admin/user-list'):{
+            case ('/admin/user-list'): {
                 setSelectedKeys(['sub1-i2'])
                 break;
             }
-            case('/admin/category-list'):{
+            case ('/admin/category-list'): {
                 setSelectedKeys(['sub2-i1'])
                 break;
             }
-            case('/admin/product-list'):{
+            case ('/admin/product-list'): {
                 setSelectedKeys(['sub2-i2'])
                 break;
             }
-            case('/admin/promotions'):{
+            case ('/admin/promotions'): {
                 setSelectedKeys(['sub2-i3'])
                 break;
             }
-            case('/admin/promotion/new'):{
+            case ('/admin/promotion/new'): {
                 setSelectedKeys(['sub2-i3'])
                 break;
             }
-            case('/admin/bills'):{
+            case ('/admin/material-list'): {
+                setSelectedKeys(['sub2-i4'])
+                break;
+            }
+            case ('/admin/bills'): {
                 setSelectedKeys(['sub3-i1'])
                 break;
             }
-            case('/admin/order-list'):{
+            case ('/admin/order-list'): {
                 setSelectedKeys(['sub3-i2'])
                 break;
             }
-            case('/admin/message'):{
+            case ('/admin/message'): {
                 setSelectedKeys(['sub4'])
                 break;
             }
-            
+
         }
     }, [location])
 
@@ -181,9 +186,9 @@ const AdmSidebar = () => {
                 <Menu
                     items={items}
                     mode="inline"
-                    defaultOpenKeys={['sub1','sub2','sub3']}
+                    defaultOpenKeys={['sub1', 'sub2', 'sub3']}
                     selectedKeys={selectedKeys}
-                    style={{height: '100%'}}
+                    style={{ height: '100%' }}
                     ref={menuRef}
                 />
                 {/* <Menu>

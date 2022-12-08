@@ -7,12 +7,9 @@ import com.example.ManShop.Entitys.Categorys;
 import com.example.ManShop.Entitys.Images;
 import com.example.ManShop.Entitys.Product;
 import com.example.ManShop.Entitys.ProductSize;
+import com.example.ManShop.Entitys.Materials;
 import com.example.ManShop.Entitys.Sizes;
-import com.example.ManShop.JPAs.SizeJPA;
-import com.example.ManShop.JPAs.CategoryJPA;
-import com.example.ManShop.JPAs.ImagesJPA;
-import com.example.ManShop.JPAs.ProductJPA;
-import com.example.ManShop.JPAs.ProductsizeJPA;
+import com.example.ManShop.JPAs.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +40,8 @@ public class ProductController {
 
     final
     CategoryJPA categoryJPA;
+    final
+    MaterialJPA  materialJPA;
 
     final
     ImagesJPA imagesJPA;
@@ -53,9 +52,10 @@ public class ProductController {
     @Autowired
     SizeJPA sizesJPA;
 
-    public ProductController(ProductJPA productJPA, CategoryJPA categoryJPA, ImagesJPA imagesJPA, ProductsizeJPA productsizeJPA) {
+    public ProductController(ProductJPA productJPA, MaterialJPA materialJPA, CategoryJPA categoryJPA, ImagesJPA imagesJPA, ProductsizeJPA productsizeJPA) {
         this.productJPA = productJPA;
         this.categoryJPA = categoryJPA;
+        this.materialJPA = materialJPA;
         this.imagesJPA = imagesJPA;
         this.productsizeJPA = productsizeJPA;
     }

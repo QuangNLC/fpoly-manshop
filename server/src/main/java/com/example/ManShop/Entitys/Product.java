@@ -34,6 +34,8 @@ public class Product {
     private String title;
     @ManyToOne @JoinColumn(name="category")
     private Categorys category;
+    @ManyToOne @JoinColumn(name="material")
+    private Materials material;
 
     @OneToMany(mappedBy = "product")
     private List<ProductSize> productsizes;

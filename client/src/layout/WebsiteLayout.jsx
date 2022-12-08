@@ -59,7 +59,7 @@ const WebsiteLayout = () => {
         <Container>
             {
                 location.pathname !== '/message' &&
-                <MessageContainer style={{ width: "50px", height: "50px" }} onClick={handleClickMatchMessage}>
+                <MessageContainer style={{ width: "10px", height: "10px" }} onClick={handleClickMatchMessage}>
                     <QuestionAnswerTwoToneIcon />
                 </MessageContainer>
             }
