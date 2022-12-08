@@ -1,9 +1,11 @@
 package com.example.ManShop.Controller;
 
+import com.example.ManShop.DTOS.RPResponeseDTO;
+import com.example.ManShop.DTOS.RPResquestDTO;
 import com.example.ManShop.DTOS.RevenueStatisticsResponeDTO;
 import com.example.ManShop.JPAs.OrderDetailJPA;
+import com.example.ManShop.JPAs.OrderDetailStatusJPA;
 import com.example.ManShop.JPAs.OrderJPA;
-import com.example.ManShop.JPAs.ProductJPA;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -23,11 +25,14 @@ import java.util.List;
 public class ReportController {
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd");
     private static final SimpleDateFormat dateFormat2 = new SimpleDateFormat("YYYY-MM");
-@Autowired
+    @Autowired
     OrderJPA orderJPA;
 
     @Autowired
     OrderDetailJPA orderDetailJPA;
+    @Autowired
+    OrderDetailStatusJPA orderDetailStatusJPA;
+
     @GetMapping("/turnover/{year}")
     public ResponseEntity<?> reprotTurnover(@PathVariable("year") Integer year){
         List<RevenueStatisticsResponeDTO> list = new ArrayList<>();
@@ -57,10 +62,32 @@ public class ReportController {
 
     @GetMapping("/order-statistic")
     public ResponseEntity<?> reportOrder(){
-
-
-
-        return null;
+        List<RPResquestDTO> objectList = orderDetailStatusJPA.getRPE();
+        int ckeck1 =0;
+        int ckeck2 =0;
+        int ckeck3 =0;
+        int ckeck4 =0;
+        int ckeck5 =0;
+        for (RPResquestDTO a: objectList) {
+            if(a.getTitle().equals("Chờ Xác Nhận")){
+                int check1=ckeck1 ++;
+            }if(a.getTitle().equals("Đã Xác Nhận")){
+                int check2=ckeck2 ++;
+            }if(a.getTitle().equals("Đang Giao")){
+                int check3=ckeck3 ++;
+            }if(a.getTitle().equals("Hoàn Tất")){
+                int check4=ckeck4 ++;
+            }if(a.getTitle().equals("Đang Chờ")){
+                int check5=ckeck5 ++;
+            }
+        }
+        List<RPResponeseDTO> rpDTO = new ArrayList<>();
+        rpDTO.add(new RPResponeseDTO("Chờ Xác Nhận",ckeck1));
+        rpDTO.add(new RPResponeseDTO("Đã Xác Nhận",ckeck2));
+        rpDTO.add(new RPResponeseDTO("Đang Giao",ckeck3));
+        rpDTO.add(new RPResponeseDTO("Hoàn Tất",ckeck4));
+        rpDTO.add(new RPResponeseDTO("Đang Chờ",ckeck5));
+        return ResponseEntity.ok(rpDTO);
     }
 
     @GetMapping("/order-today")
@@ -71,4 +98,6 @@ public class ReportController {
     public Integer reportProduct(){
         return orderDetailJPA.getsll(dateFormat2.format(new Date()));
     }
+
+//    @GetMapping("/")
 }

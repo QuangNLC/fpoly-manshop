@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 public interface PromotionJPA extends JpaRepository<Promotions,Integer> {
-    @Query("select p from Promotions  p where p.date_befor > :date and p.isactive = false and p.isauto =true ")
+    @Query("select p from Promotions  p where p.date_befor > :date and p.isactive = false and p.isauto =false ")
     List<Promotions> ListFromStartDate(Date date);
 
     @Query("select p from Promotions  p where p.date_befor < :date and p.isactive = True  ")

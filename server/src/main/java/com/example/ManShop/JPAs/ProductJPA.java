@@ -59,6 +59,8 @@ public interface ProductJPA extends JpaRepository<Product,Integer> {
     @Query("select DISTINCT  p.id from Product p join PromotionProduct pp on  pp.product.id =p.id join Promotions  pr on pr.id =pp.promition.id where pr.isactive =1")
     List<Integer> findListInteger();
 
+    @Query("select p from Product p where p.id in (:listpr)")
+    List<Product> findBylistID(List<Integer> listpr);
 
 
 

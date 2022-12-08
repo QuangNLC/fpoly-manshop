@@ -10,8 +10,10 @@ import com.example.ManShop.Entitys.Promotions;
 import com.example.ManShop.JPAs.ProductJPA;
 import com.example.ManShop.JPAs.ProductPromotionJPA;
 import com.example.ManShop.JPAs.PromotionJPA;
+import com.example.ManShop.JPAs.UserJPA;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -37,7 +39,8 @@ public class PromotionsController {
     final ProductJPA productJPA;
     final ProductPromotionJPA productPromotionJPA;
 
-
+@Autowired
+    UserJPA userJPA;
 
     public PromotionsController(PromotionJPA promotionJPA, ProductJPA productJPA, ProductPromotionJPA productPromotionJPA) {
         this.promotionJPA = promotionJPA;
@@ -131,6 +134,7 @@ public class PromotionsController {
     public ResponseEntity<?> updatePromotions(@RequestBody PromotionRequestDTO promotions,@PathVariable("id") Integer id ) {
         log.info("Gọi vào hàm update promotions với (id) = " + id);
         Promotions promotions1 = promotionJPA.findById(id).get();
+      promotions1.setUsers(userJPA.findById(promotions.getUsers().getUsername()).get());
         System.out.println(promotions);
         try {
 
@@ -143,9 +147,15 @@ public class PromotionsController {
                 promotions1.setBy_persent(0);
             }
             promotions1.setIsactive(promotions.isActive());
+            if(promotions.isActive()==false){
+                promotions1.setIsauto(true);
+            }else{
+                promotions1.setIsauto(false);
+            }
             Promotions uppromitons = promotionJPA.save(promotions1);
             try {
-                List<Product> proList = productJPA.findAllById(promotions.getListpr());
+                List<Product> proList = productJPA.findBylistID(promotions.getListpr());
+            //    System.out.println(proList.size());
                 List<PromotionProduct> s = new ArrayList<>();
                 for (int i = 0; i < proList.size(); i++) {
                     PromotionProduct newls = new PromotionProduct();
@@ -156,7 +166,8 @@ public class PromotionsController {
                 }
                 Promotions prnew = promotionJPA.findById(uppromitons.getId()).get();
                 prnew.setPromotionProducts(s);
-                return ResponseEntity.ok().body(convertoDTO(prnew.getId()));
+                return ResponseEntity.ok("done");
+               // return ResponseEntity.ok().body(convertoDTO(prnew.getId()));
             } catch (Exception e) {
                 e.printStackTrace();
                 return ResponseEntity.notFound().build();
