@@ -361,7 +361,7 @@ const ProductDetail = () => {
                                                         }}
                                                     />
                                                 </Amount>
-                                                <Add onClick={() => { setSelectedQuantity((selectedQuantity + 1)) }} />
+                                                <Add onClick={() => { setSelectedQuantity((((selectedQuantity + 1) >= product.productsizes[selectedSizeIndex].quantity) ? (selectedQuantity + 1) : product.productsizes[selectedSizeIndex].quantity)) }} />
                                             </AmountContainer>
                                         </AddContainer>
                                         <ButtonContainer>

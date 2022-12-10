@@ -16,6 +16,8 @@ import CustomerInfoForm from '../../components/CustomerInfoForm'
 import addressAPI from '../../api/addressAPI'
 import feeAPI from '../../api/feeAPI'
 import axios from 'axios'
+import momoPayment from '../../assets/imgs/momo-payment.jpg'
+import moment from 'moment'
 
 const Container = styled.div`
     width: 100%;
@@ -178,6 +180,28 @@ const FormLocationGroup = styled.div`
     align-items: center;
     justify-content: space-between;
 `
+const MoMoContainer = styled.div`
+    width: 100%;
+    display: flex;
+`
+const MoMoLeft = styled.div`
+    flex: 1;
+`
+const MoMoRight = styled.div`
+    flex: 2;
+`
+const MoMoImg = styled.img`
+    width: 100%;
+    object-fit: contain;
+`
+const MoMoItem = styled.div`
+    width: 100%;
+    padding: 5px;
+`
+const MoMoItemLabel = styled.div`
+
+`
+const MoMoItemContent = styled.div``
 
 const openNotificationWithIcon = (type, title, des) => {
     notification[type]({
@@ -225,10 +249,10 @@ const Webcart = () => {
         wardId: null
     })
     const [useDefaultCustomer, setUseDefaultCustomer] = useState(false)
-
+    const [payment, setPayment] = useState(1)
     const dispatch = useDispatch();
     const navigate = useNavigate();
-
+    const [isPayModal, setIsPayModal] = useState(true);
     const onChangeCity = (value) => {
         console.log(value)
         form.setFieldValue('districtId', null)
@@ -247,28 +271,6 @@ const Webcart = () => {
             districtId: value,
             wardId: null
         })
-        const province = cityData.find((item) => item.id === selectedData?.cityId)
-        const district = province?.districts.find((item) => item.id === value)
-        console.log(province, district)
-        // if (province && district) {
-        //     console.log({
-        //         "pick_province": "Hà Nội",
-        //         "pick_district": "Quận Nam Từ Liêm",
-        //         "province": province.title,
-        //         "district": district.title,
-        //         "address": "",
-        //         "weight": 1000,
-        //         "value": null,
-        //         "transport": "road",
-        //         "deliver_option": "none",
-        //         "tags": []
-        //     })
-        //     axios.get(' https://services.giaohangtietkiem.vn/services/shipment/fee', {
-        //         token: '0F39423929357c68955e79974BFe7e0CB54029E5'
-        //     })
-        //     .then(res => console.log(res))
-        //     .catch(err => console.log(err))
-        // }
     }
 
     const onChangeWard = (value) => {
@@ -282,70 +284,72 @@ const Webcart = () => {
     const onFinish = (value) => {
         console.log('checkout', value)
         if (data && data.length > 0) {
-            Modal.confirm({
-                title: "Hộp Thoại Xác Nhận",
-                content: "Xác nhận đặt hàng?",
-                okText: "Xác Nhận",
-                cancelText: "Hủy Bỏ",
-                onOk: () => {
-                    let checkoutPayload = {
-                        "users": {
-                            "username": auth.info.username
-                        },
-                        "total_price": data.reduce((total, item) => {
-                            if (checkPr(item.product)) {
-                                return total + item.quantity * (item.price - item.price * (getDiscountPercent(item.product) / 100))
-                            } else {
-
-                                return total + item.quantity * item.price
-                            }
-                        }, 0),
-                        "customers": {
-                            "phone": value.phone,
-                            "name": value.name,
-                            "note": value.note ? value.note : '',
-                            "user": {
+            if (value.payment === 1) {
+                Modal.confirm({
+                    title: "Hộp Thoại Xác Nhận",
+                    content: "Xác nhận đặt hàng?",
+                    okText: "Xác Nhận",
+                    cancelText: "Hủy Bỏ",
+                    onOk: () => {
+                        let checkoutPayload = {
+                            "users": {
                                 "username": auth.info.username
-                            }
+                            },
+                            "total_price": data.reduce((total, item) => {
+                                if (checkPr(item.product)) {
+                                    return total + item.quantity * (item.price - item.price * (getDiscountPercent(item.product) / 100))
+                                } else {
 
-                        },
-                        "orderDetail": [
-                            ...data.map((item) => ({
-                                product: {
-                                    id: item.product.id
-                                },
-                                size: item.selectedSize.size.title,
-                                quantity: item.quantity,
-                                total_price: item.price * item.quantity
-                            }))
-                        ]
-                        ,
-                        cityId: value.cityId,
-                        districtId: value.districtId,
-                        wardId: value.wardId,
-                        location: value.location
-                    };
-                    console.log(checkoutPayload)
-                    checkoutAPI.checkout(checkoutPayload)
-                        .then(res => {
-                            if (!res.status) {
-                                console.log(res);
-                                dispatch(clearCartAction());
-                                Modal.success({
-                                    title: "Thành công",
-                                    content: "Đơn đặt hàng của bạn đã được tạo thành công. Tự động chuyển trang đến đơn hàng của tôi!"
-                                })
-                                navigate("/my-orders")
-                            }
+                                    return total + item.quantity * item.price
+                                }
+                            }, 0),
+                            "customers": {
+                                "phone": value.phone,
+                                "name": value.name,
+                                "note": value.note ? value.note : '',
+                                "user": {
+                                    "username": auth.info.username
+                                }
 
-                        })
-                        .catch(err => {
-                            console.log(err);
-                        });
-                }
-            })
+                            },
+                            "orderDetail": [
+                                ...data.map((item) => ({
+                                    product: {
+                                        id: item.product.id
+                                    },
+                                    size: item.selectedSize.size.title,
+                                    quantity: item.quantity,
+                                    total_price: item.price * item.quantity
+                                }))
+                            ]
+                            ,
+                            cityId: value.cityId,
+                            districtId: value.districtId,
+                            wardId: value.wardId,
+                            location: value.location
+                        };
+                        console.log(checkoutPayload)
+                        checkoutAPI.checkout(checkoutPayload)
+                            .then(res => {
+                                if (!res.status) {
+                                    console.log(res);
+                                    dispatch(clearCartAction());
+                                    Modal.success({
+                                        title: "Thành công",
+                                        content: "Đơn đặt hàng của bạn đã được tạo thành công. Tự động chuyển trang đến đơn hàng của tôi!"
+                                    })
+                                    navigate("/my-orders")
+                                }
 
-
+                            })
+                            .catch(err => {
+                                console.log(err);
+                            });
+                    }
+                })
+            } else if (value.payment === 2) {
+                console.log('momo pay')
+            }
         }
     }
 
@@ -549,9 +553,19 @@ const Webcart = () => {
         >
             <Container>
                 <Wrapper>
-                    <DeleteCartWrapper>
-                        <Button onClick={handleClearCart}>Xóa Giỏ Hàng</Button>
-                    </DeleteCartWrapper>
+                    {
+                        cartReducer.cart && cartReducer.cart.length > 0 ?
+                            (<DeleteCartWrapper>
+                                <Button onClick={handleClearCart}>Xóa Giỏ Hàng</Button>
+                            </DeleteCartWrapper>)
+                            :
+                            (
+                                <DeleteCartWrapper>
+                                    <Button onClick={() => navigate("/products")} type="primary">Mua Hàng Ngay</Button>
+                                </DeleteCartWrapper>
+                            )
+
+                    }
                     <CartDetails>
                         <CartBody>
                             <List
@@ -837,14 +851,68 @@ const Webcart = () => {
                                     <Form.Item>
                                         <Typography>Phương Thức Thanh Toán</Typography>
                                     </Form.Item>
-                                    <Form.Item>
+                                    <Form.Item
+                                        hasFeedback
+                                        name="payment"
+                                        rules={[
+                                            { required: true, message: 'Vui lòng chọn phương thức thanh toán' }
+                                        ]}
+                                    >
                                         <Select
                                             placeholder="Phương thức thanh toán"
-                                            value="1"
                                         >
-                                            <Select.Option value="1">Thanh toán khi nhận hàng!</Select.Option>
+                                            <Select.Option value={1}>Thanh toán khi nhận hàng!</Select.Option>
+                                            <Select.Option value={2}>Thanh toán momo!</Select.Option>
                                         </Select>
                                     </Form.Item>
+                                    {
+                                        form.getFieldValue('payment') === 2 &&
+                                        <Form.Item>
+                                            <MoMoContainer>
+                                                <MoMoLeft>
+                                                    <MoMoImg src={momoPayment} />
+                                                </MoMoLeft>
+                                                <MoMoRight>
+                                                    <MoMoItem>
+                                                        <MoMoItemLabel>
+                                                            <Typography.Title level={5}>Người Thụ Hưởng</Typography.Title>
+                                                        </MoMoItemLabel>
+                                                        <MoMoItemContent>
+                                                            <Typography.Text level={5}>Nguyễn Ích Quang</Typography.Text>
+                                                        </MoMoItemContent>
+                                                    </MoMoItem>
+                                                    <MoMoItem>
+                                                        <MoMoItemLabel>
+                                                            <Typography.Title level={5}>Thanh Toán</Typography.Title>
+                                                        </MoMoItemLabel>
+                                                        <MoMoItemContent>
+                                                            <Typography.Text level={5}>
+                                                                {data && formatter.format(data.reduce((total, item) => {
+                                                                    if (checkPr(item.product)) {
+                                                                        return total + item.quantity * (item.price - item.price * (getDiscountPercent(item.product) / 100))
+                                                                    } else {
+
+                                                                        return total + item.quantity * item.price
+                                                                    }
+                                                                }, 0))}
+                                                            </Typography.Text>
+                                                        </MoMoItemContent>
+                                                        <MoMoItem>
+                                                            <MoMoItemLabel>
+                                                                <Typography.Title level={5}>Nội Dung Chuyển Khoản</Typography.Title>
+                                                            </MoMoItemLabel>
+                                                            <MoMoItemContent>
+                                                                <Typography.Text level={5}>
+                                                                    {`${moment(new Date()).format('DDMMYYYYHmm')}-${auth?.info?.username}`}
+                                                                </Typography.Text>
+                                                            </MoMoItemContent>
+                                                        </MoMoItem>
+                                                    </MoMoItem>
+                                                </MoMoRight>
+                                            </MoMoContainer>
+                                        </Form.Item>
+                                    }
+
                                     <Summary>
                                         <SummaryTitle>Thông Tin Hóa Đơn</SummaryTitle>
                                         <SummaryItem>
@@ -883,7 +951,56 @@ const Webcart = () => {
                             </Bottom>
                         </Form>
                     }
+                    {/* <Modal
+                        open={isPayModal}
+                        title="Thông Tin Thoanh Toán MoMo"
+                        centered
+                        width={1000}
+                        onCancel={() => {setIsPayModal(false)}}
+                    >
+                        <MoMoContainer>
+                            <MoMoLeft>
+                                <MoMoImg src={momoPayment} />
+                            </MoMoLeft>
+                            <MoMoRight>
+                                <MoMoItem>
+                                    <MoMoItemLabel>
+                                        <Typography.Title level={5}>Người Thụ Hưởng</Typography.Title>
+                                    </MoMoItemLabel>
+                                    <MoMoItemContent>
+                                        <Typography.Text level={5}>Nguyễn Ích Quang</Typography.Text>
+                                    </MoMoItemContent>
+                                </MoMoItem>
+                                <MoMoItem>
+                                    <MoMoItemLabel>
+                                        <Typography.Title level={5}>Thanh Toán</Typography.Title>
+                                    </MoMoItemLabel>
+                                    <MoMoItemContent>
+                                        <Typography.Text level={5}>
+                                            {data && formatter.format(data.reduce((total, item) => {
+                                                if (checkPr(item.product)) {
+                                                    return total + item.quantity * (item.price - item.price * (getDiscountPercent(item.product) / 100))
+                                                } else {
 
+                                                    return total + item.quantity * item.price
+                                                }
+                                            }, 0))}
+                                        </Typography.Text>
+                                    </MoMoItemContent>
+                                    <MoMoItem>
+                                    <MoMoItemLabel>
+                                        <Typography.Title level={5}>Nội Dung Chuyển Khoản</Typography.Title>
+                                    </MoMoItemLabel>
+                                    <MoMoItemContent>
+                                        <Typography.Text level={5}>
+                                            {`${moment(new Date()).format('DDMMYYYYHmm')}-${auth?.info?.username}`}
+                                        </Typography.Text>
+                                    </MoMoItemContent>
+                                </MoMoItem>
+                                </MoMoItem>
+                            </MoMoRight>
+                        </MoMoContainer>
+                    </Modal> */}
                 </Wrapper>
             </Container >
         </Helmet >
