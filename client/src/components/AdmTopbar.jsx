@@ -16,7 +16,9 @@ import ListItemText from '@mui/material/ListItemText';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import ordersAPI from '../api/ordersAPI';
-
+import { useDispatch, useSelector } from 'react-redux';
+import {logOutAction} from '../redux/actions/AuthReducerAction'
+import {clearCartAction} from '../redux/actions/CartReducerAtion'
 
 const Container = styled.div`
     width: 100%;
@@ -75,10 +77,59 @@ const NotiItemDetail = styled.div``
 var stompClient = null;
 
 
+const AvatarContainer = ({ auth }) => {
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const dispatch = useDispatch();
+    const open = Boolean(anchorEl);
+    const navigate = useNavigate()
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const handleClickLogOut = () => {
+        navigate("/adm-login")
+        dispatch(clearCartAction())
+        dispatch(logOutAction())
+    };
+
+
+
+    return (
+        <>
+            <AvatarImage src={`http://localhost:8080/api/file/images/${auth.info.photo}`} onClick={handleClick} />
+            <Menu
+                id="basic-menu"
+                open={open}
+                onClose={handleClose}
+                anchorEl={anchorEl}
+
+            >
+                <MenuItem onClick={handleClose}>
+                    <Link to="my-account" style={{ color: 'black' }}>
+                        Tài Khoản Của Tôi
+                    </Link>
+                </MenuItem>
+                <MenuItem onClick={handleClose}>
+                    <Link to="change-password" style={{ color: 'black' }}>
+                        Đổi Mật Khẩu
+                    </Link>
+                </MenuItem>
+                <MenuItem onClick={handleClickLogOut}>
+                    Đăng Xuất
+                </MenuItem>
+            </Menu>
+        </>
+    )
+}
+
 const AdmTopbar = () => {
 
     const [notiList, setNotiList] = useState(undefined)
     const [isNotiOpen, setIsNotiOpen] = useState(false)
+    const auth = useSelector(state => state.auth.auth);
     const navigate = useNavigate()
     const connectListOrderNoti = () => {
         let Sock = new SockJS("http://localhost:8080/ws");
@@ -207,7 +258,8 @@ const AdmTopbar = () => {
                         </Menu>
                     </IconContainer>
                     <Avatar>
-                        <AvatarImage src={avt} />
+                        {/* <AvatarImage src={`http://localhost:8080/api/file/images/${auth?.info?.photo}`} /> */}
+                        <AvatarContainer auth={{ ...auth }}/>
                     </Avatar>
                 </Right>
             </Wrapper>

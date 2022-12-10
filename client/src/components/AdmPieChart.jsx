@@ -8,10 +8,6 @@ const Container = styled.div`
     padding: 20px;
 `
 const Wrapper = styled.div`
-    padding: 20px;
-    -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
-    box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
-    background-color: white;
     display: flex;
 `
 const Title = styled.h3``
@@ -45,13 +41,7 @@ const NoteItemContent = styled.div`
     font-weight: 300;
 `
 
-const data = [
-    { name: 'Chờ Xác Nhận', value: 10, color:  '#FFBB28'},
-    { name: 'Đã Xác Nhận', value: 20, color: '#00C49F' },
-    { name: 'Đang Giao', value: 30, color: '#FF8042'  },
-    { name: 'Hoàn Thành', value: 40, color: '#0088FE'  },
-    { name: 'Hủy Đơn', value: 50, color: '#fa0505'  },
-];
+
 
 const COLORS = [ '#FFBB28', '#00C49F', '#FF8042','#0088FE','#fa0505'];
 const RADIAN = Math.PI / 180;
@@ -69,7 +59,7 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
 };
 
 
-const AdmPieChart = () => {
+const AdmPieChart = ({data}) => {
     return (
         <Container>
             <Wrapper>

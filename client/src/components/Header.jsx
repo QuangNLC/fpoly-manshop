@@ -123,7 +123,8 @@ const Button = styled.div`
   font-size: 16px;
   font-weight: 300;
   transition: all 0.25s ease-in;
-
+  width: max-content;
+  text-decoration: underline;
   &:hover {
     background-color: #333333;
     color: white;

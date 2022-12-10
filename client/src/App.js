@@ -44,6 +44,8 @@ import WebCartDetails from "./pages/website/WebCartDetails";
 import WebTestProductList from "./pages/website/WebTestProductList";
 import ProtectedAdminLayout from "./layout/ProtectedAdminLayout";
 import WebAdmLogin from "./pages/website/WebAdmLogin";
+import AdmMyAccount from "./pages/admin/AdmMyAccount";
+import AdmChangePassword from "./pages/admin/AdmChangePassword";
 function App() {
   const store = createStore(rootReducer);
 
@@ -92,6 +94,8 @@ function App() {
             <Route path="promotions" element={<AdmPromotions />} />
             <Route path="promotion/new" element={<AdmNewPromotions />} />
             <Route path="promotion/detail/:id" element={<AdmUpdatePromotion />} />
+            <Route path="my-account" element={<AdmMyAccount />} />
+            <Route path="change-password" element={<AdmChangePassword />} />
             <Route path="*" element={<div>Trang khong ton tai</div>} />
           </Route>
         </Routes>

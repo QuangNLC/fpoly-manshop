@@ -18,6 +18,7 @@ import SignalCellularAltOutlinedIcon from '@mui/icons-material/SignalCellularAlt
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
 import StorefrontOutlinedIcon from '@mui/icons-material/StorefrontOutlined';
 import EventNoteOutlinedIcon from '@mui/icons-material/EventNoteOutlined';
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import { useRef } from 'react';
 
 
@@ -74,23 +75,6 @@ const getItem = (label, key, icon, children, type) => {
     };
 }
 
-const items = [
-    getItem('Chức Năng', 'sub1', <DashboardOutlinedIcon />, [
-        getItem('Thống Kê', 'sub1-i1', <Link to="/admin"></Link>),
-        getItem('Tài Khoản', 'sub1-i2', <Link to="/admin/user-list"></Link>)
-    ]),
-    getItem('Sản Phẩm', 'sub2', <StorefrontOutlinedIcon />, [
-        getItem('Thể Loại', 'sub2-i1', <Link to="/admin/category-list"></Link>),
-        getItem('Chất Liệu ', 'sub2-i4', <Link to="/admin/material-list"></Link>),
-        getItem('Danh Sách ', 'sub2-i2', <Link to="/admin/product-list"></Link>),
-        getItem('Khuyến Mại', 'sub2-i3', <Link to="/admin/promotions"></Link>)
-    ]),
-    getItem('Hóa Đơn', 'sub3', < EventNoteOutlinedIcon />, [
-        // getItem('Tạo Đơn', 'sub3-i1',<Link to="/admin/bills"></Link>),
-        getItem('Danh Sách Hoá Đơn', 'sub3-i2', <Link to="/admin/order-list"></Link>),
-    ]),
-    getItem('Hộp Thư Đến', 'sub4', <Link to="/admin/message"><EmailOutlinedIcon /></Link>)
-];
 
 const AdmSidebar = () => {
     const location = useLocation();
@@ -99,6 +83,26 @@ const AdmSidebar = () => {
     const [count, setCount] = useState(0)
     const [selectedKeys, setSelectedKeys] = useState([])
     const menuRef = useRef();
+
+    const items = [
+        getItem('Chức Năng', 'sub1', <DashboardOutlinedIcon />, [
+            getItem('Thống Kê', 'sub1-i1', <Link to="/admin"></Link>),
+            getItem('Tài Khoản', 'sub1-i2', <Link to="/admin/user-list"></Link>)
+        ]),
+        getItem('Sản Phẩm', 'sub2', <StorefrontOutlinedIcon />, [
+            getItem('Thể Loại', 'sub2-i1', <Link to="/admin/category-list"></Link>),
+            getItem('Chất Liệu ', 'sub2-i4', <Link to="/admin/material-list"></Link>),
+            getItem('Danh Sách ', 'sub2-i2', <Link to="/admin/product-list"></Link>),
+            getItem('Khuyến Mại', 'sub2-i3', <Link to="/admin/promotions"></Link>)
+        ]),
+        getItem('Hóa Đơn', 'sub3', < EventNoteOutlinedIcon />, [
+            // getItem('Tạo Đơn', 'sub3-i1',<Link to="/admin/bills"></Link>),
+            getItem('Danh Sách Hoá Đơn', 'sub3-i2', <Link to="/admin/order-list"></Link>),
+        ]),
+        getItem('Hộp Thư Đến', 'sub4', <Link to="/admin/message"><Badge count={count}></Badge></Link>),
+        getItem('Website', 'sub5', <Link to="/"></Link>)
+    ];
+
     const connectCountMessageNoti = () => {
         let Sock = new SockJS("http://localhost:8080/ws");
         stompClient = over(Sock);
@@ -159,6 +163,10 @@ const AdmSidebar = () => {
             }
             case ('/admin/message'): {
                 setSelectedKeys(['sub4'])
+                break;
+            }
+            default: {
+                setSelectedKeys([])
                 break;
             }
 

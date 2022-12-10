@@ -134,7 +134,7 @@ public class PromotionsController {
     public ResponseEntity<?> updatePromotions(@RequestBody PromotionRequestDTO promotions,@PathVariable("id") Integer id ) {
         log.info("Gọi vào hàm update promotions với (id) = " + id);
         Promotions promotions1 = promotionJPA.findById(id).get();
-      promotions1.setUsers(userJPA.findById(promotions.getUsers().getUsername()).get());
+        promotions1.setUsers(userJPA.findById(promotions.getUsers().getUsername()).get());
         System.out.println(promotions);
         try {
 
@@ -146,16 +146,24 @@ public class PromotionsController {
                 promotions1.setBy_price(promotions.getBy_price());
                 promotions1.setBy_persent(0);
             }
-            promotions1.setIsactive(promotions.isActive());
-            if(promotions.isActive()==false){
+
+            if(promotions.getIsActive()==1){
                 promotions1.setIsauto(true);
+                promotions1.setIsactive(true);
             }else{
+                promotions1.setIsactive(false);
                 promotions1.setIsauto(false);
+
+            }
+            if(promotions.getDate_after() != null) {
+                promotions1.setDate_befor(promotions.getDate_befor());
+                promotions1.setDate_after(promotions.getDate_after());
             }
             Promotions uppromitons = promotionJPA.save(promotions1);
+
             try {
                 List<Product> proList = productJPA.findBylistID(promotions.getListpr());
-            //    System.out.println(proList.size());
+                //    System.out.println(proList.size());
                 List<PromotionProduct> s = new ArrayList<>();
                 for (int i = 0; i < proList.size(); i++) {
                     PromotionProduct newls = new PromotionProduct();
@@ -167,7 +175,7 @@ public class PromotionsController {
                 Promotions prnew = promotionJPA.findById(uppromitons.getId()).get();
                 prnew.setPromotionProducts(s);
                 return ResponseEntity.ok("done");
-               // return ResponseEntity.ok().body(convertoDTO(prnew.getId()));
+                // return ResponseEntity.ok().body(convertoDTO(prnew.getId()));
             } catch (Exception e) {
                 e.printStackTrace();
                 return ResponseEntity.notFound().build();

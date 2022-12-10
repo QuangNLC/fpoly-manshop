@@ -279,8 +279,10 @@ const AdmUpdatePromotion = () => {
                         },
                         by_persent: value?.discount,
                         check: 0,
-                        listpr: [...listPr.map(item => item.id)]
+                        listpr: [...listPr.map(item => item.id)],
+                        isActive: value?.isactive ? 1 : 0
                     }
+                    console.log(payload)
                     promotionsAPI.updatePromotion(payload)
                         .then(res => {
                             if (!res.status) {
@@ -304,8 +306,8 @@ const AdmUpdatePromotion = () => {
         // console.log(selectedProducts)
     }, [selectedProducts])
 
-    useEffect(()=> {
-        if(formInitValue){
+    useEffect(() => {
+        if (formInitValue) {
             form.resetFields();
         }
     }, [formInitValue])
@@ -345,6 +347,7 @@ const AdmUpdatePromotion = () => {
             promotionsAPI.getPromotionDetail(id)
                 .then(res => {
                     if (!res.status) {
+                        console.log(res)
                         if (res.promotionProductDTOList && res.promotionProductDTOList.length > 0) {
                             setListPr([...res.promotionProductDTOList.map((item, index) => ({
                                 index: index + 1,
@@ -372,6 +375,11 @@ const AdmUpdatePromotion = () => {
             title="Quản lý khuyến mại"
         >
             <Container>
+                <div
+                    style={{ width: '100%', padding: '0 20px'}}
+                >
+                    <Button type='primary' onClick={() => {navigate("/admin/promotions")}}>Danh Sách</Button>
+                </div>
                 <Wrapper>
                     <Left>
                         <LeftTitle>thông tin khuyến mại</LeftTitle>
@@ -464,9 +472,9 @@ const AdmUpdatePromotion = () => {
                                             )
                                     }
                                 </Form.Item>
-                                <Form.Item>
+                                {/* <Form.Item>
                                     <Button type='primary' danger >Xoá Khuyến Mại</Button>
-                                </Form.Item>
+                                </Form.Item> */}
                             </FormWrapper>
                         </Form>
                     </Left>

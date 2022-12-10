@@ -306,7 +306,7 @@ const AdmNewPromotions = () => {
                         ...item
                     })))
                     console.log(res)
-                }else{
+                } else {
                     console.log(res)
                 }
             })
@@ -318,6 +318,11 @@ const AdmNewPromotions = () => {
             title="Quản lý khuyến mại"
         >
             <Container>
+                <div
+                    style={{ width: '100%', padding: '0 20px' }}
+                >
+                    <Button type='primary' onClick={() => { navigate("/admin/promotions") }}>Danh Sách</Button>
+                </div>
                 <Wrapper>
                     <Left>
                         <LeftTitle>thông tin khuyến mại</LeftTitle>
@@ -385,12 +390,12 @@ const AdmNewPromotions = () => {
                                 >
                                     <DatePicker style={{ width: '100%' }} />
                                 </Form.Item>
-                                <Form.Item
+                                {/* <Form.Item
                                     label="Trạng Thái"
                                     name="isactive"
                                 >
                                     <Switch />
-                                </Form.Item>
+                                </Form.Item> */}
                                 <Form.Item>
                                     {
                                         listPr && listPr.length > 0 ?

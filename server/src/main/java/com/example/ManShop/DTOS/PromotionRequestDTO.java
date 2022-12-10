@@ -16,7 +16,7 @@ public class PromotionRequestDTO {
     private  double by_price=0;
     private int  by_persent=0;
     private int check=1;
-    private boolean isActive;
+    private int isActive;
     private List<Integer> listpr;
 
 }

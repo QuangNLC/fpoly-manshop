@@ -16,9 +16,6 @@ const Container = styled.div`
     padding: 20px;
 `
 const Wrapper = styled.div`
-    padding: 20px;
-    -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
-    box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
 `
 const Details = styled.div`
     width: 100%;
@@ -34,6 +31,7 @@ const ProductDetailsFormContainer = styled.div`
     box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
     width:  100%;
     padding: 20px;
+    background-color: white;
 `
 const Right = styled.div`
     width: calc(1/3 *  100%);
@@ -45,6 +43,7 @@ const ProductSizesDetails = styled.div`
     padding:  20px;
     -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
     box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+    background-color: white;
 `
 
 const ProductSizesTitleContainer = styled.div`

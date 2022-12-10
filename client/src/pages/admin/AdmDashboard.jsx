@@ -34,8 +34,23 @@ const BarCharWrapper = styled.div`
     padding: 0 20px;
     background-color: white;
     -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+    box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75)  
+`
+
+const PieChartContainer = styled.div`
+    width: 100%;
+    margin-top: 20px;
+    padding: 20px;
+`
+
+const PieChartWrapper = styled.div`
+    width: 100%;
+    padding: 20px;
+    background-color: white;
+    -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
     box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
-    
+    display: flex;
+    justify-content: center;
 `
 const WidgetsContainer = styled.div`
     padding: 20px;
@@ -149,7 +164,40 @@ const WidgetLgButton = styled.button`
 
     }
 `
+const data = [
+    { name: 'Chờ Xác Nhận', value: 10, color:  '#FFBB28'},
+    { name: 'Đã Xác Nhận', value: 20, color: '#00C49F' },
+    { name: 'Đang Giao', value: 30, color: '#FF8042'  },
+    { name: 'Hoàn Thành', value: 40, color: '#0088FE'  },
+    { name: 'Hủy Đơn', value: 50, color: '#fa0505'  },
+];
+const getPieColor = (name) => {
+    let color = '#FFBB28'
 
+    switch(name){
+        case('Chờ Xác Nhận'):{
+            color = '#FFBB28';
+            break;
+        }
+        case('Đã Xác Nhận'):{
+            color = '#00C49F';
+            break;
+        }
+        case('Đang Giao'):{
+            color = '#FF8042';
+            break;
+        }
+        case('Hoàn Tất'):{
+            color = '#0088FE';
+            break;
+        }
+        case('Đang Chờ'):{
+            color = '#fa0505';
+            break;
+        }
+    }
+    return color;
+}
 
 const AdmDashboard = () => {
     const [chartData, setChartData] = useState([])
@@ -161,6 +209,11 @@ const AdmDashboard = () => {
         console.log(value)
         setBarChartYear(value)
     }
+
+    const [pieChartData, setPieChartData] = useState([])
+    const [pieChartLoading, setPieChartLoading] = useState(true)
+
+    
 
 
     useEffect(() => {
@@ -187,6 +240,7 @@ const AdmDashboard = () => {
 
     useEffect(() => {
         setbarChartLoading(true)
+        setPieChartLoading(false)
         reportAPI.getChartData(2022)
             .then((res) => {
                 if (!res.status) {
@@ -203,6 +257,20 @@ const AdmDashboard = () => {
                 }
             })
             .catch(err => console.log(err))
+        reportAPI.getOrderStat()
+        .then(res => {
+            if(!res.status){
+                console.log(res)
+                setPieChartData(res.map((item, index) => ({
+                    ...item,
+                    color: getPieColor(item.name)
+                })))
+                setPieChartLoading(false)
+            }else{
+                console.log(res)
+            }
+        })
+        .catch(err => console.log(err))
     }, [])
 
 
@@ -239,7 +307,20 @@ const AdmDashboard = () => {
                     }
                 </BarCharWrapper>
             </BarChartContainer>
-            <AdmPieChart />
+            <PieChartContainer>
+                <PieChartWrapper>
+                    {
+                        pieChartLoading ?
+                            (
+                                <Spin />
+                            )
+                            :
+                            (
+                                <AdmPieChart data={pieChartData}/>
+                            )
+                    }
+                </PieChartWrapper>
+            </PieChartContainer>
             {/* <WidgetsContainer>
                 <WidgetSm>
                     <WidgetSmTitle>New Join Members</WidgetSmTitle>
