@@ -12,6 +12,10 @@ const authAPI = {
     registerByAdmd: (payload) => {
         const url = 'auth/adm-register';
         return axiosClient.post(url, payload);
+    },
+    updateRoleByAdm: (payload) => {
+        const url = `auth/adm-update/${payload.username}/${payload.roleid}`
+        return axiosClient.put(url);
     }
 };
 

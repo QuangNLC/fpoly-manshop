@@ -10,6 +10,8 @@ import { Link, useParams } from 'react-router-dom';
 import usersAPI from '../../api/usersAPI';
 import defaultAvt from '../../assets/imgs/default-avt.jpg';
 import DialogHOC from '../../hoc/DialogHOC'
+import { Checkbox, Input, Radio, Select, Button, Modal, notification } from 'antd';
+import authAPI from '../../api/authAPI';
 
 const Container = styled.div`
     width: 100%;
@@ -47,6 +49,8 @@ const UserShow = styled.div`
     -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
     box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
     margin-right: 20px;
+    background-color: white;
+    border-radius: 10px;
 `
 const UserShowTop = styled.div`
     display: flex;
@@ -93,6 +97,8 @@ const UserUpdate = styled.div`
     padding: 20px;
     -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
     box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+    background-color: white;
+    border-radius: 10px;
 `
 const UserUpdateTitle = styled.span`
     font-size: 24px;
@@ -175,6 +181,12 @@ const UpdateButton = styled.div`
     }
 `
 
+const openNotificationWithIcon = (type, title, des) => {
+    notification[type]({
+        message: title,
+        description: des,
+    });
+};
 
 
 
@@ -182,11 +194,35 @@ const AdmUserDetail = () => {
     const { username } = useParams();
     const [isLoading, setIsLoading] = useState(true)
     const [user, setUser] = useState(null)
-
+    const [selectedRole, setSelectedRole] = useState(3)
     const [updateValue, setUpdateValue] = useState({});
 
     const handleUpdateUser = (user) => {
-        console.log('updatevalue: ', [user]);
+        const payload = {
+            username: username,
+            roleid: selectedRole
+        };
+        Modal.confirm({
+            title: 'Hộp Thoại Xác Nhận',
+            content: 'Bạn có muốn cập nhật tài khoản không.',
+            okText: 'Xác Nhận',
+            cancelText: 'Hủy Bỏ',
+            onOk: () => {
+                console.log(payload)
+                setIsLoading(true)
+                authAPI.updateRoleByAdm(payload)
+                    .then(res => {
+                        if (!res.status) {
+                            openNotificationWithIcon('success', 'Thông Báo', 'Cập nhật tài khoản thành công.')
+                            setIsLoading(false);
+                            console.log(res.roles.id)
+                            setSelectedRole(res.roles.id);
+
+                        }
+                    })
+                    .catch(err => console.log(err))
+            }
+        })
     }
 
     const onChangeUpdateValue = (e) => {
@@ -196,18 +232,24 @@ const AdmUserDetail = () => {
         })
     }
 
+    const onChangeSelectedRole = (e) => {
+        setSelectedRole(e.target.value)
+    }
 
 
     console.log(updateValue)
 
     useEffect(() => {
+        setIsLoading(true)
         console.log(username);
         usersAPI.getUser(username)
             .then(res => {
                 console.log(res);
                 setUser(res);
                 setUpdateValue(res);
-                setIsLoading(false)
+                setIsLoading(false);
+                console.log(res.roles.id)
+                setSelectedRole(res.roles.id);
             })
             .catch(err => {
                 console.log(err);
@@ -269,8 +311,8 @@ const AdmUserDetail = () => {
                                         </UserShowBottom>
                                     </UserShow>
                                     <UserUpdate>
-                                        <UserUpdateTitle>Chỉnh sửa tài khoản</UserUpdateTitle>
-                                        <UserUpdateForm>
+                                        <UserUpdateTitle>Chỉnh sửa quyền tài khoản</UserUpdateTitle>
+                                        {/* <UserUpdateForm>
                                             <UserUpdateLeft>
                                                 <UserUpdateItem>
                                                     <ItemLabel>Tên tài khoản</ItemLabel>
@@ -302,10 +344,6 @@ const AdmUserDetail = () => {
                                                     />
                                                     <ItemError>Số điện thọai đang để trống!</ItemError>
                                                 </UserUpdateItem>
-                                                {/* <UserUpdateItem>
-                                                    <ItemLabel>Adress</ItemLabel>
-                                                    <ItemInput placeholder='New York | USA' type="text" />
-                                                </UserUpdateItem> */}
                                             </UserUpdateLeft>
                                             <UserUpdateRight>
                                                 <UserUpdateUpload>
@@ -321,7 +359,21 @@ const AdmUserDetail = () => {
                                                     <UpdateButton style={{ width: "120px", borderRadius: "20px" }}>Cập nhật</UpdateButton>
                                                 </DialogHOC>
                                             </UserUpdateRight>
-                                        </UserUpdateForm>
+                                        </UserUpdateForm> */}
+                                        <div
+                                            style={{ marginTop: 20 }}
+                                        >
+                                            <Radio.Group onChange={onChangeSelectedRole} value={selectedRole}>
+                                                <Radio value={3}>Người Dùng</Radio>
+                                                <Radio value={1}>Quản Lý</Radio>
+                                            </Radio.Group>
+                                        </div>
+                                        <div
+                                            style={{ marginTop: 20 }}
+                                        >
+                                            <Button onClick={handleUpdateUser} type='primary'>Cập Nhật</Button>
+                                        </div>
+
                                     </UserUpdate>
                                 </UserContainer>
                             }

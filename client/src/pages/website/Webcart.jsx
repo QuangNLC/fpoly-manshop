@@ -125,7 +125,6 @@ const Summary = styled.div`
     border: 0.5px solid lightgray;
     border-radius: 10px;
     padding: 20px;
-    height: 50vh;
 `
 const SummaryTitle = styled.h1`
     font-weight: 200;
@@ -175,7 +174,7 @@ const SummaryContainer = styled.div`
 
 const FormLocationGroup = styled.div`
     width: 100%;
-    padding: 10px;
+    padding-top: 10px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -189,6 +188,7 @@ const MoMoLeft = styled.div`
 `
 const MoMoRight = styled.div`
     flex: 2;
+    margin-left: 20px;
 `
 const MoMoImg = styled.img`
     width: 100%;
@@ -284,72 +284,76 @@ const Webcart = () => {
     const onFinish = (value) => {
         console.log('checkout', value)
         if (data && data.length > 0) {
-            if (value.payment === 1) {
-                Modal.confirm({
-                    title: "Hộp Thoại Xác Nhận",
-                    content: "Xác nhận đặt hàng?",
-                    okText: "Xác Nhận",
-                    cancelText: "Hủy Bỏ",
-                    onOk: () => {
-                        let checkoutPayload = {
-                            "users": {
+            Modal.confirm({
+                title: "Hộp Thoại Xác Nhận",
+                content: "Xác nhận đặt hàng?",
+                okText: "Xác Nhận",
+                cancelText: "Hủy Bỏ",
+                onOk: () => {
+                    let checkoutPayload = {
+                        "users": {
+                            "username": auth.info.username
+                        },
+                        "total_price": data.reduce((total, item) => {
+                            if (checkPr(item.product)) {
+                                return total + item.quantity * (item.price - item.price * (getDiscountPercent(item.product) / 100))
+                            } else {
+
+                                return total + item.quantity * item.price
+                            }
+                        }, 0),
+                        "customers": {
+                            "phone": value.phone,
+                            "name": value.name,
+                            "note": value.note ? value.note : '',
+                            "user": {
                                 "username": auth.info.username
-                            },
-                            "total_price": data.reduce((total, item) => {
-                                if (checkPr(item.product)) {
-                                    return total + item.quantity * (item.price - item.price * (getDiscountPercent(item.product) / 100))
-                                } else {
+                            }
 
-                                    return total + item.quantity * item.price
-                                }
-                            }, 0),
-                            "customers": {
-                                "phone": value.phone,
-                                "name": value.name,
-                                "note": value.note ? value.note : '',
-                                "user": {
-                                    "username": auth.info.username
-                                }
+                        },
+                        "orderDetail": [
+                            ...data.map((item) => ({
+                                product: {
+                                    id: item.product.id
+                                },
+                                size: item.selectedSize.size.title,
+                                quantity: item.quantity,
+                                total_price: item.price * item.quantity
+                            }))
+                        ],
+                        reduce_price: data.reduce((total, item) => {
+                            if (checkPr(item.product)) {
+                                return total + item.quantity * (item.price * (getDiscountPercent(item.product) / 100))
+                            } else {
+                                return total
+                            }
+                        }, 0),
+                        methodpayment: value?.payment === 1 ? "Khi nhận đơn" : 'Chuyển khoản',
+                        descriptions_payment: value?.payment === 1 ? "Thanh toán khi nhận hàng." : `${moment(new Date()).format('DDMMYYYY')}-${auth?.info?.username}`,
+                        cityId: value.cityId,
+                        districtId: value.districtId,
+                        wardId: value.wardId,
+                        location: value.location
+                    };
+                    console.log(checkoutPayload)
+                    checkoutAPI.checkout(checkoutPayload)
+                        .then(res => {
+                            if (!res.status) {
+                                console.log(res);
+                                dispatch(clearCartAction());
+                                Modal.success({
+                                    title: "Thành công",
+                                    content: "Đơn đặt hàng của bạn đã được tạo thành công. Tự động chuyển trang đến đơn hàng của tôi!"
+                                })
+                                navigate("/my-orders")
+                            }
 
-                            },
-                            "orderDetail": [
-                                ...data.map((item) => ({
-                                    product: {
-                                        id: item.product.id
-                                    },
-                                    size: item.selectedSize.size.title,
-                                    quantity: item.quantity,
-                                    total_price: item.price * item.quantity
-                                }))
-                            ]
-                            ,
-                            cityId: value.cityId,
-                            districtId: value.districtId,
-                            wardId: value.wardId,
-                            location: value.location
-                        };
-                        console.log(checkoutPayload)
-                        checkoutAPI.checkout(checkoutPayload)
-                            .then(res => {
-                                if (!res.status) {
-                                    console.log(res);
-                                    dispatch(clearCartAction());
-                                    Modal.success({
-                                        title: "Thành công",
-                                        content: "Đơn đặt hàng của bạn đã được tạo thành công. Tự động chuyển trang đến đơn hàng của tôi!"
-                                    })
-                                    navigate("/my-orders")
-                                }
-
-                            })
-                            .catch(err => {
-                                console.log(err);
-                            });
-                    }
-                })
-            } else if (value.payment === 2) {
-                console.log('momo pay')
-            }
+                        })
+                        .catch(err => {
+                            console.log(err);
+                        });
+                }
+            })
         }
     }
 
@@ -492,6 +496,12 @@ const Webcart = () => {
         message.success("Thay đổi size thành công!")
     }
 
+    const onChangePayment = (e) => {
+        if (e) {
+            setPayment(e)
+        }
+    }
+
     useEffect(() => {
         if (auth && auth.info.address) {
             setCustomerValue(
@@ -504,7 +514,6 @@ const Webcart = () => {
                     location: auth.info.address.location
                 }
             )
-
         }
 
 
@@ -537,6 +546,14 @@ const Webcart = () => {
                             location: auth.info.address.location
                         }
                     )
+                    console.log({
+                        name: auth.info.fullname,
+                        phone: auth.info.phone,
+                        cityId: auth.info.address.city.id,
+                        districtId: auth.info.address.district.id,
+                        wardId: auth.info.address.ward.id,
+                        location: auth.info.address.location
+                    })
                     setSelectedData({
                         cityId: auth.info.address.city.id,
                         districtId: auth.info.address.district.id,
@@ -696,157 +713,154 @@ const Webcart = () => {
                         >
 
                             <Bottom>
-                                {
-                                    useDefaultCustomer ?
-                                        (
-                                            <div>
-                                                <Typography.Title level={2}>Họ Tên</Typography.Title>
-                                                <Typography.Text>{customerValue?.name}</Typography.Text>
-                                                <Typography.Title level={2}>Số Điện Thoại</Typography.Title>
-                                                <Typography.Text>{customerValue?.phone}</Typography.Text>
-                                                <Typography.Title level={2}>Địa Chỉ</Typography.Title>
-                                                <Typography.Text>{`${auth?.info?.address?.location} - ${auth?.info?.address?.ward?.title} - ${auth?.info?.address?.district?.title} - ${auth?.info?.address?.city?.title}`}</Typography.Text>
-                                            </div>
-                                        )
-                                        :
-                                        (
-                                            <CustomerInfoContainer>
-                                                <Form.Item>
-                                                    <Typography>Thông tin liên hệ giao hàng</Typography>
-                                                </Form.Item>
-                                                <Form.Item
-                                                    label="Họ và tên"
-                                                    name="name"
-                                                    hasFeedback
-                                                    rules={[
-                                                        { required: true, message: "Vui lòng nhập họ và tên!" },
-                                                        { whitespace: true, message: "Vui lòng không nhập khoảng trắng!" }
-                                                    ]}
-                                                >
-                                                    <Input />
-                                                </Form.Item>
-                                                <Form.Item
-                                                    label="Số điện thoại"
-                                                    name="phone"
-                                                    hasFeedback
-                                                    rules={[
-                                                        { required: true, message: "Vui lòng nhập số điện thoại!" },
-                                                        { whitespace: true, message: "Vui lòng không nhập khoảng trắng!" }
-                                                    ]}
-                                                >
-                                                    <Input />
-                                                </Form.Item>
-                                                <Form.Item style={{ marginBottom: "0px" }}>
-                                                    <Typography>Địa chỉ giao hàng</Typography>
-                                                    <FormLocationGroup>
-                                                        <Form.Item
-                                                            label="Tỉnh/Thành Phố"
-                                                            name="cityId"
-                                                            hasFeedback
-                                                            rules={[
-                                                                { required: true, message: 'Vui lòng chọn Tỉnh/Thành Phố!' }
-                                                            ]}
-                                                            style={{ width: '30%' }}
-                                                        >
-                                                            <Select
-                                                                onChange={onChangeCity}
-                                                                placeholder="Tỉnh/Thành"
-                                                            >
-                                                                {
-                                                                    cityData.map((item, index) => (
-                                                                        <Select.Option key={item.id} value={item.id}>{item.title}</Select.Option>
-                                                                    ))
-                                                                }
-                                                            </Select>
-                                                        </Form.Item>
-                                                        <Form.Item
-                                                            label="Quận/Huyện"
-                                                            name="districtId"
-                                                            hasFeedback
-                                                            rules={[
-                                                                { required: true, message: 'Vui lòng chọn Quận/Huyện' }
-                                                            ]}
-                                                            style={{ width: '30%' }}
-                                                        >
-                                                            <Select placeholder="Quận/Huyện" disabled={!selectedData.cityId}
-                                                                onChange={onChangeDistrict}
-                                                            >
-                                                                {
-                                                                    selectedData.cityId ?
-                                                                        (
-                                                                            <>
-                                                                                {
-                                                                                    (cityData.find(item => item.id === selectedData.cityId)).districts.map(item => (
-                                                                                        <Select.Option value={item.id} key={item.id} >{item.title}</Select.Option>
-                                                                                    ))
-                                                                                }
-                                                                            </>
-                                                                        )
-                                                                        :
-                                                                        (
-                                                                            <>
+                                <CustomerInfoContainer>
+                                    <Form.Item>
+                                        <Typography>Thông tin liên hệ giao hàng</Typography>
+                                    </Form.Item>
+                                    <div
+                                        style={{ display: 'flex', alignItems: 'center' }}
+                                    >
+                                        <div
+                                            style={{ width: '50%', padding: '5px' }}
+                                        >
+                                            <Form.Item
+                                                label="Họ và tên"
+                                                name="name"
+                                                hasFeedback
+                                                rules={[
+                                                    { required: true, message: "Vui lòng nhập họ và tên!" },
+                                                    { whitespace: true, message: "Vui lòng không nhập khoảng trắng!" }
+                                                ]}
+                                            >
+                                                <Input />
+                                            </Form.Item>
+                                        </div>
+                                        <div
+                                            style={{ width: '50%', padding: '5px' }}
+                                        >
+                                            <Form.Item
+                                                label="Số điện thoại"
+                                                name="phone"
+                                                hasFeedback
+                                                rules={[
+                                                    { required: true, message: "Vui lòng nhập số điện thoại!" },
+                                                    { whitespace: true, message: "Vui lòng không nhập khoảng trắng!" }
+                                                ]}
+                                            >
+                                                <Input />
+                                            </Form.Item>
+                                        </div>
+                                    </div>
 
-                                                                            </>
-                                                                        )
-                                                                }
-                                                            </Select>
-                                                        </Form.Item>
-                                                        <Form.Item
-                                                            label="Phường/Xã"
-                                                            name="wardId"
-                                                            hasFeedback
-                                                            rules={[
-                                                                { required: true, message: 'Vui lòng chọn Phường/Xã!' }
-                                                            ]}
-                                                            style={{ width: '30%' }}
-                                                        >
-                                                            <Select disabled={!selectedData.districtId}
-                                                                onChange={onChangeWard}
-                                                                placeholder="Phường/Xã"
-                                                            >
-                                                                {
-                                                                    selectedData.cityId && selectedData.districtId ?
-                                                                        (
-                                                                            <>
-                                                                                {
-                                                                                    ((cityData.find(item => item.id === selectedData.cityId)).districts.find(item => item.id === selectedData.districtId)).wards.map(item => (
-                                                                                        <Select.Option value={item.id} key={item.id} >{item.title}</Select.Option>
-                                                                                    ))
-                                                                                }
-                                                                            </>
-                                                                        )
-                                                                        :
-                                                                        (
-                                                                            <>
-
-                                                                            </>
-                                                                        )
-                                                                }
-                                                            </Select>
-                                                        </Form.Item>
-                                                    </FormLocationGroup>
-                                                </Form.Item>
-
-                                                <Form.Item
-                                                    label="Địa chỉ"
-                                                    name="location"
-                                                    hasFeedback
-                                                    rules={[
-                                                        { required: true, message: 'Vui lòng nhập địa chỉ nhận hàng!' },
-                                                        { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' }
-                                                    ]}
+                                    <Form.Item style={{ marginBottom: "0px" }}>
+                                        <Typography>Địa chỉ giao hàng</Typography>
+                                        <FormLocationGroup>
+                                            <Form.Item
+                                                label="Tỉnh/Thành Phố"
+                                                name="cityId"
+                                                hasFeedback
+                                                rules={[
+                                                    { required: true, message: 'Vui lòng chọn Tỉnh/Thành Phố!' }
+                                                ]}
+                                                style={{ width: '30%' }}
+                                            >
+                                                <Select
+                                                    onChange={onChangeCity}
+                                                    placeholder="Tỉnh/Thành"
                                                 >
-                                                    <Input />
-                                                </Form.Item>
-                                                <Form.Item
-                                                    label="Ghi Chú"
-                                                    name="note"
+                                                    {
+                                                        cityData.map((item, index) => (
+                                                            <Select.Option key={item.id} value={item.id}>{item.title}</Select.Option>
+                                                        ))
+                                                    }
+                                                </Select>
+                                            </Form.Item>
+                                            <Form.Item
+                                                label="Quận/Huyện"
+                                                name="districtId"
+                                                hasFeedback
+                                                rules={[
+                                                    { required: true, message: 'Vui lòng chọn Quận/Huyện' }
+                                                ]}
+                                                style={{ width: '30%' }}
+                                            >
+                                                <Select placeholder="Quận/Huyện" disabled={!selectedData.cityId}
+                                                    onChange={onChangeDistrict}
                                                 >
-                                                    <Input.TextArea />
-                                                </Form.Item>
-                                            </CustomerInfoContainer>
-                                        )
-                                }
+                                                    {
+                                                        selectedData.cityId ?
+                                                            (
+                                                                <>
+                                                                    {
+                                                                        (cityData.find(item => item.id === selectedData.cityId)).districts.map(item => (
+                                                                            <Select.Option value={item.id} key={item.id} >{item.title}</Select.Option>
+                                                                        ))
+                                                                    }
+                                                                </>
+                                                            )
+                                                            :
+                                                            (
+                                                                <>
+
+                                                                </>
+                                                            )
+                                                    }
+                                                </Select>
+                                            </Form.Item>
+                                            <Form.Item
+                                                label="Phường/Xã"
+                                                name="wardId"
+                                                hasFeedback
+                                                rules={[
+                                                    { required: true, message: 'Vui lòng chọn Phường/Xã!' }
+                                                ]}
+                                                style={{ width: '30%' }}
+                                            >
+                                                <Select disabled={!selectedData.districtId}
+                                                    onChange={onChangeWard}
+                                                    placeholder="Phường/Xã"
+                                                >
+                                                    {
+                                                        selectedData.cityId && selectedData.districtId ?
+                                                            (
+                                                                <>
+                                                                    {
+                                                                        ((cityData.find(item => item.id === selectedData.cityId)).districts.find(item => item.id === selectedData.districtId))?.wards.map(item => (
+                                                                            <Select.Option value={item.id} key={item.id} >{item.title}</Select.Option>
+                                                                        ))
+                                                                    }
+                                                                </>
+                                                            )
+                                                            :
+                                                            (
+                                                                <>
+
+                                                                </>
+                                                            )
+                                                    }
+                                                </Select>
+                                            </Form.Item>
+                                        </FormLocationGroup>
+                                    </Form.Item>
+
+                                    <Form.Item
+                                        label="Địa chỉ"
+                                        name="location"
+                                        hasFeedback
+                                        rules={[
+                                            { required: true, message: 'Vui lòng nhập địa chỉ nhận hàng!' },
+                                            { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' }
+                                        ]}
+                                    >
+                                        <Input />
+                                    </Form.Item>
+                                    <Form.Item
+                                        label="Ghi Chú"
+                                        name="note"
+                                    >
+                                        <Input.TextArea />
+                                    </Form.Item>
+                                </CustomerInfoContainer>
                                 <SummaryContainer>
                                     <Form.Item>
                                         <Typography>Phương Thức Thanh Toán</Typography>
@@ -860,13 +874,14 @@ const Webcart = () => {
                                     >
                                         <Select
                                             placeholder="Phương thức thanh toán"
+                                            onChange={onChangePayment}
                                         >
                                             <Select.Option value={1}>Thanh toán khi nhận hàng!</Select.Option>
                                             <Select.Option value={2}>Thanh toán momo!</Select.Option>
                                         </Select>
                                     </Form.Item>
                                     {
-                                        form.getFieldValue('payment') === 2 &&
+                                        payment === 2 &&
                                         <Form.Item>
                                             <MoMoContainer>
                                                 <MoMoLeft>
@@ -903,7 +918,7 @@ const Webcart = () => {
                                                             </MoMoItemLabel>
                                                             <MoMoItemContent>
                                                                 <Typography.Text level={5}>
-                                                                    {`${moment(new Date()).format('DDMMYYYYHmm')}-${auth?.info?.username}`}
+                                                                    {`${moment(new Date()).format('DDMMYYYY')}-${auth?.info?.username}`}
                                                                 </Typography.Text>
                                                             </MoMoItemContent>
                                                         </MoMoItem>

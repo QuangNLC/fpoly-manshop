@@ -4,8 +4,10 @@ import com.example.ManShop.DTOS.FilterInfoResponseDTO;
 import com.example.ManShop.DTOS.FilterRequestDTO;
 import com.example.ManShop.DTOS.productcreateDTO;
 import com.example.ManShop.Entitys.Categorys;
+import com.example.ManShop.Entitys.Combo;
 import com.example.ManShop.Entitys.Images;
 import com.example.ManShop.Entitys.Product;
+import com.example.ManShop.Entitys.ProductCombo;
 import com.example.ManShop.Entitys.ProductSize;
 import com.example.ManShop.Entitys.Materials;
 import com.example.ManShop.Entitys.Sizes;
@@ -51,6 +53,11 @@ public class ProductController {
 
     @Autowired
     SizeJPA sizesJPA;
+
+    @Autowired
+    ProductComboJPA productComboJPA;
+    @Autowired
+    ComboJPA comboJPA;
 
     public ProductController(ProductJPA productJPA, MaterialJPA materialJPA, CategoryJPA categoryJPA, ImagesJPA imagesJPA, ProductsizeJPA productsizeJPA) {
         this.productJPA = productJPA;
@@ -138,7 +145,22 @@ public class ProductController {
         newproduct.setName(product.getName());
         newproduct.setTitle(product.getTitle());
         newproduct.setCategory(category);
+        newproduct.setMaterial(materialJPA.findByTitle(product.getTitle()));
         Product returnproduct = productJPA.save(newproduct);
+        if(product.getProductsizes()!= null){
+            try {
+                List<String> pCombo = product.getCombo();
+                for(int i=0;i<pCombo.size();i++){
+                    ProductCombo n = new ProductCombo();
+                    n.setProduct(returnproduct);
+                    n.setCombo(comboJPA.findByTitle(pCombo.get(i)));
+                    productComboJPA.save(n);
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+                return ResponseEntity.status(404).body("lỗi khi chọn combo");
+            }
+        }
         try{
             List<ProductSize> ProSizeList = product.getProductsizes();
             ProSizeList.forEach( Size -> {

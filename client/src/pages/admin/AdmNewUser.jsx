@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import { Button, Form, Input, notification } from 'antd'
 import authAPI from '../../api/authAPI'
@@ -71,29 +71,30 @@ const openNotificationWithIcon = (type, title, des) => {
 
 const AdmNewUser = () => {
     const navigate = useNavigate();
+    const [selectedRole, setSelectedRole] = useState(3)
     const onClickCreateAccount = (value) => {
-        console.log(value)
         const payload = {
-            ...value
+            ...value,
+            role: selectedRole
         }
         console.log(payload)
-        // try {
-        //     authAPI.registerByAdmd(payload)
-        //         .then(res => {
-        //             if (!res.status) {
-        //                 openNotificationWithIcon('success', 'Đăng ký thành công!', 'Đăng ký thành công!');
-        //                 navigate('/admin/user-list')
+        try {
+            authAPI.registerByAdmd(payload)
+                .then(res => {
+                    if (!res.status) {
+                        openNotificationWithIcon('success', 'Đăng ký thành công!', 'Đăng ký thành công!');
+                        navigate('/admin/user-list')
 
-        //             } else {
-        //                 openNotificationWithIcon('error', 'Đăng ký thất bại!', 'Đăng ký thất bại!');
-        //                 console.log(res)
-        //             }
+                    } else {
+                        openNotificationWithIcon('error', 'Đăng ký thất bại!', 'Đăng ký thất bại!');
+                        console.log(res)
+                    }
 
-        //         })
-        //         .catch(err => console.log(err));
-        // } catch (err) {
-        //     console.log(err)
-        // }
+                })
+                .catch(err => console.log(err));
+        } catch (err) {
+            console.log(err)
+        }
     }
 
 
@@ -213,15 +214,15 @@ const AdmNewUser = () => {
                             <ItemLabel>Quyền Truy cập</ItemLabel>
                             <GenderOptions style={{ paddingBottom: "5px" }}>
                                 <Item>
-                                    <ItemInput type="radio" name="role" id="user" value="USER" style={{ marginBottom: "5px" }} defaultChecked />
+                                    <ItemInput type="radio" name="role" id="user" value={3} style={{ marginBottom: "5px" }} defaultChecked  onClick={() => {setSelectedRole(3)}}/>
                                     <ItemLabel htmlFor='user' style={{ textAlign: "Center" }}>Người Dùng</ItemLabel>
                                 </Item>
-                                <Item>
+                                {/* <Item>
                                     <ItemInput type="radio" name="role" id="staff" value="STAFF" style={{ marginBottom: "5px" }} />
                                     <ItemLabel htmlFor='staff' style={{ textAlign: "Center" }}>Nhân Viên</ItemLabel>
-                                </Item>
+                                </Item> */}
                                 <Item>
-                                    <ItemInput type="radio" name="role" id="admin" value="ADMIN" style={{ marginBottom: "5px" }} />
+                                    <ItemInput type="radio" name="role" id="admin" value={1} style={{ marginBottom: "5px" }}  onClick={() => {setSelectedRole(1)}}/>
                                     <ItemLabel htmlFor='admin' style={{ textAlign: "Center" }}>Quản Trị Viên</ItemLabel>
                                 </Item>
                             </GenderOptions>

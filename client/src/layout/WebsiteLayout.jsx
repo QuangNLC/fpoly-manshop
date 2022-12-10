@@ -17,7 +17,8 @@ const Content = styled.div`
     margin: 140px auto 0 auto;
     max-width: 100%;
     min-height: 100vh;
-    background-color: white;
+    
+    background-color: #f5f4f2;
 `
 const MessageContainer = styled.div`
     position: fixed;

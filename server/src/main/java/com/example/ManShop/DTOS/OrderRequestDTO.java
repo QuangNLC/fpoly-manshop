@@ -26,6 +26,11 @@ public class OrderRequestDTO {
     private Integer districtId=null;
     private Long wardId =null;
     private String location=null;
+    private  double reducePrice =0;
+    //them cho thanh toan
+    private String methodpayment;
+    private String descriptions_payment;
+
 
 
 }

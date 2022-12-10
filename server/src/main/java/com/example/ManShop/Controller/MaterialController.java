@@ -11,17 +11,17 @@ import java.util.List;
 
 @RestController
 @CrossOrigin("*")
-@RequestMapping("/api/material")
-public class MaterialController {
+@RequestMapping("/api")
+public class  MaterialController {
     @Autowired
     MaterialJPA materialJPA;
 
-    @RequestMapping("/getall")
+    @RequestMapping("/material/getall")
     public ResponseEntity<List<Materials>> getAll(){
         return ResponseEntity.ok(materialJPA.findAll());
     }
 
-    @GetMapping("/details")
+    @GetMapping("/material/details")
     public ResponseEntity<Materials> getMaterialDetails(@PathParam(value = "materialId") Integer materialId){
         if(!materialJPA.existsById(materialId)){
             return ResponseEntity.notFound().build();
@@ -29,7 +29,7 @@ public class MaterialController {
         return ResponseEntity.ok(materialJPA.findById(materialId).get());
     }
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/create")
+    @PostMapping("/material/create")
     public ResponseEntity<?> createMaterial(@RequestBody Materials reqMaterial){
         Materials newMaterial = new Materials();
         newMaterial.setTitle(reqMaterial.getTitle());
@@ -44,7 +44,7 @@ public class MaterialController {
     }
 
 
-    @PutMapping("/update")
+    @PutMapping("/material/update")
     public ResponseEntity<?> updateMaterialDetails(@PathParam("materialId") Integer materialId, @RequestBody Materials reqMate){
         if(!materialJPA.existsById(materialId)){
             return ResponseEntity.notFound().build();
@@ -55,7 +55,7 @@ public class MaterialController {
         Materials resMate = materialJPA.save(updatedMate);
         return ResponseEntity.ok(resMate);
     }
-    @DeleteMapping()
+    @DeleteMapping("/material")
     public ResponseEntity<?> deleteMaterial(@PathParam("materialId") Integer materialId){
         if(!materialJPA.existsById(materialId)){
             return ResponseEntity.notFound().build();
@@ -63,4 +63,8 @@ public class MaterialController {
         materialJPA.deleteById(materialId);
         return ResponseEntity.status(200).body("Delete Successfully!");
     }
+
+    //combo
+
+
 }
