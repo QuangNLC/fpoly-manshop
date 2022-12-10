@@ -42,6 +42,8 @@ public class Orders {
     @ManyToOne @JoinColumn(name = "customer")
     private Customers customers;
 
+    @Column(name = "ReducePrice")
+    private double reduce_price;
 
     @OneToMany(mappedBy = "orders")
     private List<OrderDetail> orderDetail;
@@ -50,6 +52,9 @@ public class Orders {
 //    @JsonIgnore
 //    @JoinColumn(name = "statusOrder")
 //    private StatusOrder statusOrders;
+
+    @OneToMany(mappedBy = "orders")
+    private List<OrderPayment> orderPayment;
 
     @OneToMany(mappedBy = "orders")
     private List<StatusDetail> statusDetail;

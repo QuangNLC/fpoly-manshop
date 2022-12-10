@@ -21,6 +21,7 @@ public class UpDateStatusOrderDTO {
     private  Boolean isFinish=false;
     private Customers customers= null;
     private double total_price = 0;
+    private double reduce_price = 0;
     private List<OrderDetail> orderDetail =null ;
     private Integer cityId =null;
     private Integer districtId=null;

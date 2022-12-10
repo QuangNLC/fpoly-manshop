@@ -31,7 +31,7 @@ public class ScheduleTask {
         this.promotionJPA = promotionJPA;
     }
 
-    @Scheduled(cron = "59 * * * * *")
+    @Scheduled(cron = "57 59 23 * * *")
     @Async
     @Bean
     public void checkDateStartPromotions(){
@@ -44,7 +44,7 @@ public class ScheduleTask {
         }
         log.info("__________________End check Start________________");
     }
-    @Scheduled(cron = "59 * * * * *")
+    @Scheduled(cron = "57 59 23 * * *")
     @Async
     @Bean
     public void checkDateEndPromotions(){

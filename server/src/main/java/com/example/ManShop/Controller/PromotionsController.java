@@ -39,7 +39,7 @@ public class PromotionsController {
     final ProductJPA productJPA;
     final ProductPromotionJPA productPromotionJPA;
 
-@Autowired
+    @Autowired
     UserJPA userJPA;
 
     public PromotionsController(PromotionJPA promotionJPA, ProductJPA productJPA, ProductPromotionJPA productPromotionJPA) {

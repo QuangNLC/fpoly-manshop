@@ -113,12 +113,26 @@ public class AuthController {
 
         return ResponseEntity.ok(users);
     }
+    @PutMapping("/adm-update/{username}/{idrole}")
+    public ResponseEntity<?> updateuser(@PathVariable("username") String username,@PathVariable("idrole") Integer idrole){
+        log.info("gọi vào hàm update thông tin người dùng");
+        try {
+            Users users = userJPA.findById("username").get();
+            users.setRoles(rolesJPA.findById(idrole).get());
+            userJPA.save(users);
+            return ResponseEntity.ok(users);
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.notFound().build();
+        }
+
+
+    }
 
 
     @PostMapping("/adm-register")
     public ResponseEntity<?> registerByAdmin(@Valid @RequestBody RegisterRequest request){
         log.info("Gọi vào hàm đăng kí người dùng với dữ liệu từ client:" +request);
-        int defaurole =3;
         if (userJPA.existsById(request.getUsername())){
             log.error("(Username) = " + request.getUsername() + " đã được sử dụng!");
             return ResponseEntity.badRequest().body("Username da duoc su dung, hay nhap lai!");
@@ -136,7 +150,7 @@ public class AuthController {
         users.setActivated(true);
         users.setVerificode(RandomString.make(64));
         users.setPassword(passwordEncoder.encode(request.getPassword()));
-        Role roles = rolesJPA.findById(3).get();
+        Role roles = rolesJPA.findById(request.getRole()).get();
         users.setRoles(roles);
         Address address = new Address();
         // config address

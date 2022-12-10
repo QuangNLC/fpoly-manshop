@@ -17,14 +17,14 @@ public class RegisterRequest {
     @NotBlank(message = "khong duoc de trong email")
     private String email;
     @NotBlank(message = "ho va ten khong duoc de trong")
-     private String fullname;
+    private String fullname;
     @NotNull(message = "khong duoc de trong so dien thoai")
-   // @Length(min = 9,max = 11, message = "khong dung dinh dang sdt")
+    // @Length(min = 9,max = 11, message = "khong dung dinh dang sdt")
     private String phone;
     @NotBlank(message = "ban chua nhap mat khau")
     private String password;
 
-    private Role role;
+    private int role =3;
 
     private Integer cityId;
 

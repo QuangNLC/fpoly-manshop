@@ -35,6 +35,12 @@ public class OrderContoller {
     final OrderJPA orderJPA;
     final ProductsizeJPA productsizeJPA;
     final SizeJPA sizeJPA;
+
+    @Autowired
+    private OrderPaymentJPA orderPaymentJPA;
+
+    @Autowired
+    private  PaymentJPA paymentJPA;
     @Autowired
     private StatusOrderJPA statusOrderJPA;
     @Autowired
@@ -114,7 +120,6 @@ public class OrderContoller {
             Citys city = new Citys();
             Districts district = new Districts();
             Wards ward = new Wards();
-            System.out.println("check");
             city.setId(orderRequest.getCityId());
             district.setId(orderRequest.getDistrictId());
             ward.setId(orderRequest.getWardId());
@@ -140,8 +145,16 @@ public class OrderContoller {
         newOrder.setOrder_date(new Date());
         newOrder.setCreatedDate(new Date());
         newOrder.setUsers(user);
+        newOrder.setReduce_price(orderRequest.getReducePrice());
         newOrder.setOrderDetail(orderRequest.getOrderDetail());
         Orders responseOrder = orderJPA.save(newOrder);
+
+        OrderPayment neworPM = new OrderPayment();
+        neworPM.setPayment(paymentJPA.findByTitle(orderRequest.getMethodpayment()));
+        neworPM.setOrders(responseOrder);
+        neworPM.setDecriptions(orderRequest.getDescriptions_payment());
+        orderPaymentJPA.save(neworPM);
+
         StatusDetail sttdetail = new StatusDetail();
         sttdetail.setFinish(false);
         sttdetail.setTimeDate(new Date());
@@ -208,11 +221,6 @@ public class OrderContoller {
             return ResponseEntity.badRequest().body("Không tìm thấy đơn hàng với id()"+id);
         }
         else {
-//            for (Integer sdsd:statusList){
-//                if(sdsd == checklistSttus){
-//                    return ResponseEntity.status(404).body("Đơn hàng có trạng tháu này r");
-//                }
-//            }
             try {
                 Orders orders = orderJPA.findById(id).get();
                 if (DTO.getStatusOrder().equals("Đang chờ") || DTO.getStatusOrder().equals("Chờ Xác Nhận")){
@@ -235,6 +243,7 @@ public class OrderContoller {
                         orders.setCustomers(customers);
                     }
                     orders.setTotal_price(DTO.getTotal_price());
+                    orders.setReduce_price(DTO.getReduce_price());
                     orderJPA.save(orders);
                     orderDetailJPA.deletelistOrderdetail(orders.getId());
                     Orders orderForDetail = new Orders();
@@ -398,6 +407,12 @@ public class OrderContoller {
             newOrder.setOrder_date(new Date());
             newOrder.setCreatedDate(new Date());
             orderJPA.save(newOrder);
+            OrderPayment neworpm = new OrderPayment();
+            neworpm.setOrders(newOrder);
+            neworpm.setPayment(paymentJPA.findByTitle("Tại cửa hàng"));
+            neworpm.setDecriptions("đơn hàng được thanh toán tại quầy!!");
+            orderPaymentJPA.save(neworpm);
+
             StatusDetail statusDetail = new StatusDetail();
             statusDetail.setOrders(newOrder);
             statusDetail.setDescription("hóa đơn tạo tại quầy");

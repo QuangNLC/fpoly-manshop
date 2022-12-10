@@ -49,6 +49,8 @@ public class Product {
    @JsonIgnore
     @OneToMany(mappedBy = "product")
     private List<OrderDetail> orderDetail;
+    @OneToMany(mappedBy = "product")
+    private List<ProductCombo> productCombos;
 
 
 }
