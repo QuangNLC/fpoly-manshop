@@ -446,8 +446,6 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
         ordersAPI.updateWatingOrder(payload)
             .then(res => {
                 if (!res.status) {
-                    // openNotificationWithIcon('success', 'Lưu Đơn Hàng', 'Lưu đơn chờ thành công');
-                    // navigate('/admin/order-list')
                     openNotificationWithIcon('success', 'Thêm Sản Phẩm Vào Giỏ Hàng', 'Đã thêm sản phẩm vào giỏ hàng')
                     setCartLoading(false)
                 }
@@ -686,39 +684,6 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
 
     const handleSaveWatingOrder = () => {
         if (auth && id) {
-            // Modal.confirm({
-            //     title: "Hộp Thoại Xác Nhận",
-            //     content: "Bạn có muốn lưu đơn chờ không",
-            //     okText: "Xác Nhận",
-            //     cancelText: "Hủy Bỏ",
-            //     onOk: () => {
-            //         let payload = {
-            //             users: {
-            //                 username: auth?.info?.username
-            //             },
-            //             id,
-            //             orderDetail: [
-            //                 ...cart.map((item, index) => ({
-            //                     product: { id: item?.item?.id },
-            //                     quantity: item?.quantity,
-            //                     size: item?.selectedSize?.size?.title,
-            //                     total_price: item?.item?.export_price * item?.quantity
-            //                 }))
-            //             ],
-            //             statusOrders: ({ id: 5, title: 'Đang Chờ' })
-            //         }
-            //         console.log(payload)
-            //         ordersAPI.updateWatingOrder(payload)
-            //             .then(res => {
-            //                 if (!res.status) {
-            //                     openNotificationWithIcon('success', 'Lưu Đơn Hàng', 'Lưu đơn chờ thàn công');
-            //                     // navigate('/admin/order-list')
-            //                 }
-            //             }
-            //             )
-            //             .catch(err => console.log(err))
-            //     }
-            // })
             let payload = {
                 users: {
                     username: auth?.info?.username

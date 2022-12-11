@@ -15,6 +15,31 @@ import { formatter } from '../../utils';
 const Container = styled.div`
     width: 100%;
 `
+const WidgetContainer = styled.div`
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+`
+const Widget = styled.div`
+    flex: 1;
+    margin: 0px 20px;
+    padding: 30px;
+    border-radius: 10px;
+    cursor: pointer;
+    -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+    box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+    background-color: white;
+`
+const WidgetTitle = styled.div`
+    font-size: 20px;
+`
+const WidgetDetail = styled.div`
+    margin: 10px 0px;
+    display: flex;
+    align-items: center;
+    font-size: 30px;
+    font-weight: 600;
+`
 const BarChartContainer = styled.div`
     width: 100%;
     display: flex;
@@ -52,146 +77,35 @@ const PieChartWrapper = styled.div`
     display: flex;
     justify-content: center;
 `
-const WidgetsContainer = styled.div`
-    padding: 20px;
-    display: flex;
-`
-const WidgetSm = styled.div`
-    flex:1;
-    padding: 20px;
-    margin-right: 20px;
-    -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
-    box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
-`
-const WidgetSmTitle = styled.span`
-    font-size: 32px;
-    font-weight: 600;
-`
-const WidgetSmList = styled.ul`
-    list-style:none;
-`
-const WidgetSmListItem = styled.li`
-    display:flex;
-    align-items:center;
-    justify-content: space-between;
-    margin: 20px 0;
-`
-const WidgetSmListItemImg = styled.img`
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-`
-const WidgetSmUser = styled.div`
-    display: flex;
-    flex-direction: column;
-`
-const WidgetSmUsername = styled.span`
-    font-weight: 600;
-`
-const WidgetSmUserTitle = styled.span`
-    font-weight: 300;
-`
-const WidgetSmButton = styled.button`
-    display: flex;
-    align-items: center;
-    border: none;
-    border-radius: 10px;
-    padding: 8px 10px;
-    background-color: #eeeef7;
-    color: #555;
-    cursor: pointer;
-`
-const WidgetLg = styled.div`
-    flex:2;
-    padding: 20px;
-    -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
-    box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
-`
-const WidgetLgTitle = styled.span`
-    font-size: 22px;
-    font-weight: 600;
-    padding: 20px;
-`
-const WidgetLgTable = styled.table`
-    width: 100%;
-    border-spacing: 20px;
-`
-const WidgetLgTr = styled.tr`
-`
-const WidgetLgTh = styled.th`
-    text-align: left;
-`
-const WidgetLgUser = styled.td``
-const WidgetLgImgContainer = styled.td``
-const WidgetLgImg = styled.img`
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-`
-const WidgetLgNameContaienr = styled.td``
-const WidgetLgName = styled.span`
-    font-weight: 500;
-`
-const WidgetLgDate = styled.td`
-    font-weight: 300;
-`
-const WidgetLgAmount = styled.td`
-    font-weight: 300;
-`
-const WidgetLgStatus = styled.td``
-const WidgetLgButton = styled.button`
-    padding: 8px 4px;
-    border: none;
-    border-radius: 10px;
-    ${props => {
-        switch (props.status) {
-            case ("Approved"): {
-                return "background-color: #e5fef2;color: #3bb077;"
-            }
-            case ("Declined"): {
-                return "background-color: #fff0f1;color: #d95087;"
-            }
-            case ("Pending"): {
-                return "background-color: #ebf1fe;color: #2a7ade;"
-            }
-            default: {
-                return "background-color: #e5fef2;color: #3bb077;"
-            }
-        }
-    }
 
-    }
-`
 const data = [
-    { name: 'Chờ Xác Nhận', value: 10, color:  '#FFBB28'},
+    { name: 'Chờ Xác Nhận', value: 10, color: '#FFBB28' },
     { name: 'Đã Xác Nhận', value: 20, color: '#00C49F' },
-    { name: 'Đang Giao', value: 30, color: '#FF8042'  },
-    { name: 'Hoàn Thành', value: 40, color: '#0088FE'  },
-    { name: 'Hủy Đơn', value: 50, color: '#fa0505'  },
+    { name: 'Đang Giao', value: 30, color: '#FF8042' },
+    { name: 'Hoàn Thành', value: 40, color: '#0088FE' },
+    { name: 'Hủy Đơn', value: 50, color: '#fa0505' },
 ];
 const getPieColor = (name) => {
     let color = '#FFBB28'
 
-    switch(name){
-        case('Chờ Xác Nhận'):{
+    switch (name) {
+        case ('Chờ Xác Nhận'): {
             color = '#FFBB28';
             break;
         }
-        case('Đã Xác Nhận'):{
+        case ('Đã Xác Nhận'): {
             color = '#00C49F';
             break;
         }
-        case('Đang Giao'):{
+        case ('Đang Giao'): {
             color = '#FF8042';
             break;
         }
-        case('Hoàn Tất'):{
+        case ('Hoàn Tất'): {
             color = '#0088FE';
             break;
         }
-        case('Đang Chờ'):{
+        case ('Đang Chờ'): {
             color = '#fa0505';
             break;
         }
@@ -212,8 +126,11 @@ const AdmDashboard = () => {
 
     const [pieChartData, setPieChartData] = useState([])
     const [pieChartLoading, setPieChartLoading] = useState(true)
+    const [totalOrderCountToday, setTotalOrderCountToday] = useState(0)
+    const [totalOrderCountLoading, setTotalOrderCountLoading] = useState(true)
+    const [totalSellThisMonth, setTotalSellThisMonth] = useState(0)
+    const [totalSellThisMonthLoading, setTotalSellThisMonthLoading] = useState(true)
 
-    
 
 
     useEffect(() => {
@@ -240,7 +157,9 @@ const AdmDashboard = () => {
 
     useEffect(() => {
         setbarChartLoading(true)
-        setPieChartLoading(false)
+        setPieChartLoading(true)
+        setTotalOrderCountLoading(true)
+        setTotalSellThisMonthLoading(true)
         reportAPI.getChartData(2022)
             .then((res) => {
                 if (!res.status) {
@@ -258,18 +177,39 @@ const AdmDashboard = () => {
             })
             .catch(err => console.log(err))
         reportAPI.getOrderStat()
+            .then(res => {
+                if (!res.status) {
+                    console.log(res)
+                    setPieChartData(res.map((item, index) => ({
+                        ...item,
+                        color: getPieColor(item.name)
+                    })))
+                    setPieChartLoading(false)
+                } else {
+                    console.log(res)
+                }
+            })
+            .catch(err => console.log(err))
+        reportAPI.getTodayOrderCount()
+            .then(res => {
+                if (!res.status) {
+                    setTotalOrderCountToday(res)
+                    setTotalOrderCountLoading(false)
+                } else {
+                    console.log(res)
+                }
+            })
+            .catch(err => console.log(err))
+        reportAPI.getProductSellThisMonth()
         .then(res => {
-            if(!res.status){
-                console.log(res)
-                setPieChartData(res.map((item, index) => ({
-                    ...item,
-                    color: getPieColor(item.name)
-                })))
-                setPieChartLoading(false)
-            }else{
+            if (!res.status) {
+                setTotalSellThisMonth(res)
+                setTotalSellThisMonthLoading(false)
+            } else {
                 console.log(res)
             }
-        })
+        }
+        )
         .catch(err => console.log(err))
     }, [])
 
@@ -277,8 +217,44 @@ const AdmDashboard = () => {
 
     return (
         <Container>
-            <AdmFeaturedInfo />
-            {/* <AdmChart title={"Lượng Người Dùng"} data={userStatsData} dataKey={"activeUser"} grid /> */}
+            {/* <AdmFeaturedInfo /> */}
+            <WidgetContainer>
+                <Widget>
+                    {
+                        totalOrderCountLoading ?
+                            (
+                                <Spin />
+                            )
+                            :
+                            (
+                                <>
+                                    <WidgetTitle>Hôm Nay</WidgetTitle>
+                                    <WidgetDetail>{`${totalOrderCountToday} Đơn Hàng`}</WidgetDetail>
+                                </>
+
+                            )
+                    }
+
+                </Widget>
+                <Widget>
+                    {
+                        totalSellThisMonthLoading ?
+                            (
+                                <Spin />
+                            )
+                            :
+                            (
+                                <>
+                                    <WidgetTitle>Hàng Bán Được Tháng Này</WidgetTitle>
+                                    <WidgetDetail>{`${totalSellThisMonth} Sản Phẩm`}</WidgetDetail>
+                                </>
+
+                            )
+                    }
+
+
+                </Widget>
+            </WidgetContainer>
             <BarChartContainer>
                 <BarChartSelectYear>
                     Năm:
@@ -316,130 +292,11 @@ const AdmDashboard = () => {
                             )
                             :
                             (
-                                <AdmPieChart data={pieChartData}/>
+                                <AdmPieChart data={pieChartData} />
                             )
                     }
                 </PieChartWrapper>
             </PieChartContainer>
-            {/* <WidgetsContainer>
-                <WidgetSm>
-                    <WidgetSmTitle>New Join Members</WidgetSmTitle>
-                    <WidgetSmList>
-                        <WidgetSmListItem>
-                            <WidgetSmListItemImg src={"https://images.pexels.com/photos/3992656/pexels-photo-3992656.png?auto=compress&cs=tinysrgb&dpr=2&w=500"} />
-                            <WidgetSmUser>
-                                <WidgetSmUsername>Anna Keller</WidgetSmUsername>
-                                <WidgetSmUserTitle>Software Engineer</WidgetSmUserTitle>
-                            </WidgetSmUser>
-                            <WidgetSmButton>
-                                <VisibilityIcon style={{ fontSize: "16px", marginRight: "5px" }} />
-                                Display
-                            </WidgetSmButton>
-                        </WidgetSmListItem>
-                        <WidgetSmListItem>
-                            <WidgetSmListItemImg src={"https://images.pexels.com/photos/3992656/pexels-photo-3992656.png?auto=compress&cs=tinysrgb&dpr=2&w=500"} />
-                            <WidgetSmUser>
-                                <WidgetSmUsername>Anna Keller</WidgetSmUsername>
-                                <WidgetSmUserTitle>Software Engineer</WidgetSmUserTitle>
-                            </WidgetSmUser>
-                            <WidgetSmButton>
-                                <VisibilityIcon style={{ fontSize: "16px", marginRight: "5px" }} />
-                                Display
-                            </WidgetSmButton>
-                        </WidgetSmListItem>
-                        <WidgetSmListItem>
-                            <WidgetSmListItemImg src={"https://images.pexels.com/photos/3992656/pexels-photo-3992656.png?auto=compress&cs=tinysrgb&dpr=2&w=500"} />
-                            <WidgetSmUser>
-                                <WidgetSmUsername>Anna Keller</WidgetSmUsername>
-                                <WidgetSmUserTitle>Software Engineer</WidgetSmUserTitle>
-                            </WidgetSmUser>
-                            <WidgetSmButton>
-                                <VisibilityIcon style={{ fontSize: "16px", marginRight: "5px" }} />
-                                Display
-                            </WidgetSmButton>
-                        </WidgetSmListItem>
-                        <WidgetSmListItem>
-                            <WidgetSmListItemImg src={"https://images.pexels.com/photos/3992656/pexels-photo-3992656.png?auto=compress&cs=tinysrgb&dpr=2&w=500"} />
-                            <WidgetSmUser>
-                                <WidgetSmUsername>Anna Keller</WidgetSmUsername>
-                                <WidgetSmUserTitle>Software Engineer</WidgetSmUserTitle>
-                            </WidgetSmUser>
-                            <WidgetSmButton>
-                                <VisibilityIcon style={{ fontSize: "16px", marginRight: "5px" }} />
-                                Display
-                            </WidgetSmButton>
-                        </WidgetSmListItem>
-                    </WidgetSmList>
-                </WidgetSm>
-                <WidgetLg>
-                    <WidgetLgTitle>Latest Transactions</WidgetLgTitle>
-                    <WidgetLgTable>
-                        <thead>
-                            <WidgetLgTr>
-                                <WidgetLgTh>Customner</WidgetLgTh>
-                                <WidgetLgTh>Name</WidgetLgTh>
-                                <WidgetLgTh>Date</WidgetLgTh>
-                                <WidgetLgTh>Amount</WidgetLgTh>
-                                <WidgetLgTh>Status</WidgetLgTh>
-                            </WidgetLgTr>
-                        </thead>
-                        <tbody>
-                            <WidgetLgTr>
-                                <WidgetLgImgContainer>
-                                    <WidgetLgImg src="https://images.pexels.com/photos/4172933/pexels-photo-4172933.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940" />
-                                </WidgetLgImgContainer>
-                                <WidgetLgNameContaienr>
-                                    <WidgetLgName>Susan Carol</WidgetLgName>
-                                </WidgetLgNameContaienr>
-                                <WidgetLgDate>2 Jun 2021</WidgetLgDate>
-                                <WidgetLgAmount>$122.00</WidgetLgAmount>
-                                <WidgetLgStatus>
-                                    <WidgetLgButton status={"Approved"} >Approved</WidgetLgButton>
-                                </WidgetLgStatus>
-                            </WidgetLgTr>
-                            <WidgetLgTr>
-                                <WidgetLgImgContainer>
-                                    <WidgetLgImg src="https://images.pexels.com/photos/4172933/pexels-photo-4172933.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940" />
-                                </WidgetLgImgContainer>
-                                <WidgetLgNameContaienr>
-                                    <WidgetLgName>Susan Carol</WidgetLgName>
-                                </WidgetLgNameContaienr>
-                                <WidgetLgDate>2 Jun 2021</WidgetLgDate>
-                                <WidgetLgAmount>$122.00</WidgetLgAmount>
-                                <WidgetLgStatus>
-                                    <WidgetLgButton status={"Declined"}>Declined</WidgetLgButton>
-                                </WidgetLgStatus>
-                            </WidgetLgTr>
-                            <WidgetLgTr>
-                                <WidgetLgImgContainer>
-                                    <WidgetLgImg src="https://images.pexels.com/photos/4172933/pexels-photo-4172933.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940" />
-                                </WidgetLgImgContainer>
-                                <WidgetLgNameContaienr>
-                                    <WidgetLgName>Susan Carol</WidgetLgName>
-                                </WidgetLgNameContaienr>
-                                <WidgetLgDate>2 Jun 2021</WidgetLgDate>
-                                <WidgetLgAmount>$122.00</WidgetLgAmount>
-                                <WidgetLgStatus>
-                                    <WidgetLgButton status={"Pending"} >Pending</WidgetLgButton>
-                                </WidgetLgStatus>
-                            </WidgetLgTr>
-                            <WidgetLgTr>
-                                <WidgetLgImgContainer>
-                                    <WidgetLgImg src="https://images.pexels.com/photos/4172933/pexels-photo-4172933.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940" />
-                                </WidgetLgImgContainer>
-                                <WidgetLgNameContaienr>
-                                    <WidgetLgName>Susan Carol</WidgetLgName>
-                                </WidgetLgNameContaienr>
-                                <WidgetLgDate>2 Jun 2021</WidgetLgDate>
-                                <WidgetLgAmount>$122.00</WidgetLgAmount>
-                                <WidgetLgStatus>
-                                    <WidgetLgButton status={"Approved"} >Approved</WidgetLgButton>
-                                </WidgetLgStatus>
-                            </WidgetLgTr>
-                        </tbody>
-                    </WidgetLgTable>
-                </WidgetLg>
-            </WidgetsContainer> */}
         </Container>
     )
 }
