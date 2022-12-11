@@ -256,6 +256,9 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
     const [form] = useForm()
     const [isDefaultCustomer, setIsDefaultCustomer] = useState(true)
     const [cartLoading, setCartLoading] = useState(false)
+
+
+
     const onChangeCity = (value) => {
         form.setFieldValue('districtId', null)
         form.setFieldValue('wardId', null)
@@ -326,7 +329,7 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
                 }))
             ],
             statusOrders: ({ id: 5, title: 'Đang Chờ' }),
-            total_price: cart.length > 0 ? (cart.reduce((total, curr) => (total + curr?.quantity*curr?.item?.export_price),0)) : 0
+            total_price: cart.length > 0 ? (cart.reduce((total, curr) => (total + curr?.quantity * curr?.item?.export_price), 0)) : 0
         }
         ordersAPI.updateWatingOrder(payload)
             .then(res => {
@@ -368,7 +371,7 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
                         }))
                     ],
                     statusOrders: ({ id: 5, title: 'Đang Chờ' }),
-                    total_price: cart.length > 0 ? (cart.reduce((total, curr) => (total + curr?.quantity*curr?.item?.export_price),0)) : 0
+                    total_price: cart.length > 0 ? (cart.reduce((total, curr) => (total + curr?.quantity * curr?.item?.export_price), 0)) : 0
                 }
                 ordersAPI.updateWatingOrder(payload)
                     .then(res => {
@@ -423,7 +426,7 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
                 }))
             ],
             statusOrders: ({ id: 5, title: 'Đang Chờ' }),
-            total_price: cart.length > 0 ? (cart.reduce((total, curr) => (total + curr?.quantity*curr?.item?.export_price),0)) : 0
+            total_price: cart.length > 0 ? (cart.reduce((total, curr) => (total + curr?.quantity * curr?.item?.export_price), 0)) : 0
         }
         ordersAPI.updateWatingOrder(payload)
             .then(res => {
@@ -845,11 +848,6 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
                     <StepContainer>
                         {
                             steps && steps.length > 0 &&
-                            // <Steps current={steps.findIndex((item) => item.id === info?.statusOrders?.id)}>
-                            //     {steps.map(item => (
-                            //         <Steps.Step title={item.title} key={item.id} />
-                            //     ))}
-                            // </Steps>
                             <Steps current={steps.findIndex((item) => item.id === info?.statusDetail[info?.statusDetail.length - 1]?.statusOrder.id)}>
                                 {steps.map(item => {
                                     let checkDesc = findStepIndex(info?.statusDetail, item.id)
@@ -941,7 +939,6 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
                                                         />
                                                     )
                                                 }
-
                                             </CartBody>
                                         </CartDetails>
                                         <PayDetails>

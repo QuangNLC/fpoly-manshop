@@ -1,14 +1,16 @@
 import React, { useState } from 'react'
 import { useEffect } from 'react';
-import { Form, useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import Helmet from '../../components/Helmet';
 import styled from 'styled-components';
-import { List, Spin, Steps, Tag, Typography, Select, Button, Skeleton, Modal, notification, Table, Input } from 'antd';
+import { List, Spin, Steps, Tag, Typography, Select, Button, Skeleton, Modal, notification, Table, Input, Form } from 'antd';
 import ordersAPI from '../../api/ordersAPI';
 import { formatter } from '../../utils';
 import AdmWatingOrder from './AdmWatingOrder';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
+import { useForm } from 'antd/es/form/Form';
+import addressAPI from '../../api/addressAPI';
 
 const Container = styled.div`
     width: 100%;
@@ -37,6 +39,37 @@ const StepsActionsContainer = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
+`
+const PaymentContainer = styled.div`
+    width: 100%;
+    padding: 30px 20px;
+    background-color:white;
+    margin-bottom: 20px;
+`
+const PaymentWrapper = styled.div``
+const PaymentTitle = styled.div`
+    width: 100%;
+    text-transform: capitalize;
+    text-align: left;
+    padding-bottom: 15px;
+    border-bottom: 1px solid teal;
+    font-size: 20px;
+    font-weight: 300;
+    margin-bottom: 5px;
+`
+const PaymentType = styled.div`
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom :5px;
+`
+const PaymentDetail = styled.div`
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom :5px;
 `
 
 
@@ -192,6 +225,13 @@ const ActionContainer = styled.div`
     justify-content: space-between;
     align-items: center;
 `
+const FormLocationGroup = styled.div`
+    width: 100%;
+    padding-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+`
 
 
 const StatusBadge = (props) => {
@@ -330,6 +370,7 @@ const findStepIndex = (arr, sttId) => {
 }
 
 
+
 const AdmOrderInfo = () => {
 
     const { id } = useParams();
@@ -350,7 +391,7 @@ const AdmOrderInfo = () => {
         { index: 5, id: 4, title: "Hoàn Tất" }
     ])
     const navigate = useNavigate();
-
+    const [updateForm] = useForm()
     const statusModalColumns = [
         {
             title: '',
@@ -463,8 +504,21 @@ const AdmOrderInfo = () => {
     }
 
     const onClickUpdateCustomerInfo = () => {
-        setEditingCustomerInfo(info?.customers);
-        setIsModalCustomerInfo(true)
+        setIsModalCustomerInfo(true);
+        setEditingCustomerInfo({
+            name: info?.customers?.name,
+            phone: info?.customers?.phone,
+            location: info?.customers?.address?.location,
+            note: info?.note ? info?.note : '',
+            cityId: info?.customers?.address?.city?.id,
+            districtId: info?.customers?.address?.district?.id,
+            wardId: info?.customers?.address?.ward?.id
+        })
+        setSelectedData({
+            cityId: info?.customers?.address?.city?.id,
+            districtId: info?.customers?.address?.district?.id,
+            wardId: info?.customers?.address?.ward?.id
+        })
     }
 
     const onCloseModalCustomerInfo = () => {
@@ -479,8 +533,8 @@ const AdmOrderInfo = () => {
     }
 
     const onChangeCity = (value) => {
-        // form.setFieldValue('districtId', null)
-        // form.setFieldValue('wardId', null)
+        updateForm.setFieldValue('districtId', null)
+        updateForm.setFieldValue('wardId', null)
         setSelectedData({
             cityId: value,
             districtId: null,
@@ -489,7 +543,7 @@ const AdmOrderInfo = () => {
     }
 
     const onChangeDistrict = (value) => {
-        // form.setFieldValue('wardId', null)
+        updateForm.setFieldValue('wardId', null)
         setSelectedData({
             ...selectedData,
             districtId: value,
@@ -511,8 +565,57 @@ const AdmOrderInfo = () => {
         wardId: null
     })
 
+    const handleUpdateCustomerInfo = (value) => {
+        Modal.confirm({
+            title: 'Hộp Thoại Xác Nhận',
+            content: 'Bạn có muốn cập nhật đơn hàng không?',
+            okText: 'Xác Nhận',
+            cancelText: 'Hủy Bỏ',
+            onOk: () => {
+                let payload = {
+                    ...info,
+                    customers:{
+                        "phone": value?.phone,
+                        "name": value?.name,
+                        "note": value.note ? value.note : '',
+                        "user": {
+                            "username": auth?.info?.username
+                        }
+                    }
+                    ,
+                    statusOrder : "Chờ Xác Nhận",
+                    isFinish: false,
+                    cityId: value.cityId,
+                    districtId: value.districtId,
+                    wardId: value.wardId,
+                    location: value.location
+                }
+                console.log(payload)
+                ordersAPI.updateOrderStatus(payload)
+                .then(res => {
+                    if(!res.status){
+                        openNotificationWithIcon('success','Thông Báo','Cập nhật đơn hàng thành công!')
+                        setInfo(res)
+                        setIsModalCustomerInfo(false)
+                        console.log(res)
+                    }else{
+                        console.log(res)
+                    }
+                })
+                .catch(err => console.log(err))
+            }
+        })
+    }
 
 
+    useEffect(() => {
+        if (editingCustomerInfo) {
+            console.log(editingCustomerInfo)
+            console.log('reset field form')
+            updateForm.setFieldValue('phone', editingCustomerInfo.phone)
+            updateForm.resetFields()
+        }
+    }, [editingCustomerInfo])
 
     useEffect(() => {
         ordersAPI.getOrderInfo(id)
@@ -521,23 +624,24 @@ const AdmOrderInfo = () => {
                     setInfo(res)
                     console.log(res)
                     setIsLoadingInfo(false)
-                    // ordersAPI.getAllOrderStatus()
-                    //     .then(stepsRes => {
-                    //         if (!stepsRes.status) {
-                    //             setSteps(stepsRes)
-                    //         } else {
-                    //             console.log(stepsRes)
-                    //         }
-                    //     }).then(() => {
-                    //     })
-                    //     .catch(err => console.log(err))
                 } else {
                     console.log(res)
                 }
             })
             .catch(err => console.log(err))
     }, [id])
-    console.log(steps[0])
+
+    useEffect(() => {
+        addressAPI.getCityData()
+            .then(res => {
+                if (!res.status) {
+                    setCityData(res)
+                } else {
+                    console.log(res)
+                }
+            })
+            .catch(err => console.log(err))
+    }, [])
     return (
         <Helmet
             title={"Quản Lý Đơn Hàng"}
@@ -553,7 +657,7 @@ const AdmOrderInfo = () => {
                     )
                     :
                     (
-                        info?.statusDetail[info?.statusDetail.length - 1].statusOrder?.id === 5 ?
+                        info?.statusDetail[info?.statusDetail.length - 1].statusOrder?.id === 5?
                             (
                                 <AdmWatingOrder id={info?.id} info={info} onClickUpdateStatus={onClickUpdateWatingOrder} />
                             )
@@ -591,41 +695,257 @@ const AdmOrderInfo = () => {
                                             <Button style={{ borderRadius: "20px" }} onClick={() => { setIsModalStatus(true) }}>Chi Tiết</Button>
                                         </StepsActionsContainer>
                                     </StepsContainer>
+                                    <PaymentContainer>
+                                        <PaymentWrapper>
+                                            <PaymentTitle>thông tin thanh toán</PaymentTitle>
+                                            <PaymentType>
+                                                <Typography.Title level={5}>Phương thức thanh toán</Typography.Title>
+                                                <Typography.Text level={5}>{info?.orderPayment[0]?.payment?.title}</Typography.Text>
+                                            </PaymentType>
+                                            <PaymentDetail>
+                                                <Typography.Title level={5}>Tài khoản thụ hưởng</Typography.Title>
+                                                <Typography.Text level={5}>Techcombank - 19037049661012</Typography.Text>
+                                            </PaymentDetail>
+                                            <PaymentDetail>
+                                                <Typography.Title level={5}>Người thụ hưởng</Typography.Title>
+                                                <Typography.Text level={5}>Nguyễn Ích Quang</Typography.Text>
+                                            </PaymentDetail>
+                                            <PaymentDetail>
+                                                <Typography.Title level={5}>Nội dung</Typography.Title>
+                                                <Typography.Text level={5}>{info?.orderPayment[0]?.decriptions}</Typography.Text>
+                                            </PaymentDetail>
+                                            <PaymentDetail>
+                                                <Typography.Title level={5}>Thanh toán</Typography.Title>
+                                                <Typography.Text level={5}>{formatter.format(info?.total_price)}</Typography.Text>
+                                            </PaymentDetail>
+                                        </PaymentWrapper>
+                                    </PaymentContainer>
                                     <CustomerInfoContainer>
                                         <Title>thông tin đơn hàng</Title>
                                         <CustomerInfoActions>
-                                            <Button
-                                                style={{ borderRadius: "20px" }}
-                                                disabled={info?.statusDetail[info?.statusDetail.length - 1]?.statusOrder?.id >= 2}
-                                                onClick={() => { onClickUpdateCustomerInfo() }}
-                                            >
-                                                Cập Nhật
-                                            </Button>
+                                            {
+                                                !isModalCustomerInfo ?
+                                                    (<Button
+                                                        style={{ borderRadius: "20px" }}
+                                                        disabled={info?.statusDetail[info?.statusDetail.length - 1]?.statusOrder?.id >= 2}
+                                                        onClick={() => { onClickUpdateCustomerInfo() }}
+                                                    >
+                                                        Cập Nhật
+                                                    </Button>)
+                                                    :
+                                                    (
+                                                        <>
+                                                            <Button
+                                                                style={{ borderRadius: "20px" }}
+                                                                disabled={info?.statusDetail[info?.statusDetail.length - 1]?.statusOrder?.id >= 2}
+                                                                onClick={() => { setIsModalCustomerInfo(false) }}
+                                                            >
+                                                                Hủy
+                                                            </Button>
+                                                        </>
+
+
+                                                    )
+                                            }
+
                                         </CustomerInfoActions>
-                                        <CustomerInfo>
-                                            <CustomerInfoItem>
-                                                <CustomerInfoItemLabel>trạng thái</CustomerInfoItemLabel>
-                                                <CustomerInfoItemContent>
-                                                    <StatusBadge status={info?.statusDetail[info?.statusDetail.length - 1]?.statusOrder} />
-                                                </CustomerInfoItemContent>
-                                            </CustomerInfoItem>
-                                            <CustomerInfoItem>
-                                                <CustomerInfoItemLabel>mã đơn hàng</CustomerInfoItemLabel>
-                                                <CustomerInfoItemContent>{info?.id}</CustomerInfoItemContent>
-                                            </CustomerInfoItem>
-                                            <CustomerInfoItem>
-                                                <CustomerInfoItemLabel>họ và tên</CustomerInfoItemLabel>
-                                                <CustomerInfoItemContent>{info?.customers?.name}</CustomerInfoItemContent>
-                                            </CustomerInfoItem>
-                                            <CustomerInfoItem>
-                                                <CustomerInfoItemLabel>số điện thoại</CustomerInfoItemLabel>
-                                                <CustomerInfoItemContent>{info?.customers?.phone}</CustomerInfoItemContent>
-                                            </CustomerInfoItem>
-                                            <CustomerInfoItem>
-                                                <CustomerInfoItemLabel>địa chỉ</CustomerInfoItemLabel>
-                                                <CustomerInfoItemContent>{`${info?.customers?.address?.location} - ${info?.customers?.address?.ward?.title} - ${info?.customers?.address?.district?.title} - ${info?.customers?.address?.city?.title}`}</CustomerInfoItemContent>
-                                            </CustomerInfoItem>
-                                        </CustomerInfo>
+                                        {
+                                            !isModalCustomerInfo ?
+                                                (
+                                                    <CustomerInfo>
+                                                        <CustomerInfoItem>
+                                                            <CustomerInfoItemLabel>trạng thái</CustomerInfoItemLabel>
+                                                            <CustomerInfoItemContent>
+                                                                <StatusBadge status={info?.statusDetail[info?.statusDetail.length - 1]?.statusOrder} />
+                                                            </CustomerInfoItemContent>
+                                                        </CustomerInfoItem>
+                                                        <CustomerInfoItem>
+                                                            <CustomerInfoItemLabel>mã đơn hàng</CustomerInfoItemLabel>
+                                                            <CustomerInfoItemContent>{info?.id}</CustomerInfoItemContent>
+                                                        </CustomerInfoItem>
+                                                        <CustomerInfoItem>
+                                                            <CustomerInfoItemLabel>họ và tên</CustomerInfoItemLabel>
+                                                            <CustomerInfoItemContent>{info?.customers?.name}</CustomerInfoItemContent>
+                                                        </CustomerInfoItem>
+                                                        <CustomerInfoItem>
+                                                            <CustomerInfoItemLabel>số điện thoại</CustomerInfoItemLabel>
+                                                            <CustomerInfoItemContent>{info?.customers?.phone}</CustomerInfoItemContent>
+                                                        </CustomerInfoItem>
+                                                        <CustomerInfoItem>
+                                                            <CustomerInfoItemLabel>địa chỉ</CustomerInfoItemLabel>
+                                                            <CustomerInfoItemContent>{`${info?.customers?.address?.location} - ${info?.customers?.address?.ward?.title} - ${info?.customers?.address?.district?.title} - ${info?.customers?.address?.city?.title}`}</CustomerInfoItemContent>
+                                                        </CustomerInfoItem>
+                                                    </CustomerInfo>)
+                                                :
+                                                (
+                                                    <div
+                                                        style={{ width: '100%' }}
+                                                    >
+                                                        <Form
+                                                            form={updateForm}
+                                                            initialValues={editingCustomerInfo}
+                                                            layout='vertical'
+                                                            wrapperCol={{ span: 24 }}
+                                                            labelCol={{ span: 24 }}
+                                                            onFinish={handleUpdateCustomerInfo}
+                                                        >
+                                                            <div
+                                                                style={{ display: 'flex', alignItems: 'center' }}
+                                                            >
+                                                                <div
+                                                                    style={{ width: '50%', padding: '5px' }}
+                                                                >
+                                                                    <Form.Item
+                                                                        label="Họ và tên"
+                                                                        name="name"
+                                                                        hasFeedback
+                                                                        rules={[
+                                                                            { required: true, message: "Vui lòng nhập họ và tên!" },
+                                                                            { whitespace: true, message: "Vui lòng không nhập khoảng trắng!" }
+                                                                        ]}
+                                                                    >
+                                                                        <Input />
+                                                                    </Form.Item>
+                                                                </div>
+                                                                <div
+                                                                    style={{ width: '50%', padding: '5px' }}
+                                                                >
+                                                                    <Form.Item
+                                                                        label="Số điện thoại"
+                                                                        name="phone"
+                                                                        hasFeedback
+                                                                        rules={[
+                                                                            { required: true, message: "Vui lòng nhập số điện thoại!" },
+                                                                            // { whitespace: true, message: "Vui lòng không nhập khoảng trắng!" }
+                                                                        ]}
+                                                                    >
+                                                                        <Input />
+                                                                    </Form.Item>
+                                                                </div>
+                                                            </div>
+                                                            <Form.Item style={{ marginBottom: "0px" }}>
+                                                                <Typography>Địa chỉ giao hàng</Typography>
+                                                                <FormLocationGroup>
+                                                                    <Form.Item
+                                                                        label="Tỉnh/Thành Phố"
+                                                                        name="cityId"
+                                                                        hasFeedback
+                                                                        rules={[
+                                                                            { required: true, message: 'Vui lòng chọn Tỉnh/Thành Phố!' }
+                                                                        ]}
+                                                                        style={{ width: '30%' }}
+                                                                    >
+                                                                        <Select
+                                                                            onChange={onChangeCity}
+                                                                            placeholder="Tỉnh/Thành"
+                                                                        >
+                                                                            {
+                                                                                cityData.map((item, index) => (
+                                                                                    <Select.Option key={item.id} value={item.id}>{item.title}</Select.Option>
+                                                                                ))
+                                                                            }
+                                                                        </Select>
+                                                                    </Form.Item>
+                                                                    <Form.Item
+                                                                        label="Quận/Huyện"
+                                                                        name="districtId"
+                                                                        hasFeedback
+                                                                        rules={[
+                                                                            { required: true, message: 'Vui lòng chọn Quận/Huyện' }
+                                                                        ]}
+                                                                        style={{ width: '30%' }}
+                                                                    >
+                                                                        <Select placeholder="Quận/Huyện" disabled={!selectedData.cityId}
+                                                                            onChange={onChangeDistrict}
+                                                                        >
+                                                                            {
+                                                                                selectedData.cityId ?
+                                                                                    (
+                                                                                        <>
+                                                                                            {
+                                                                                                (cityData.find(item => item.id === selectedData.cityId)).districts.map(item => (
+                                                                                                    <Select.Option value={item.id} key={item.id} >{item.title}</Select.Option>
+                                                                                                ))
+                                                                                            }
+                                                                                        </>
+                                                                                    )
+                                                                                    :
+                                                                                    (
+                                                                                        <>
+
+                                                                                        </>
+                                                                                    )
+                                                                            }
+                                                                        </Select>
+                                                                    </Form.Item>
+                                                                    <Form.Item
+                                                                        label="Phường/Xã"
+                                                                        name="wardId"
+                                                                        hasFeedback
+                                                                        rules={[
+                                                                            { required: true, message: 'Vui lòng chọn Phường/Xã!' }
+                                                                        ]}
+                                                                        style={{ width: '30%' }}
+                                                                    >
+                                                                        <Select disabled={!selectedData.districtId}
+                                                                            onChange={onChangeWard}
+                                                                            placeholder="Phường/Xã"
+                                                                        >
+                                                                            {
+                                                                                selectedData.cityId && selectedData.districtId ?
+                                                                                    (
+                                                                                        <>
+                                                                                            {
+                                                                                                ((cityData.find(item => item.id === selectedData.cityId)).districts.find(item => item.id === selectedData.districtId))?.wards.map(item => (
+                                                                                                    <Select.Option value={item.id} key={item.id} >{item.title}</Select.Option>
+                                                                                                ))
+                                                                                            }
+                                                                                        </>
+                                                                                    )
+                                                                                    :
+                                                                                    (
+                                                                                        <>
+
+                                                                                        </>
+                                                                                    )
+                                                                            }
+                                                                        </Select>
+                                                                    </Form.Item>
+                                                                </FormLocationGroup>
+                                                            </Form.Item>
+                                                            <Form.Item
+                                                                label="Địa chỉ"
+                                                                name="location"
+                                                                hasFeedback
+                                                                rules={[
+                                                                    { required: true, message: 'Vui lòng nhập địa chỉ nhận hàng!' },
+                                                                    { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' }
+                                                                ]}
+                                                            >
+                                                                <Input />
+                                                            </Form.Item>
+                                                            <Form.Item
+                                                                label="Ghi Chú"
+                                                                name="note"
+                                                            >
+                                                                <Input.TextArea />
+                                                            </Form.Item>
+                                                            <Form.Item>
+
+
+                                                                <Button
+                                                                    style={{ borderRadius: "20px" }}
+                                                                    type={'primary'}
+                                                                    htmlType="submit"
+                                                                >
+                                                                    Lưu
+                                                                </Button>
+                                                            </Form.Item>
+                                                        </Form>
+                                                    </div>
+                                                )
+                                        }
+
                                     </CustomerInfoContainer>
                                     <CartContainer>
                                         <CartDetails>
@@ -652,16 +972,6 @@ const AdmOrderInfo = () => {
                                                                             <b>Mã sản phẩm:</b> {item.product.id}
                                                                         </ProductId>
                                                                         <b>Size:</b> {item.size}
-                                                                        {/* <ProductSize>
-                                                                        <br />
-                                                                        <Select value={item.selectedSize.size.title} disabled>
-                                                                            {
-                                                                                item.size.map((size) => (
-                                                                                    <Select.Option value={size.id} key={size.id}>{size.size.title}</Select.Option>
-                                                                                ))
-                                                                            }
-                                                                        </Select>
-                                                                    </ProductSize> */}
                                                                     </Details>
                                                                 </ProductDetail>
                                                                 <PriceDetail>
@@ -706,16 +1016,6 @@ const AdmOrderInfo = () => {
                                 >
                                     <Typography.Title level={5}>Ghi Chú</Typography.Title>
                                     <Input.TextArea value={updateSttDesc} onChange={(e) => { setUpdateSttDesc(e.target.value) }} placeholder="Ghi chú" />
-                                </Modal>
-
-                                <Modal
-                                    open={isModalCustomerInfo}
-                                    centered
-                                    okText="Xác Nhận"
-                                    cancelText="Hủy Bỏ"
-                                    onCancel={() => onCloseModalCustomerInfo()}
-                                >
-
                                 </Modal>
                             </Container >
 

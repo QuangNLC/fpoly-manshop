@@ -16,7 +16,7 @@ import CustomerInfoForm from '../../components/CustomerInfoForm'
 import addressAPI from '../../api/addressAPI'
 import feeAPI from '../../api/feeAPI'
 import axios from 'axios'
-import momoPayment from '../../assets/imgs/momo-payment.jpg'
+import momoPayment from '../../assets/imgs/techpayment.jpg'
 import moment from 'moment'
 
 const Container = styled.div`
@@ -232,6 +232,17 @@ const getDiscountPercent = (product) => {
     return result
 }
 
+function makeid(length) {
+    var result = '';
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+}
+
+
 const Webcart = () => {
     const cartReducer = useSelector(state => state.cartReducer);
     const [data, setData] = useState([]);
@@ -250,6 +261,7 @@ const Webcart = () => {
     })
     const [useDefaultCustomer, setUseDefaultCustomer] = useState(false)
     const [payment, setPayment] = useState(1)
+    const [randomText, setRandomText] = useState(`${moment(new Date()).format('DDMMYYYY')}${makeid(10)}`)
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [isPayModal, setIsPayModal] = useState(true);
@@ -329,7 +341,7 @@ const Webcart = () => {
                             }
                         }, 0),
                         methodpayment: value?.payment === 1 ? "Khi nhận đơn" : 'Chuyển khoản',
-                        descriptions_payment: value?.payment === 1 ? "Thanh toán khi nhận hàng." : `${moment(new Date()).format('DDMMYYYY')}-${auth?.info?.username}`,
+                        descriptions_payment: value?.payment === 1 ? "Thanh toán khi nhận hàng." : randomText,
                         cityId: value.cityId,
                         districtId: value.districtId,
                         wardId: value.wardId,
@@ -499,6 +511,7 @@ const Webcart = () => {
     const onChangePayment = (e) => {
         if (e) {
             setPayment(e)
+            setRandomText(`${moment(new Date()).format('DDMMYYYY')}${makeid(10)}`)
         }
     }
 
@@ -546,14 +559,6 @@ const Webcart = () => {
                             location: auth.info.address.location
                         }
                     )
-                    console.log({
-                        name: auth.info.fullname,
-                        phone: auth.info.phone,
-                        cityId: auth.info.address.city.id,
-                        districtId: auth.info.address.district.id,
-                        wardId: auth.info.address.ward.id,
-                        location: auth.info.address.location
-                    })
                     setSelectedData({
                         cityId: auth.info.address.city.id,
                         districtId: auth.info.address.district.id,
@@ -877,7 +882,7 @@ const Webcart = () => {
                                             onChange={onChangePayment}
                                         >
                                             <Select.Option value={1}>Thanh toán khi nhận hàng!</Select.Option>
-                                            <Select.Option value={2}>Thanh toán momo!</Select.Option>
+                                            <Select.Option value={2}>Thanh toán qua ngân hàng!</Select.Option>
                                         </Select>
                                     </Form.Item>
                                     {
@@ -888,6 +893,22 @@ const Webcart = () => {
                                                     <MoMoImg src={momoPayment} />
                                                 </MoMoLeft>
                                                 <MoMoRight>
+                                                    <MoMoItem>
+                                                        <MoMoItemLabel>
+                                                            <Typography.Title level={5}>Ngân Hàng</Typography.Title>
+                                                        </MoMoItemLabel>
+                                                        <MoMoItemContent>
+                                                            <Typography.Text level={5}>Techcombank - Chi nhánh Đan Phượng</Typography.Text>
+                                                        </MoMoItemContent>
+                                                    </MoMoItem>
+                                                    <MoMoItem>
+                                                        <MoMoItemLabel>
+                                                            <Typography.Title level={5}>Số Tài Khoản</Typography.Title>
+                                                        </MoMoItemLabel>
+                                                        <MoMoItemContent>
+                                                            <Typography.Text level={5}>19037049661012</Typography.Text>
+                                                        </MoMoItemContent>
+                                                    </MoMoItem>
                                                     <MoMoItem>
                                                         <MoMoItemLabel>
                                                             <Typography.Title level={5}>Người Thụ Hưởng</Typography.Title>
@@ -918,7 +939,7 @@ const Webcart = () => {
                                                             </MoMoItemLabel>
                                                             <MoMoItemContent>
                                                                 <Typography.Text level={5}>
-                                                                    {`${moment(new Date()).format('DDMMYYYY')}-${auth?.info?.username}`}
+                                                                    {randomText}
                                                                 </Typography.Text>
                                                             </MoMoItemContent>
                                                         </MoMoItem>
