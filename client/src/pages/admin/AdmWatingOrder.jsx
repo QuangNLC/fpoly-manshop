@@ -238,6 +238,29 @@ const findStepIndex = (arr, sttId) => {
     return result;
 }
 
+const checkPr = (product) => {
+    let result = false;
+    let now = new Date();
+    if (product && product.promotions) {
+        if (product.promotions.length > 0) {
+            if (product.promotions[0]?.promition.isactive) {
+                result = (now >= new Date(product.promotions[0]?.promition.date_after) && now <= new Date(product.promotions[0]?.promition.date_befor))
+            }
+        }
+    }
+
+    return result
+}
+
+const getDiscountPercent = (product) => {
+    console.log(product)
+    let result = 0
+    if (product) {
+        result = product.promotions[0]?.promition?.by_persent
+    }
+    return result
+}
+
 
 const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
     const [steps, setSteps] = useState([
@@ -344,7 +367,21 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
                 }))
             ],
             statusOrders: ({ id: 5, title: 'Đang Chờ' }),
-            total_price: cart.length > 0 ? (cart.reduce((total, curr) => (total + curr?.quantity * curr?.item?.export_price), 0)) : 0
+            reduce_price: cart.reduce((total, item) => {
+                if (checkPr(item.item)) {
+                    return total + item.quantity * (item.item?.export_price * (getDiscountPercent(item.item) / 100))
+                } else {
+                    return total
+                }
+            }, 0),
+            total_price: cart.reduce((total, item) => {
+                if (checkPr(item.item)) {
+                    return total + item.quantity * (item.item?.export_price - item.item?.export_price * (getDiscountPercent(item.item) / 100))
+                } else {
+
+                    return total + item.quantity * item.item?.export_price
+                }
+            }, 0)
         }
         ordersAPI.updateWatingOrder(payload)
             .then(res => {
@@ -386,7 +423,21 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
                         }))
                     ],
                     statusOrders: ({ id: 5, title: 'Đang Chờ' }),
-                    total_price: cart.length > 0 ? (cart.reduce((total, curr) => (total + curr?.quantity * curr?.item?.export_price), 0)) : 0
+                    reduce_price: cart.reduce((total, item) => {
+                        if (checkPr(item.item)) {
+                            return total + item.quantity * (item.item?.export_price * (getDiscountPercent(item.item) / 100))
+                        } else {
+                            return total
+                        }
+                    }, 0),
+                    total_price: cart.reduce((total, item) => {
+                        if (checkPr(item.item)) {
+                            return total + item.quantity * (item.item?.export_price - item.item?.export_price * (getDiscountPercent(item.item) / 100))
+                        } else {
+
+                            return total + item.quantity * item.item?.export_price
+                        }
+                    }, 0)
                 }
                 ordersAPI.updateWatingOrder(payload)
                     .then(res => {
@@ -441,7 +492,21 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
                 }))
             ],
             statusOrders: ({ id: 5, title: 'Đang Chờ' }),
-            total_price: cart.length > 0 ? (cart.reduce((total, curr) => (total + curr?.quantity * curr?.item?.export_price), 0)) : 0
+            reduce_price: cart.reduce((total, item) => {
+                if (checkPr(item.item)) {
+                    return total + item.quantity * (item.item?.export_price * (getDiscountPercent(item.item) / 100))
+                } else {
+                    return total
+                }
+            }, 0),
+            total_price: cart.reduce((total, item) => {
+                if (checkPr(item.item)) {
+                    return total + item.quantity * (item.item?.export_price - item.item?.export_price * (getDiscountPercent(item.item) / 100))
+                } else {
+
+                    return total + item.quantity * item.item?.export_price
+                }
+            }, 0)
         }
         ordersAPI.updateWatingOrder(payload)
             .then(res => {
@@ -623,7 +688,22 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
                                 total_price: item?.item?.export_price * item?.quantity
                             }))
                         ],
-                        statusOrders: ({ id: 5, title: 'Đang Chờ' })
+                        statusOrders: ({ id: 5, title: 'Đang Chờ' }),
+                        reduce_price: cart.reduce((total, item) => {
+                            if (checkPr(item.item)) {
+                                return total + item.quantity * (item.item?.export_price * (getDiscountPercent(item.item) / 100))
+                            } else {
+                                return total
+                            }
+                        }, 0),
+                        total_price: cart.reduce((total, item) => {
+                            if (checkPr(item.item)) {
+                                return total + item.quantity * (item.item?.export_price - item.item?.export_price * (getDiscountPercent(item.item) / 100))
+                            } else {
+    
+                                return total + item.quantity * item.item?.export_price
+                            }
+                        }, 0)
                     }
                     ordersAPI.updateWatingOrder(payload)
                         .then(res => {
@@ -743,7 +823,22 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
                     districtId: value.districtId,
                     wardId: value.wardId,
                     location: value.location,
-                    DescriptionOder: updateSttDesc ? updateSttDesc : ''
+                    DescriptionOder: updateSttDesc ? updateSttDesc : '',
+                    reduce_price: cart.reduce((total, item) => {
+                        if (checkPr(item.item)) {
+                            return total + item.quantity * (item.item?.export_price * (getDiscountPercent(item.item) / 100))
+                        } else {
+                            return total
+                        }
+                    }, 0),
+                    total_price: cart.reduce((total, item) => {
+                        if (checkPr(item.item)) {
+                            return total + item.quantity * (item.item?.export_price - item.item?.export_price * (getDiscountPercent(item.item) / 100))
+                        } else {
+
+                            return total + item.quantity * item.item?.export_price
+                        }
+                    }, 0)
                 }
                 console.log(payload)
                 setUpdateSttDesc('')
@@ -909,7 +1004,28 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
                                                                                 </QuantityButton>
 
                                                                             </ProductAmountContainer>
-                                                                            <ProductPrice>{formatter.format(item.quantity * item.item.export_price)}</ProductPrice>
+                                                                            <ProductPrice>{
+                                                                                checkPr(item.item) ?
+                                                                                    (
+                                                                                        <div style={{}}>
+                                                                                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                                                                <span style={{ fontSize: '20px', textDecoration: 'line-through', marginRight: 5 }}>
+                                                                                                    {formatter.format(item.quantity * item.item.export_price)}
+                                                                                                </span>
+                                                                                                <Tag color='magenta' >- {getDiscountPercent(item.item)} %</Tag>
+                                                                                            </div>
+                                                                                            <div>
+                                                                                                {formatter.format(item.quantity * (item.item.export_price - item.item.export_price * (getDiscountPercent(item.item) / 100)))}
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    )
+                                                                                    :
+                                                                                    (
+                                                                                        <>
+                                                                                            {formatter.format(item.quantity * item.item.export_price)}
+                                                                                        </>
+                                                                                    )
+                                                                            }</ProductPrice>
                                                                         </PriceDetail>
                                                                         <ProductAction>
                                                                             <Button danger onClick={() => { handleDeleteCartItem(index) }}>Xoá Sản Phẩm</Button>
@@ -959,11 +1075,34 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
                                                                 </PayItem>
                                                                 <PayItem>
                                                                     <PayItemTitle>
+                                                                        Giảm Giá
+                                                                    </PayItemTitle>
+                                                                    <PayItemContent>
+                                                                        <b>
+                                                                            {formatter.format(cart.reduce((total, item) => {
+                                                                                if (checkPr(item.item)) {
+                                                                                    return total + item.quantity * (item.item?.export_price * (getDiscountPercent(item.item) / 100))
+                                                                                } else {
+                                                                                    return total
+                                                                                }
+                                                                            }, 0))}
+                                                                        </b>
+                                                                    </PayItemContent>
+                                                                </PayItem>
+                                                                <PayItem>
+                                                                    <PayItemTitle>
                                                                         Thanh Toán
                                                                     </PayItemTitle>
                                                                     <PayItemContent>
                                                                         <b>
-                                                                            {formatter.format(cart.reduce((total, curr) => total + curr?.item?.export_price * curr.quantity, 0))}
+                                                                            {formatter.format(cart.reduce((total, item) => {
+                                                                                if (checkPr(item.item)) {
+                                                                                    return total + item.quantity * (item.item?.export_price - item.item?.export_price * (getDiscountPercent(item.item) / 100))
+                                                                                } else {
+
+                                                                                    return total + item.quantity * item.item?.export_price
+                                                                                }
+                                                                            }, 0))}
                                                                         </b>
                                                                     </PayItemContent>
                                                                 </PayItem>
