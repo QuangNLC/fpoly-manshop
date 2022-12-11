@@ -377,10 +377,10 @@ const AdmOrderInfo = () => {
     const [info, setInfo] = useState(undefined)
     const [IsLoadingInfo, setIsLoadingInfo] = useState(true)
     const [isModalStatus, setIsModalStatus] = useState(false)
-    const [isModalDesc, setIsModalDesc] = useState(false)
     const [isModalCustomerInfo, setIsModalCustomerInfo] = useState(false)
     const [editingCustomerInfo, setEditingCustomerInfo] = useState(undefined)
     const [editingOrderItem, setEdittingOrderItem] = useState(undefined)
+    const [isModalDesc, setIsModalDesc] = useState(false)
     const [updateSttDesc, setUpdateSttDesc] = useState('')
     const auth = useSelector(state => state.auth.auth);
     const [steps, setSteps] = useState([
@@ -574,7 +574,7 @@ const AdmOrderInfo = () => {
             onOk: () => {
                 let payload = {
                     ...info,
-                    customers:{
+                    customers: {
                         "phone": value?.phone,
                         "name": value?.name,
                         "note": value.note ? value.note : '',
@@ -583,7 +583,7 @@ const AdmOrderInfo = () => {
                         }
                     }
                     ,
-                    statusOrder : "Chờ Xác Nhận",
+                    statusOrder: "Chờ Xác Nhận",
                     isFinish: false,
                     cityId: value.cityId,
                     districtId: value.districtId,
@@ -592,17 +592,17 @@ const AdmOrderInfo = () => {
                 }
                 console.log(payload)
                 ordersAPI.updateOrderStatus(payload)
-                .then(res => {
-                    if(!res.status){
-                        openNotificationWithIcon('success','Thông Báo','Cập nhật đơn hàng thành công!')
-                        setInfo(res)
-                        setIsModalCustomerInfo(false)
-                        console.log(res)
-                    }else{
-                        console.log(res)
-                    }
-                })
-                .catch(err => console.log(err))
+                    .then(res => {
+                        if (!res.status) {
+                            openNotificationWithIcon('success', 'Thông Báo', 'Cập nhật đơn hàng thành công!')
+                            setInfo(res)
+                            setIsModalCustomerInfo(false)
+                            console.log(res)
+                        } else {
+                            console.log(res)
+                        }
+                    })
+                    .catch(err => console.log(err))
             }
         })
     }

@@ -215,9 +215,9 @@ const AdmTopbar = () => {
         <Container>
             <Wrapper>
                 <Left>
-                    {/* <Link to="/">
-                        <Logo>Mnc 4 Man</Logo>
-                    </Link> */}
+                    <Link to="/admin">
+                        <Logo>ManShop</Logo>
+                    </Link>
                 </Left>
                 <Right>
                     <IconContainer>

@@ -256,8 +256,24 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
     const [form] = useForm()
     const [isDefaultCustomer, setIsDefaultCustomer] = useState(true)
     const [cartLoading, setCartLoading] = useState(false)
+    const [isModalDesc, setIsModalDesc] = useState(false)
+    const [updateSttDesc, setUpdateSttDesc] = useState('')
+    const submitButtonRef = useRef()
+    const customerInfoRef = useRef()
+    const onCloseModalDesc = () => {
+        setUpdateSttDesc('');
+        setIsModalDesc(false)
+    }
 
+    const handleUpdateStatus = () => {
+        console.log('update stt', updateSttDesc)
+        submitButtonRef.current.click();
+        setIsModalDesc(false);
+    }
 
+    const onClickOpenModalDescStt = () => {
+        setIsModalDesc(true)
+    }
 
     const onChangeCity = (value) => {
         form.setFieldValue('districtId', null)
@@ -294,7 +310,6 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
 
     const onChangeCustomerDefault = (checked) => {
         setIsDefaultCustomer(!checked)
-
     }
 
     const handleChangeCartItemSize = (item, newSizeId, currIndex) => {
@@ -762,9 +777,11 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
                     cityId: value.cityId,
                     districtId: value.districtId,
                     wardId: value.wardId,
-                    location: value.location
+                    location: value.location,
+                    DescriptionOder: updateSttDesc ? updateSttDesc : ''
                 }
                 console.log(payload)
+                setUpdateSttDesc('')
                 onClickUpdateStatus(payload)
             }
         })
@@ -783,6 +800,8 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
         clearFilters();
         setSearchText('');
     };
+
+
 
     useEffect(() => {
         if (addingProduct) {
@@ -804,9 +823,6 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
                     )
                 })
             ])
-        }
-        if (info?.customers) {
-            console.log(info)
         }
     }, [info])
 
@@ -988,7 +1004,8 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
                                                                 </PayItem>
                                                                 <PayItem>
                                                                     <PayItemContent>
-                                                                        <Button type='primary' htmlType='submit'>Xác Nhận Đơn Hàng</Button>
+                                                                        <Button htmlType='submit' visible={false} ref={submitButtonRef}></Button>
+                                                                        <Button type='primary' onClick={() => onClickOpenModalDescStt()}>Xác Nhận Đơn Hàng</Button>
                                                                     </PayItemContent>
                                                                 </PayItem>
                                                             </PayContainer>
@@ -1003,6 +1020,7 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
                                                                             { required: true, message: "Vui lòng nhập họ và tên!" },
                                                                             { whitespace: true, message: "Vui lòng không nhập khoảng trắng!" }
                                                                         ]}
+                                                                        ref={customerInfoRef}
                                                                     >
                                                                         <Input />
                                                                     </Form.Item>
@@ -1193,6 +1211,17 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
                             <InputNumber style={{ width: '100%' }} />
                         </Form.Item>
                     </Form>
+                </Modal>
+                <Modal
+                    open={isModalDesc}
+                    centered
+                    okText="Xác Nhận"
+                    cancelText="Huỷ Bỏ"
+                    onCancel={onCloseModalDesc}
+                    onOk={handleUpdateStatus}
+                >
+                    <Typography.Title level={5}>Ghi Chú</Typography.Title>
+                    <Input.TextArea value={updateSttDesc} onChange={(e) => { setUpdateSttDesc(e.target.value) }} placeholder="Ghi chú" />
                 </Modal>
             </Container>
         </Helmet >

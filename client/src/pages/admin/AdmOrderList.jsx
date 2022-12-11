@@ -281,6 +281,7 @@ const AdmOrderList = () => {
             title: 'Ngày Tạo',
             dataIndex: 'createdDate',
             key: 'createdDate',
+            render: (text) => (<>{moment(text).format('DD/MM/YYYY, H:mm:ss')}</>),
             sorter: (a, b) => (a.createdDate > b.createdDate ? -1 : 1)
         },
         {
@@ -439,7 +440,7 @@ const AdmOrderList = () => {
                             {
                                 key: res.id,
                                 id: res.id,
-                                createdDate: moment(res.createdDate).format('DD/MM/YYYY, H:mm:ss'),
+                                createdDate: res?.createdDate,
                                 username: res?.customers?.name,
                                 totalQuantity: 0,
                                 status: { id: 5, title: 'Đang Chờ' }
@@ -545,7 +546,7 @@ const AdmOrderList = () => {
                                 setData([...res.map((item, index) => ({
                                     ...item,
                                     key: item.id,
-                                    createdDate: moment(item.createdDate).format('DD/MM/YYYY, H:mm:ss'),
+                                    createdDate: item.createdDate,
                                     username: item.customers.name,
                                     totalQuantity: item?.orderDetail.reduce((total, curr) => (total + curr.quantity), 0),
                                     status: item?.statusDetail[item?.statusDetail.length - 1].statusOrder

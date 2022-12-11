@@ -247,6 +247,47 @@ const WebProductList = (props) => {
         <Wrapper>
           <FiltersContainer>
             <FilterItem>
+              {
+                searchText &&
+                <>
+                  <Typography.Title level={5}>Tìm Kiếm: </Typography.Title>
+                  <Typography.Text>{searchText}</Typography.Text>
+                </>
+              }
+            </FilterItem>
+
+            <FilterItem>
+              <FilterItemTitle>
+                <Typography.Title level={3}>Thể loại</Typography.Title>
+              </FilterItemTitle>
+              <Select style={{ width: '100%' }} defaultValue={0} value={payloadOption.categoryId} onChange={onChangeCategoryOption}>
+                <Select.Option value={0}>
+                  Tất Cả
+                </Select.Option>
+                {
+                  categories.map(item => (
+                    <Select.Option value={item.id} key={item.id}>
+                      {item.title}
+                    </Select.Option>
+                  ))
+                }
+              </Select>
+            </FilterItem>
+            <FilterItem>
+              <FilterItemTitle>
+                <Typography.Title level={3}>Sắp xếp theo</Typography.Title>
+              </FilterItemTitle>
+              <Select style={{ width: '100%' }} defaultValue={1} value={payloadOption.sortId} onChange={onChangeSortOption}>
+                {
+                  sortOption.map(item => (
+                    <Select.Option value={item.id} key={item.id}>
+                      {item.title}
+                    </Select.Option>
+                  ))
+                }
+              </Select>
+            </FilterItem>
+            <FilterItem>
               <FilterItemTitle>
                 <Typography.Title level={3}>Size</Typography.Title>
                 <SizesWrapper>
@@ -265,13 +306,11 @@ const WebProductList = (props) => {
               </FilterItemTitle>
             </FilterItem>
             <FilterItem>
-              {
-                searchText &&
-                <>
-                  <Typography.Title level={5}>Tìm Kiếm: </Typography.Title>
-                  <Typography.Text>{searchText}</Typography.Text>
-                </>
-              }
+              <Button
+                onClick={onClickClearPayloadOption}
+              >
+                Xóa Bộ Lọc
+              </Button>
             </FilterItem>
           </FiltersContainer>
           <ProductListContainer>
@@ -285,7 +324,7 @@ const WebProductList = (props) => {
                 :
                 (
                   <ProductListWrrapper>
-                    <ProductFilterContainer>
+                    {/* <ProductFilterContainer>
                       <ProductFilerItem>
                         <Select style={{ width: 120 }} defaultValue={0} value={payloadOption.categoryId} onChange={onChangeCategoryOption}>
                           <Select.Option value={0}>
@@ -318,7 +357,7 @@ const WebProductList = (props) => {
                           Xóa Bộ Lọc
                         </Button>
                       </ProductFilerItem>
-                    </ProductFilterContainer>
+                    </ProductFilterContainer> */}
                     {
                       showProducts.length > 0 ?
                         (
