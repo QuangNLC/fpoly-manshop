@@ -2,14 +2,14 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import CartIcon from "./Products/CartIcon";
-import LocalMallOutlinedIcon from '@mui/icons-material/LocalMallOutlined';
+import LocalMallOutlinedIcon from "@mui/icons-material/LocalMallOutlined";
 import { useDispatch, useSelector } from "react-redux";
-import Badge from '@mui/material/Badge';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
+import Badge from "@mui/material/Badge";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 import { logOutAction } from "../redux/actions/AuthReducerAction";
 import { clearCartAction } from "../redux/actions/CartReducerAtion";
-import { Input } from 'antd';
+import { Input } from "antd";
 
 const Container = styled.div`
   position: fixed;
@@ -27,7 +27,7 @@ const TopWrapper = styled.div`
   align-items: center;
   justify-content: space-between;
   height: 80px;
-`
+`;
 const NavigationWrapper = styled.div`
   width: 100%;
   background-color: black;
@@ -36,14 +36,15 @@ const NavigationWrapper = styled.div`
   align-items: center;
   justity-content: flex-start;
   padding-left: 120px;
-`
+`;
 
 const Left = styled.div``;
 const Logo = styled.h1`
   text-transform: uppercase;
-  font-size: 30px;
-  letter-spacing:4px;
-  color: bladck;
+  margin-left: 50px;
+  font-size: 35px;
+  letter-spacing: 5px;
+  color: black;
   width: 240px;
   text-align: center;
   text-shadow: 0 1px 0 hsl(174, 5%, 80%), 0 2px 0 hsl(174, 5%, 75%),
@@ -69,14 +70,14 @@ const NavItem = styled.li`
   padding: 5px 10px;
   font-size: 18px;
   font-weight: ${(props) => (props.active ? "400" : "300")};
-  color: ${(props) => (props.active ? "red" : "white")};
+  color: ${(props) => (props.active ? "#cbba9c" : "white")};
   text-transform: uppercase;
-  border-radius: 5px;
   margin: 0px 5px;
   transition: all 0.25s ease-in;
   cursor: pointer;
   &:hover {
-    color: red;
+    color: "#cbba9c";
+    border: 1px soild red;
   }
 `;
 
@@ -88,7 +89,7 @@ const SearchContainer = styled.div`
   width: 100%;
   display: flex;
   align-items: center;
-`
+`;
 const CartContainer = styled.div`
   width: 80px;
   height: 80px;
@@ -110,7 +111,7 @@ const AvatarImg = styled.img`
   border-radius: 50%;
   object-fit: cover;
   cursor: pointer;
-`
+`;
 
 const Button = styled.div`
   background-color: white;
@@ -135,7 +136,7 @@ const AvatarContainer = ({ auth }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const dispatch = useDispatch();
   const open = Boolean(anchorEl);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -144,61 +145,59 @@ const AvatarContainer = ({ auth }) => {
   };
 
   const handleClickLogOut = () => {
-    navigate("/")
-    dispatch(clearCartAction())
-    dispatch(logOutAction())
+    navigate("/");
+    dispatch(clearCartAction());
+    dispatch(logOutAction());
   };
-
-
 
   return (
     <>
-      <AvatarImg src={`http://localhost:8080/api/file/images/${auth.info.photo}`} onClick={handleClick} />
+      <AvatarImg
+        src={`http://localhost:8080/api/file/images/${auth.info.photo}`}
+        onClick={handleClick}
+      />
       <Menu
         id="basic-menu"
         open={open}
         onClose={handleClose}
-        anchorEl={anchorEl}
-
-      >
+        anchorEl={anchorEl}>
         <MenuItem onClick={handleClose}>
-          <Link to="my-account" style={{ color: 'black' }}>
+          <Link to="my-account" style={{ color: "black" }}>
             Tài Khoản Của Tôi
           </Link>
         </MenuItem>
         <MenuItem onClick={handleClose}>
-          <Link to="my-orders" style={{ color: 'black' }}>
+          <Link to="my-orders" style={{ color: "black" }}>
             Đơn Hàng Của Tôi
           </Link>
         </MenuItem>
-        {auth?.info?.roles?.rolename && (auth?.info?.roles?.rolename === "ROLE_ADMIN") &&
-          <MenuItem onClick={handleClose}>
-            <Link to="/admin" style={{ color: 'black' }}>
-              Trang Quản Trị
-            </Link>
-          </MenuItem>
-        }
-        <MenuItem onClick={handleClickLogOut}>
-          Đăng Xuất
-        </MenuItem>
+        {auth?.info?.roles?.rolename &&
+          auth?.info?.roles?.rolename === "ROLE_ADMIN" && (
+            <MenuItem onClick={handleClose}>
+              <Link to="/admin" style={{ color: "black" }}>
+                Trang Quản Trị
+              </Link>
+            </MenuItem>
+          )}
+        <MenuItem onClick={handleClickLogOut}>Đăng Xuất</MenuItem>
       </Menu>
     </>
-  )
-}
+  );
+};
 
 const Header = () => {
-  const isAuth = useSelector(state => state.auth.isAuth);
-  const auth = useSelector(state => state.auth.auth);
-  const cartReducer = useSelector(state => state.cartReducer);
+  const isAuth = useSelector((state) => state.auth.isAuth);
+  const auth = useSelector((state) => state.auth.auth);
+  const cartReducer = useSelector((state) => state.cartReducer);
   const location = useLocation();
   const navigate = useNavigate();
   const onSearch = (value) => {
-    if(value.trim() !== ''){
-      navigate(`/products/search=${value}`)
-    }else{
-      navigate('/products')
+    if (value.trim() !== "") {
+      navigate(`/products/search=${value}`);
+    } else {
+      navigate("/products");
     }
-  }
+  };
   return (
     <Container>
       <TopWrapper>
@@ -221,26 +220,20 @@ const Header = () => {
             <CartContainer>
               {/* <CartIcon style={{ fontSize: "20px" }} /> */}
               <Link to="/cart">
-                {
-                  cartReducer.cart ? (
-                    <Badge badgeContent={cartReducer.cart.length} color="primary">
-                      <LocalMallOutlinedIcon color="action" />
-                    </Badge>
-                  )
-                    :
-                    (
-                      <Badge badgeContent={0} color="primary">
-                        <LocalMallOutlinedIcon color="action" />
-                      </Badge>
-                    )
-                }
-
+                {cartReducer.cart ? (
+                  <Badge badgeContent={cartReducer.cart.length} color="primary">
+                    <LocalMallOutlinedIcon color="action" />
+                  </Badge>
+                ) : (
+                  <Badge badgeContent={0} color="primary">
+                    <LocalMallOutlinedIcon color="action" />
+                  </Badge>
+                )}
               </Link>
             </CartContainer>
             <AuthContainer>
               {isAuth ? (
-                <AvatarContainer auth={{ ...auth }}>
-                </AvatarContainer>
+                <AvatarContainer auth={{ ...auth }}></AvatarContainer>
               ) : (
                 <>
                   <Link to="/login">
@@ -261,17 +254,21 @@ const Header = () => {
             <NavItem active={location.pathname === "/"}>Trang chủ</NavItem>
           </Link>
           <Link to="/products" className="">
-            <NavItem active={location.pathname === "/products"}>Sản phẩm</NavItem>
+            <NavItem active={location.pathname === "/products"}>
+              Sản phẩm
+            </NavItem>
           </Link>
           <Link to="/about-us" className="">
-            <NavItem active={location.pathname === "/about-us"}>Giới thiệu</NavItem>
+            <NavItem active={location.pathname === "/about-us"}>
+              Giới thiệu
+            </NavItem>
           </Link>
           <Link to="/contact" className="">
             <NavItem active={location.pathname === "/contact"}>Liên hệ</NavItem>
           </Link>
         </Navigation>
       </NavigationWrapper>
-    </Container >
+    </Container>
   );
 };
 
