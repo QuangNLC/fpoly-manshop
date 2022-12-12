@@ -35,7 +35,6 @@ const NavigationWrapper = styled.div`
   display: flex;
   align-items: center;
   justity-content: flex-start;
-  padding-left: 120px;
 `;
 
 const Left = styled.div``;
@@ -63,7 +62,7 @@ const Right = styled.div`
 const Navigation = styled.ul`
   width: 100%;
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   margin-bottom: 0;
 `;
 const NavItem = styled.li`
@@ -72,12 +71,11 @@ const NavItem = styled.li`
   font-weight: ${(props) => (props.active ? "400" : "300")};
   color: ${(props) => (props.active ? "#cbba9c" : "white")};
   text-transform: uppercase;
-  margin: 0px 5px;
+  margin: 5px 5px;
   transition: all 0.25s ease-in;
   cursor: pointer;
   &:hover {
-    color: "#cbba9c";
-    border: 1px soild red;
+    color: #cbba9c;
   }
 `;
 
@@ -213,7 +211,7 @@ const Header = () => {
                 placeholder="Tìm kiếm"
                 onSearch={onSearch}
                 style={{
-                  width: 200,
+                  width: 300,
                 }}
               />
             </SearchContainer>
