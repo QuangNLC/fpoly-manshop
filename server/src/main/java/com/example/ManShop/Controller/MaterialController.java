@@ -60,8 +60,13 @@ public class  MaterialController {
         if(!materialJPA.existsById(materialId)){
             return ResponseEntity.notFound().build();
         }
-        materialJPA.deleteById(materialId);
-        return ResponseEntity.status(200).body("Delete Successfully!");
+        try{
+            materialJPA.deleteById(materialId);
+            return ResponseEntity.status(200).body("Delete Successfully!");
+        }catch (Exception e){
+            return ResponseEntity.status(500).body("Xóa thất bại. Thử lại sau!");
+        }
+
     }
 
     //combo

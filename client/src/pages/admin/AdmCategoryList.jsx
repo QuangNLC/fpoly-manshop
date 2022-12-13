@@ -9,7 +9,7 @@ import usersAPI from '../../api/usersAPI';
 import defaultAvt from '../../assets/imgs/default-avt.jpg';
 import DialogHOC from '../../hoc/DialogHOC';
 import productAPI from '../../api/productsAPI';
-import { Button, Form, Input, notification } from 'antd';
+import { Button, Form, Input, notification, Modal } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 
 const Container = styled.div`
@@ -297,6 +297,17 @@ const AdmCategoryList = () => {
                         openNotificationWithIcon('warning', 'Thông báo!', 'Xóa thể loại thành công!');
                         haldeCloseForm();
                     } else {
+                        if (res.status === 500) {
+                            Modal.error({
+                                title: 'Hộp Thoại Thông Báo',
+                                content: res.data
+                            })
+                        } else {
+                            Modal.error({
+                                title: 'Hộp Thoại Thông Báo',
+                                content: 'Xóa không thành công!'
+                            })
+                        }
                         console.log(res)
                     }
                 })
