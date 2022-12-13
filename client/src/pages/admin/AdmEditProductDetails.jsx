@@ -299,7 +299,7 @@ const AdmEditProductDetails = () => {
 
     return (
         <Helmet
-            title="Create Product"
+            title="Quản lý sản phẩm"
         >
             <Container>
                 <Wrapper>
