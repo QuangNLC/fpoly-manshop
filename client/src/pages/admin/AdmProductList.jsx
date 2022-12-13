@@ -18,6 +18,9 @@ const Wrapper = styled.div`
     display:  flex;
     justify-content:center;
     flex-direction: column;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
 `
 const Top = styled.div`
     width:  100%;
@@ -140,8 +143,17 @@ const AdmProductList = () => {
         {
             field: 'index', headerName: 'STT', width: 50,
         },
-        { field: 'create_date', headerName: 'Ngày Tạo', width: 140 },
         { field: 'name', headerName: 'Tên Sản Phẩm', width: 300, },
+        { field: 'category', headerName: 'Thể Loại', width: 120, 
+            renderCell: (params) => (
+                <>{params.row.category.title}</>
+            )
+        },
+        { field: 'material', headerName: 'Chất Liệu', width: 120, 
+            renderCell: (params) => (
+                <>{params.row.material.title}</>
+            )
+        },
         {
             field: 'stock', headerName: 'Số Lượng', width: 100,
             renderCell: (params) => (
@@ -149,7 +161,7 @@ const AdmProductList = () => {
             )
         },
         { field: 'export_price', headerName: "Giá Bán", width: 130 },
-        { field: 'import_price', headerName: "Giá Nhập", width: 130 },
+        { field: 'create_date', headerName: 'Ngày Tạo', width: 140 },
         {
             field: 'action', headerName: "Thao Tác", width: 200,
             renderCell: (params) => (
@@ -222,7 +234,7 @@ const AdmProductList = () => {
                                     columns={columns}
                                     pageSize={10}
                                     rowsPerPageOptions={[5]}
-                                    style={{ height: "70vh" }}
+                                    style={{ height: "calc( 100% - 50px)" }}
                                 />
                             </>
                     }

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import productAPI from '../../api/productsAPI'
-import { Button, Form, Input, InputNumber, Select, Upload, notification } from 'antd';
+import { Button, Form, Input, InputNumber, Select, Upload, notification, Empty } from 'antd';
 import Helmet from '../../components/Helmet'
 import fileAPI from '../../api/fileAPI';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
@@ -134,12 +134,12 @@ const AdmNewProduct = () => {
 
     const [uploadList, setUploadList] = useState([])
     const [categories, setCategories] = useState([])
+    const [materials, setMaterials] = useState([])
     const [sizes, setSizes] = useState([])
     const [reqImg, setReqImg] = useState([])
     const [product, setProduct] = useState({
         "name": "",
-        "export_price": 200000.0,
-        "import_price": 300000.0,
+        "export_price": 0,
         "title": "ao dep mau dep mac vao sieu dep",
         "cover": "acc",
         "category": {
@@ -175,6 +175,7 @@ const AdmNewProduct = () => {
     }
 
     const onFinish = (value) => {
+
         let images = []
         let reqValue = {
             ...value,
@@ -182,8 +183,10 @@ const AdmNewProduct = () => {
                 id: value.category
             },
             images: product.images,
-            productsizes: product.productsizes
+            productsizes: product.productsizes,
         }
+
+        console.log(reqValue)
         if (uploadList.length > 0) {
             const formData = new FormData();
             uploadList.forEach(item => {
@@ -231,6 +234,23 @@ const AdmNewProduct = () => {
 
     }
 
+
+    const handleDeleteProductSize = (value) => {
+        let index = product.productsizes.findIndex(item => item.size.id === value.id)
+        if (index !== -1) {
+            let newSizes = product.productsizes
+            newSizes.splice(index, 1)
+            setProduct({
+                ...product,
+                productsizes: [...newSizes]
+            })
+            sizeForm.setFieldsValue({
+                id: 0,
+                quantity: ""
+            })
+        }
+    }
+
     const handleCreateProductSize = (value) => {
         let index = product.productsizes.findIndex(item => item.size.id === value.id)
         if (index === -1) {
@@ -243,7 +263,7 @@ const AdmNewProduct = () => {
                 quantity: ""
             })
         } else {
-            openNotificationWithIcon('warning', 'Tạo mới thất bại !', 'Sản phẩm chưa có size!')
+            openNotificationWithIcon('warning', 'Tạo mới thất bại !', `Sản phẩm đã có size này!`)
             sizeForm.setFieldsValue({
                 id: 0,
                 quantity: ""
@@ -261,7 +281,14 @@ const AdmNewProduct = () => {
             }
         })
             .catch(err => console.log(err))
-
+        productAPI.getAllMaterial().then(res => {
+            if (!res.status) {
+                setMaterials(res)
+            } else {
+                console.log(res)
+            }
+        })
+            .catch(err => console.log(err))
         sizesAPI.getAll()
             .then(res => {
                 if (!res.status) {
@@ -273,6 +300,7 @@ const AdmNewProduct = () => {
                 }
             })
             .catch(err => console.log(err))
+
     }, [])
 
     return (
@@ -318,33 +346,16 @@ const AdmNewProduct = () => {
                                         <Input />
                                     </Form.Item>
                                     <Form.Item
-                                        label="Giá nhập"
-                                        name="import_price"
-                                        rules={[
-                                            { required: true },
-                                            ({ getFieldValue }) => ({
-                                                validator(_, value) {
-                                                    if (value && value > 0) {
-                                                        return Promise.resolve()
-                                                    }
-                                                    return Promise.reject('Giá nhập không thể nhỏ hơn 0!')
-                                                }
-                                            })
-                                        ]}
-                                    >
-                                        <InputNumber style={{ width: '100%' }} />
-                                    </Form.Item>
-                                    <Form.Item
                                         label="Giá bán"
                                         name="export_price"
                                         rules={[
                                             { required: true, message: "Giá bán không được để trống !" },
                                             ({ getFieldValue }) => ({
                                                 validator(_, value) {
-                                                    if (value && value >= getFieldValue('import_price')) {
+                                                    if (value && value > 0) {
                                                         return Promise.resolve()
                                                     }
-                                                    return Promise.reject('Giá bán không thể thấp hơn giá nhập!')
+                                                    return Promise.reject('Giá không thể nhỏ hơn 0!')
                                                 }
                                             })
                                         ]}
@@ -369,6 +380,30 @@ const AdmNewProduct = () => {
                                             <Select.Option value={0} disabled>Vui lòng chọn thể loại</Select.Option>
                                             {
                                                 categories && categories.length > 0 && categories.map((item, index) => (
+                                                    <Select.Option key={item.id} value={item.id}>{item.title}</Select.Option>
+                                                ))
+                                            }
+
+                                        </Select>
+                                    </Form.Item>
+                                    <Form.Item
+                                        label="Chất liệu sản phẩm"
+                                        name="material"
+                                        rules={[
+                                            ((getFieldValue) => ({
+                                                validator(_, value) {
+                                                    if (value && value > 0) {
+                                                        return Promise.resolve()
+                                                    }
+                                                    return Promise.reject('Vui lòng chọn thể loại!')
+                                                }
+                                            }))
+                                        ]}
+                                    >
+                                        <Select defaultValue={0}>
+                                            <Select.Option value={0} disabled>Vui lòng chọn chất liệu</Select.Option>
+                                            {
+                                                materials && materials.length > 0 && materials.map((item, index) => (
                                                     <Select.Option key={item.id} value={item.id}>{item.title}</Select.Option>
                                                 ))
                                             }
@@ -400,8 +435,8 @@ const AdmNewProduct = () => {
                                     </Form.Item>
                                     <Form.Item
                                     >
-                                        <Button htmlType='submit' style={{ borderRadius: "20px" }}> Tạo mới </Button>
-                                        <Button style={{ borderRadius: "20px", marginLeft: "20px" }}> Làm mới </Button>
+                                        <Button htmlType='submit' style={{ borderRadius: "20px" }}> Tạo Sản Phẩm </Button>
+                                        {/* <Button style={{ borderRadius: "20px", marginLeft: "20px" }}> Làm mới </Button> */}
                                     </Form.Item>
                                 </Form>
                             </ProductDetailsFormContainer>
@@ -467,7 +502,6 @@ const AdmNewProduct = () => {
                                         </Form.Item>
                                         <Form.Item>
                                             <Button style={{ borderRadius: "20px" }} htmlType='submit'>Thêm size</Button>
-                                            <Button style={{ borderRadius: "20px", marginLeft: "20px" }}>Close</Button>
                                         </Form.Item>
                                     </Form>
                                 </SizeFormContainer>
@@ -492,7 +526,7 @@ const AdmNewProduct = () => {
                                                             <DialogHOC
                                                                 title="Thông báo!"
                                                                 content="Bạn có muốn xóa size không?"
-                                                                onYes={() => { console.log('delete size') }}
+                                                                onYes={() => { handleDeleteProductSize(item.size) }}
                                                             >
                                                                 <Button
                                                                     icon={<DeleteOutlineOutlinedIcon />}
@@ -500,11 +534,11 @@ const AdmNewProduct = () => {
                                                                 >
                                                                 </Button>
                                                             </DialogHOC>
-                                                            <Button
+                                                            {/* <Button
                                                                 icon={<CreateOutlinedIcon />}
                                                                 style={{ marginTop: 10, borderRadius: 10 }}
                                                             >
-                                                            </Button>
+                                                            </Button> */}
                                                         </SizeDetailsAction>
                                                     </SizeDetailsContainer>
                                                 ))
@@ -512,7 +546,8 @@ const AdmNewProduct = () => {
                                             :
                                             (
                                                 <>
-                                                    Size trống !
+                                                    <Empty description={'Size trống !'} />
+
                                                 </>
                                             )
                                     }

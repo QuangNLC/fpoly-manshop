@@ -30,10 +30,10 @@ public interface ProductJPA extends JpaRepository<Product,Integer> {
             @Param("minprice") Double minprice,
             @Param("maxprice") Double maxprice
     );
-    @Query("select DISTINCT p from Product p join   ProductSize pr on pr.product.id =p.id  join  Sizes s on s.id=pr.size.id where p.category.id =:idcate AND pr.quantity>0 AND s.id  in :idsize AND p.import_price between :minPrice and :maxPrice and p.name like %:name%")
+    @Query("select DISTINCT p from Product p join   ProductSize pr on pr.product.id =p.id  join  Sizes s on s.id=pr.size.id where p.category.id =:idcate AND pr.quantity>0 AND s.id  in :idsize AND p.export_price between :minPrice and :maxPrice and p.name like %:name%")
     List<Product> findByCategory_IdAndSizeList(int idcate, List<Integer> idsize,double minPrice, double maxPrice ,String name,Pageable pageable);
 
-    @Query("select DISTINCT p from Product p join   ProductSize pr on pr.product.id =p.id  join  Sizes s on s.id=pr.size.id where  pr.quantity>0 AND s.id  in :idsize AND p.import_price between :minPrice and :maxPrice and p.name like %:name%")
+    @Query("select DISTINCT p from Product p join   ProductSize pr on pr.product.id =p.id  join  Sizes s on s.id=pr.size.id where  pr.quantity>0 AND s.id  in :idsize AND p.export_price between :minPrice and :maxPrice and p.name like %:name%")
     List<Product> findByListSize(List<Integer> idsize,double minPrice, double maxPrice,String name,Pageable pageable);
 
 //    @Query("select DISTINCT p from Product p join   ProductSize pr on pr.product.id =p.id  join  Sizes s on s.id=pr.size.id where  pr.quantity>0 AND s.id  in :idsize AND p.import_price between :minPrice and :maxPrice ORDER BY p.import_price asc ")

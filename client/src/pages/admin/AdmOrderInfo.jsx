@@ -309,8 +309,24 @@ const UpdateStatusButton = ({ item, onClickUpdate }) => {
         {
             id: 4,
             title: 'Hoàn Tất'
+        },
+        {
+            id: 6,
+            title: 'Hủy Đơn'
         }
     ])
+
+    const handleUpdateItemStatusToCancel = () => {
+        let payload = {
+            id: item.id,
+            DescriptionOder: '',
+            statusOrder: 'Hủy Đơn',
+            isFinish: true,
+            orderDetail: item.orderDetail
+        }
+        onClickUpdate(payload)
+    }
+    
     const handleUpdateItemStatus = () => {
 
         if (item && nextStatus) {
@@ -356,14 +372,24 @@ const UpdateStatusButton = ({ item, onClickUpdate }) => {
         }
     }, [item])
     return (
-        item?.statusOrders?.id === 4 ?
+        item?.statusDetail[item?.statusDetail.length - 1].statusOrder?.id === 4 ?
             (
                 <></>
             )
             :
-            (
-                <Button style={{ borderRadius: "20px" }} onClick={handleUpdateItemStatus} type='primary'>{btnText}</Button >
-            )
+            (   
+                
+                item?.statusDetail[item?.statusDetail.length - 1].statusOrder?.id === 6 ? 
+                (
+                    <></>
+                )
+                :
+                (<>
+                    <Button style={{ borderRadius: "20px" }} onClick={handleUpdateItemStatusToCancel} type='primary' danger>Hủy Đơn</Button>
+                    <Button style={{ borderRadius: "20px" }} onClick={handleUpdateItemStatus} type='primary'>{btnText}</Button >
+                </>
+            ))
+                
     )
 }
 
@@ -933,7 +959,8 @@ const AdmOrderInfo = () => {
         { index: 2, id: 1, title: "Chờ Xác Nhận" },
         { index: 3, id: 2, title: "Đã Xác Nhận" },
         { index: 4, id: 3, title: "Đang Giao" },
-        { index: 5, id: 4, title: "Hoàn Tất" }
+        { index: 5, id: 4, title: "Hoàn Tất" },
+        { index: 6, id: 6, title: 'Hủy Đơn' }
     ])
     const navigate = useNavigate();
     const [updateForm] = useForm()

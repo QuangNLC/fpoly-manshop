@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import productAPI from '../../api/productsAPI'
-import { Button, Form, Input, InputNumber, Select, Upload, notification } from 'antd';
+import { Button, Form, Input, InputNumber, Select, Upload, notification, Empty } from 'antd';
 import Helmet from '../../components/Helmet'
 import fileAPI from '../../api/fileAPI';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
@@ -16,9 +16,6 @@ const Container = styled.div`
     padding: 20px;
 `
 const Wrapper = styled.div`
-    padding: 20px;
-    -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
-    box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
 `
 const Details = styled.div`
     width: 100%;
@@ -26,7 +23,7 @@ const Details = styled.div`
 `
 const Left = styled.div`
     width: calc(2/3 *  100%);
-    padding: 20px;
+    padding: 20px
     
 `
 const ProductDetailsFormContainer = styled.div`
@@ -34,6 +31,8 @@ const ProductDetailsFormContainer = styled.div`
     box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
     width:  100%;
     padding: 20px;
+    background-color: white;
+    border-radius: 10px;
 `
 const Right = styled.div`
     width: calc(1/3 *  100%);
@@ -45,6 +44,8 @@ const ProductSizesDetails = styled.div`
     padding:  20px;
     -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
     box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+    background-color: white;
+    border-radius: 10px;
 `
 
 const ProductSizesTitleContainer = styled.div`
@@ -136,12 +137,12 @@ const AdmEditProductDetails = () => {
     const { productId } = useParams()
     const [uploadList, setUploadList] = useState([])
     const [categories, setCategories] = useState([])
+    const [materials, setMaterials] = useState([])
     const [sizes, setSizes] = useState([])
     const [reqImg, setReqImg] = useState([])
     const [product, setProduct] = useState({
         "name": "",
         "export_price": 200000.0,
-        "import_price": 300000.0,
         "title": "ao dep mau dep mac vao sieu dep",
         "cover": "acc",
         "category": {
@@ -157,8 +158,16 @@ const AdmEditProductDetails = () => {
             }
         ]
     })
+    const [formInitValue, setFormInitValue] = useState({
+        name: '',
+        export_price: 0,
+        title: '',
+        category: 0,
+        material: 0
+    })
     const navigate = useNavigate();
-    const [detailsForm, sizeForm] = useForm();
+    const [sizeForm] = useForm();
+    const [detailsForm] = useForm();
 
     const handleUploadImage = () => {
         const formData = new FormData();
@@ -263,7 +272,14 @@ const AdmEditProductDetails = () => {
             }
         })
             .catch(err => console.log(err))
-
+        productAPI.getAllMaterial().then(res => {
+            if (!res.status) {
+                setMaterials(res)
+            } else {
+                console.log(res)
+            }
+        })
+            .catch(err => console.log(err))
         sizesAPI.getAll()
             .then(res => {
                 if (!res.status) {
@@ -282,6 +298,15 @@ const AdmEditProductDetails = () => {
             .then(res => {
                 if (!res.status) {
                     setProduct({ ...res });
+                    console.log(res)
+                    setFormInitValue({
+                        ...formInitValue,
+                        name: res?.name,
+                        export_price: res?.export_price,
+                        category: res?.category?.id,
+                        material: res?.material?.id,
+                        title: res?.title
+                    })
                 } else {
                     console.log(res)
                 }
@@ -290,12 +315,22 @@ const AdmEditProductDetails = () => {
     }, [productId])
 
     useEffect(() => {
-        detailsForm.resetFields();
+        if (product) {
+            setFormInitValue({
+                ...formInitValue,
+                name: product?.name,
+                export_price: product?.export_price,
+                category: product?.category?.id,
+                material: product?.material?.id,
+                title: product?.title
+            })
+            detailsForm.resetFields();
+        }
     }, [product])
 
     return (
         <Helmet
-            title="Create Product"
+            title="Quản lý sản phẩm"
         >
             <Container>
                 <Wrapper>
@@ -309,7 +344,7 @@ const AdmEditProductDetails = () => {
                                     labelCol={24}
                                     layout={'vertical'}
                                     onFinish={onFinish}
-                                    initialValues={product}
+                                    initialValues={formInitValue}
                                     form={detailsForm}
                                 >
                                     <Form.Item>
@@ -335,24 +370,7 @@ const AdmEditProductDetails = () => {
                                         ]}
                                         hasFeedback
                                     >
-                                        <Input />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Giá nhập"
-                                        name="import_price"
-                                        rules={[
-                                            { required: true },
-                                            ({ getFieldValue }) => ({
-                                                validator(_, value) {
-                                                    if (value && value > 0) {
-                                                        return Promise.resolve()
-                                                    }
-                                                    return Promise.reject('Giá nhập không được nhỏ hơn 0!')
-                                                }
-                                            })
-                                        ]}
-                                    >
-                                        <InputNumber style={{ width: '100%' }} />
+                                        <Input.TextArea />
                                     </Form.Item>
                                     <Form.Item
                                         label="Giá bán"
@@ -361,10 +379,10 @@ const AdmEditProductDetails = () => {
                                             { required: true },
                                             ({ getFieldValue }) => ({
                                                 validator(_, value) {
-                                                    if (value && value >= getFieldValue('import_price')) {
+                                                    if (value && value > 0) {
                                                         return Promise.resolve()
                                                     }
-                                                    return Promise.reject('Giá bán không được thấp hơn giá nhập!')
+                                                    return Promise.reject('Giá bán phải lớn hơn 0!')
                                                 }
                                             })
                                         ]}
@@ -395,6 +413,51 @@ const AdmEditProductDetails = () => {
                                             }
 
                                         </Select>
+                                    </Form.Item>
+                                    <Form.Item
+                                        label="Chất liệu sản phẩm"
+                                        name="material"
+                                        rules={[
+                                            ((getFieldValue) => ({
+                                                validator(_, value) {
+                                                    if (value && value > 0) {
+                                                        return Promise.resolve()
+                                                    }
+                                                    return Promise.reject('Vui lòng chọn thể loại!')
+                                                }
+                                            }))
+                                        ]}
+                                    >
+                                        <Select defaultValue={0}>
+                                            <Select.Option value={0} disabled>Vui lòng chọn chất liệu</Select.Option>
+                                            {
+                                                materials && materials.length > 0 && materials.map((item, index) => (
+                                                    <Select.Option key={item.id} value={item.id}>{item.title}</Select.Option>
+                                                ))
+                                            }
+
+                                        </Select>
+                                    </Form.Item>
+                                    <Form.Item
+                                        label="Ảnh"
+                                    >
+                                        {
+                                            product && product.images.length > 0 ?
+                                                (
+                                                    <>
+                                                        {product.images.map((item, index) =>{
+                                                            return(
+                                                                <img style={{width: '90px', height: '160px', marginRight: '10px', objectFit: 'contain', cursor:'pointer'} } src={`http://localhost:8080/api/file/images/${item.photo}`}/>
+                                                            )
+                                                        } )}
+                                                    </>
+
+                                                )
+                                                :
+                                                (
+                                                    <Empty />
+                                                )
+                                        }
                                     </Form.Item>
                                     <Form.Item>
                                         <Upload.Dragger
@@ -488,7 +551,6 @@ const AdmEditProductDetails = () => {
                                         </Form.Item>
                                         <Form.Item>
                                             <Button style={{ borderRadius: "20px" }} htmlType='submit'>Tạo size</Button>
-                                            <Button style={{ borderRadius: "20px", marginLeft: "20px" }}>Đóng</Button>
                                         </Form.Item>
                                     </Form>
                                 </SizeFormContainer>
@@ -533,7 +595,7 @@ const AdmEditProductDetails = () => {
                                             :
                                             (
                                                 <>
-                                                    Size trống!
+                                                    <Empty description={'Size trống!'} />
                                                 </>
                                             )
                                     }

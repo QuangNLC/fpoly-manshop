@@ -9,7 +9,7 @@ import usersAPI from '../../api/usersAPI';
 import defaultAvt from '../../assets/imgs/default-avt.jpg';
 import DialogHOC from '../../hoc/DialogHOC';
 import productAPI from '../../api/productsAPI';
-import { Button, Form, Input, notification } from 'antd';
+import { Button, Form, Input, Modal, notification } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 
 const Container = styled.div`
@@ -300,7 +300,17 @@ const AdmMaterialList = () => {
                         openNotificationWithIcon('warning', 'Thông báo!', 'Xóa chất liệu thành công!');
                         haldeCloseForm();
                     } else {
-                        console.log(res)
+                        if (res.status === 500) {
+                            Modal.error({
+                                title: 'Hộp Thoại Thông Báo',
+                                content: res.data
+                            })
+                        } else {
+                            Modal.error({
+                                title: 'Hộp Thoại Thông Báo',
+                                content: 'Xóa không thành công!'
+                            })
+                        }
                     }
                 })
                 .catch(err => console.log(err))

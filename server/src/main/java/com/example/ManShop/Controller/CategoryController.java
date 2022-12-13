@@ -7,6 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.websocket.server.PathParam;
+import java.sql.SQLException;
 import java.util.List;
 
 @RestController
@@ -57,10 +58,16 @@ public class CategoryController {
     }
     @DeleteMapping()
     public ResponseEntity<?> deleteCategory(@PathParam("categoryId") Integer categoryId){
+
         if(!categoryJPA.existsById(categoryId)){
             return ResponseEntity.notFound().build();
         }
-        categoryJPA.deleteById(categoryId);
-        return ResponseEntity.status(200).body("Delete Successfully!");
+        try{
+            categoryJPA.deleteById(categoryId);
+            return ResponseEntity.status(200).body("Delete Successfully!");
+        }catch (Exception e){
+            return  ResponseEntity.status(500).body("Xóa thất bại");
+        }
+
     }
 }
