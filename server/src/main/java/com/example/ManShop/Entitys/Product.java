@@ -22,8 +22,6 @@ public class Product {
     private int id;
     @Column(name = "export_price")
     private double export_price;
-    @Column(name = "import_price")
-    private  double import_price;
     @Column(name = "created_date")
     private Date create_date;
     @Column(name = "update_create")
@@ -49,8 +47,6 @@ public class Product {
    @JsonIgnore
     @OneToMany(mappedBy = "product")
     private List<OrderDetail> orderDetail;
-    @OneToMany(mappedBy = "product")
-    private List<ProductCombo> productCombos;
 
 
 }

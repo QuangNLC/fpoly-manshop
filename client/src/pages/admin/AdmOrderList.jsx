@@ -206,6 +206,10 @@ const StatusBadge = (props) => {
                     setColor('#abad6f')
                     break;
                 }
+                case(6):{
+                    setColor('red')
+                    break;
+                }
                 default: {
                     setColor('blue')
                     break;
@@ -255,6 +259,10 @@ const AdmOrderList = () => {
                 {
                     text: 'Hoàn Tất',
                     value: 4,
+                },
+                {
+                    text: 'Hủy Đơn',
+                    value: 6,
                 },
             ],
             onFilter: (value, record) => record.status.id === value,

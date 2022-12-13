@@ -17,7 +17,7 @@ public class productcreateDTO {
     private List<ProductSize> productsizes;
     private List<Images> images;
     //update them caht lieu va combo tu day
-    private String mterial;
+    private Integer material;
     private List<String> combo;
 
 

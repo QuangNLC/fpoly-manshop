@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import productAPI from '../../api/productsAPI'
-import { Button, Form, Input, InputNumber, Select, Upload, notification } from 'antd';
+import { Button, Form, Input, InputNumber, Select, Upload, notification, Empty } from 'antd';
 import Helmet from '../../components/Helmet'
 import fileAPI from '../../api/fileAPI';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
@@ -16,9 +16,6 @@ const Container = styled.div`
     padding: 20px;
 `
 const Wrapper = styled.div`
-    padding: 20px;
-    -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
-    box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
 `
 const Details = styled.div`
     width: 100%;
@@ -26,7 +23,7 @@ const Details = styled.div`
 `
 const Left = styled.div`
     width: calc(2/3 *  100%);
-    padding: 20px;
+    padding: 20px
     
 `
 const ProductDetailsFormContainer = styled.div`
@@ -34,6 +31,8 @@ const ProductDetailsFormContainer = styled.div`
     box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
     width:  100%;
     padding: 20px;
+    background-color: white;
+    border-radius: 10px;
 `
 const Right = styled.div`
     width: calc(1/3 *  100%);
@@ -45,6 +44,8 @@ const ProductSizesDetails = styled.div`
     padding:  20px;
     -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
     box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+    background-color: white;
+    border-radius: 10px;
 `
 
 const ProductSizesTitleContainer = styled.div`
@@ -158,7 +159,8 @@ const AdmEditProductDetails = () => {
         ]
     })
     const navigate = useNavigate();
-    const [detailsForm, sizeForm] = useForm();
+    const [sizeForm] = useForm();
+    const [detailsForm] = useForm();
 
     const handleUploadImage = () => {
         const formData = new FormData();
@@ -281,6 +283,8 @@ const AdmEditProductDetails = () => {
         productAPI.getProduct(productId)
             .then(res => {
                 if (!res.status) {
+                    detailsForm.setFieldValue('category', res.category.id)
+                    console.log(res.category.id)
                     setProduct({ ...res });
                 } else {
                     console.log(res)
@@ -336,23 +340,6 @@ const AdmEditProductDetails = () => {
                                         hasFeedback
                                     >
                                         <Input />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Giá nhập"
-                                        name="import_price"
-                                        rules={[
-                                            { required: true },
-                                            ({ getFieldValue }) => ({
-                                                validator(_, value) {
-                                                    if (value && value > 0) {
-                                                        return Promise.resolve()
-                                                    }
-                                                    return Promise.reject('Giá nhập không được nhỏ hơn 0!')
-                                                }
-                                            })
-                                        ]}
-                                    >
-                                        <InputNumber style={{ width: '100%' }} />
                                     </Form.Item>
                                     <Form.Item
                                         label="Giá bán"
@@ -488,7 +475,6 @@ const AdmEditProductDetails = () => {
                                         </Form.Item>
                                         <Form.Item>
                                             <Button style={{ borderRadius: "20px" }} htmlType='submit'>Tạo size</Button>
-                                            <Button style={{ borderRadius: "20px", marginLeft: "20px" }}>Đóng</Button>
                                         </Form.Item>
                                     </Form>
                                 </SizeFormContainer>
@@ -533,7 +519,7 @@ const AdmEditProductDetails = () => {
                                             :
                                             (
                                                 <>
-                                                    Size trống!
+                                                    <Empty description={'Size trống!'} />
                                                 </>
                                             )
                                     }

@@ -1012,7 +1012,7 @@ const AdmWatingOrder = ({ id, info, onClickUpdateStatus }) => {
                                                                                                 <span style={{ fontSize: '20px', textDecoration: 'line-through', marginRight: 5 }}>
                                                                                                     {formatter.format(item.quantity * item.item.export_price)}
                                                                                                 </span>
-                                                                                                <Tag color='magenta' >- {getDiscountPercent(item.item)} %</Tag>
+                                                                                                <Tag color='magenta' >- {getDiscountPercent(item.item   )} %</Tag>
                                                                                             </div>
                                                                                             <div>
                                                                                                 {formatter.format(item.quantity * (item.item.export_price - item.item.export_price * (getDiscountPercent(item.item) / 100)))}

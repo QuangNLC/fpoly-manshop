@@ -542,6 +542,7 @@ const Webcart = () => {
         auth && addressAPI.getCityData()
             .then(res => {
                 if (!res.status) {
+                    console.log(res)
                     setCityData(res)
                 } else {
                     console.log(res)

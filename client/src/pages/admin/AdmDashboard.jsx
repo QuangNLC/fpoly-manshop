@@ -193,24 +193,34 @@ const AdmDashboard = () => {
         reportAPI.getTodayOrderCount()
             .then(res => {
                 if (!res.status) {
+                    console.log(res)
                     setTotalOrderCountToday(res)
                     setTotalOrderCountLoading(false)
                 } else {
+                    if (res.status === 200) {
+                        setTotalOrderCountToday(res.data)
+                        setTotalOrderCountLoading(false)
+                    }
                     console.log(res)
                 }
             })
             .catch(err => console.log(err))
         reportAPI.getProductSellThisMonth()
-        .then(res => {
-            if (!res.status) {
-                setTotalSellThisMonth(res)
-                setTotalSellThisMonthLoading(false)
-            } else {
-                console.log(res)
+            .then(res => {
+                if (!res.status) {
+                    setTotalSellThisMonth(res)
+                    setTotalSellThisMonthLoading(false)
+                } else {
+                    if (res.status === 200) {
+                        console.log(res)
+                        setTotalSellThisMonth(0)
+                        setTotalSellThisMonthLoading(false)
+                    }
+                    console.log(res)
+                }
             }
-        }
-        )
-        .catch(err => console.log(err))
+            )
+            .catch(err => console.log(err))
     }, [])
 
 
