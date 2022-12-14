@@ -38,6 +38,14 @@ const productAPI = {
         const url = '/product/create';
         return axiosClient.post(url, payload);
     },
+    deleteProduct: (payload) => {
+        const url = '/product/delete/'+payload;
+        return axiosClient.delete(url);
+    },
+    updateProduct: (payload) => {
+        const url = 'product/update/'+payload.id;
+        return axiosClient.put(url, payload);
+    },
     getByFilter: (filter, page, limit) => {
         const url = `/product/byFilter?page=${page}&limit=${limit}`;
         return axiosClient.post(url, filter);

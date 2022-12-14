@@ -13,7 +13,7 @@ const cartReducer = (state = initialState, action) => {
             if (index == -1) {
                 state.cart.push(action.payload);
             } else {
-                (state.cart[index].quantity + action.payload.quantity) > action.payload.selectedSize.quantity ?  (state.cart[index].quantity = action.payload.selectedSize.quantity) : (state.cart[index].quantity += action.payload.quantity);
+                (state.cart[index].quantity + action.payload.quantity) > action.payload.selectedSize.quantity ? (state.cart[index].quantity = action.payload.selectedSize.quantity) : (state.cart[index].quantity += action.payload.quantity);
             };
             localStorage.setItem("CART", JSON.stringify(state));
             console.log(state)
@@ -54,15 +54,15 @@ const cartReducer = (state = initialState, action) => {
         }
         case (CHANGE_CART_ITEM_SIZE): {
             let index = checkItemByProductIdAndSizeId(state.cart, action.payload.product.id, action.payload.selectedSize.id);
-            const {currentIndex, ...cartItem} = action.payload
+            const { currentIndex, ...cartItem } = action.payload
             console.log(index, currentIndex)
             console.log(cartItem)
             if (index == -1) {
-                state.cart.splice(currentIndex,1)
+                state.cart.splice(currentIndex, 1)
                 state.cart = [cartItem, ...state.cart]
-            } else {
-                state.cart.splice(currentIndex,1);
-                (state.cart[index].quantity + 1) > action.payload.selectedSize.quantity ?  (state.cart[index].quantity = action.payload.selectedSize.quantity) : (state.cart[index].quantity += 1);
+            } else if(index !== currentIndex){
+                (state.cart[index].quantity + 1) > action.payload.selectedSize.quantity ? (state.cart[index].quantity = action.payload.selectedSize.quantity) : (state.cart[index].quantity += 1);
+                state.cart.splice(currentIndex, 1);
                 state.cart = [...state.cart]
             }
             localStorage.setItem("CART", JSON.stringify(state));
@@ -80,7 +80,7 @@ const checkItemByProductIdAndSizeId = (arr, id, sizeId) => {
     let result = -1;
 
     arr.forEach((item, index) => {
-        if(item.selectedSize.id === sizeId && item.product.id === id){
+        if (item.selectedSize.id === sizeId && item.product.id === id) {
             result = index;
         }
     });

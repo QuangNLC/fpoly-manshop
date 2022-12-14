@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import productsAPI from '../../api/productsAPI';
 import DialogHOC from '../../hoc/DialogHOC';
-import { Form, Input, Select } from 'antd';
+import { Form, Input, Modal, Select } from 'antd';
 import moment from 'moment'
 
 const Container = styled.div`
@@ -144,12 +144,14 @@ const AdmProductList = () => {
             field: 'index', headerName: 'STT', width: 50,
         },
         { field: 'name', headerName: 'Tên Sản Phẩm', width: 300, },
-        { field: 'category', headerName: 'Thể Loại', width: 120, 
+        {
+            field: 'category', headerName: 'Thể Loại', width: 120,
             renderCell: (params) => (
                 <>{params.row.category.title}</>
             )
         },
-        { field: 'material', headerName: 'Chất Liệu', width: 120, 
+        {
+            field: 'material', headerName: 'Chất Liệu', width: 120,
             renderCell: (params) => (
                 <>{params.row.material.title}</>
             )
@@ -169,7 +171,7 @@ const AdmProductList = () => {
                     <Link to={"/admin/edit-product/" + params.row.id}>
                         <EditButton style={{ borderRadius: "20px" }}>Sửa</EditButton>
                     </Link>
-                    <DialogHOC title="Thông báo!" content="Bạn có muốn xóa sản phẩm này ?" onYes={() => { hadleDeleteUser(params.row.username) }}>
+                    <DialogHOC title="Thông báo!" content="Bạn có muốn xóa sản phẩm này ?" onYes={() => { hadleDeleteUser(params.row.id) }}>
                         <DeleteButton style={{ borderRadius: "20px" }}>
                             <DeleteOutlineOutlinedIcon style={{ fontSize: "20px", marginTop: "5px" }} />
                         </DeleteButton>
@@ -179,17 +181,29 @@ const AdmProductList = () => {
         }
     ];
 
-    const hadleDeleteUser = (username) => {
-        // usersAPI.deleteUser(username)
-        //     .then(res => {
-        //         const index = findIndexInArrByUsername(data, username);
-        //         setData(data.filter((item, crrIndex) => {
-        //             if (crrIndex !== index) {
-        //                 return item;
-        //             }
-        //         }));
-        //     })
-        //     .catch(err => console.log(err));
+    const hadleDeleteUser = (id) => {
+        console.log(id)
+        productsAPI.deleteProduct(id)
+            .then((res) => {
+                if (!res.status) {
+                    let index = data.findIndex(item => item.id === id)
+                    if (index !== -1) {
+                        data.splice(index, 1);
+                        setData([...data])
+                        Modal.info({
+                            title: 'Hộp THoại Thông Báo',
+                            content: 'Xóa sản phẩm thành công'
+                        })
+                    }
+                }
+                else {
+                    Modal.error({
+                        title: 'Hộp Thoại Thông Báo',
+                        content: res?.data ? res?.data : 'Xoá thất bại.'
+                    })
+                }
+            })
+            .catch(err => console.log(err))
     };
 
     useEffect(() => {

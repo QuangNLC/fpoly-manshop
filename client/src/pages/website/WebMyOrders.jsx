@@ -1,4 +1,4 @@
-import { Button, Form, Input, Spin, Typography, Upload, Modal, Tabs, Badge, Card, Empty, Timeline } from 'antd'
+import { Button, Form, Input, Spin, Typography, Upload, Modal, Tabs, Badge, Card, Empty, Timeline, Table } from 'antd'
 import React, { useEffect, useState } from 'react'
 import Helmet from '../../components/Helmet'
 import styled from 'styled-components'
@@ -145,6 +145,7 @@ const OrderSummaryDetail = styled.div`
     width: 100%;
     display: flex;
     flex-direction: row-reverse;
+    justify-content: space-between;
     font-size: 20px;
     color: darkblue;
     font-weight: 500;
@@ -152,8 +153,8 @@ const OrderSummaryDetail = styled.div`
 `
 var moment = require('moment');
 
-const Order = ({ order }) => {
-    console.log(order?.statusDetail.length)
+const Order = ({ order, onClickViewStatusInfo }) => {
+    console.log(order)
     return (
         <OrderContainer>
             <Badge.Ribbon text={order?.statusDetail[order?.statusDetail.length - 1].statusOrder.title}>
@@ -179,11 +180,24 @@ const Order = ({ order }) => {
                         }
                     </OrderDetails>
                     <OrderSummary>
-                        <OrderSummaryTitle>
-                            Thanh Toán
-                        </OrderSummaryTitle>
                         <OrderSummaryDetail>
-                            {formatter.format(order.total_price)}
+                            <div>
+                                <div style={{display: 'flex', alignItems:'center',justifyContent: 'space-between', width: '250px'}}>
+                                    <div>Tổng Tiền</div>
+                                    <div>{formatter.format(order.total_price)}</div>
+                                </div>
+                                <div style={{display: 'flex', alignItems:'center',justifyContent: 'space-between', width: '250px'}}>
+                                    <div>Giảm Giá</div>
+                                    <div>{formatter.format(order.reduce_price)}</div>
+                                </div>
+                                <div style={{display: 'flex', alignItems:'center',justifyContent: 'space-between', width: '250px'}}>
+                                    <div>Thanh Toán</div>
+                                    <div>{formatter.format(order.total_price - order.reduce_price)}</div>
+                                </div>
+                            </div>
+                            <div>
+                                <Button onClick={() => onClickViewStatusInfo(order)}>Chi tiết trạng thái</Button>
+                            </div>
                         </OrderSummaryDetail>
                     </OrderSummary>
                 </Card>
@@ -206,10 +220,66 @@ const WebMyOrders = () => {
     const location = useLocation();
     const dispatch = useDispatch();
 
+    const [isModalStatus, setIsModalStatus] = useState(false)
+    const [modalStatusInfo, setModalStatusInfo] = useState(undefined)
+
+
+    const statusModalColumns = [
+        {
+            title: '',
+            render: (record) => {
+                return (
+                    <>
+                        {record?.statusOrder?.title}
+                    </>
+                )
+            }
+        },
+        {
+            title: 'Thời Gian',
+            render: (record) => {
+                return (
+                    <>
+                        {moment(record?.timeDate).format('DD/MM/YYYY, H:mm:ss')}
+                    </>
+                )
+            }
+        },
+        {
+            title: 'Người Xác Nhận',
+            render: (record) => {
+                return (
+                    <>
+                        {record?.usersUpdate?.username}
+                    </>
+                )
+            }
+        },
+        {
+            title: 'Ghi Chú',
+            render: (record) => {
+                console.log(record)
+                return (
+                    <>
+                        {record?.description}
+                    </>
+                )
+            }
+        }
+    ]
+
+    const onClickViewStatusInfo = (order) => {
+        if (order) {
+            setIsModalStatus(true);
+            setModalStatusInfo(order);
+        }
+    }
+
+
     const filterOrdersByStatus = (arr, id) => {
         let resArr = [];
         if (id > 0) {
-            resArr = arr.filter(item => item?.statusDetail[item?.statusDetail.length -1]?.statusOrder.id === id)
+            resArr = arr.filter(item => item?.statusDetail[item?.statusDetail.length - 1]?.statusOrder.id === id)
             return resArr;
         } else if (id === 0) {
             return arr;
@@ -264,7 +334,7 @@ const WebMyOrders = () => {
                             (
                                 filterOrdersByStatus(data, item.id).sort((a, b) => (a.createdDate > b.createdDate ? -1 : 1))
                                     .map(item => (
-                                        <Order key={item.id} order={item} />
+                                        <Order key={item.id} order={item} onClickViewStatusInfo={onClickViewStatusInfo} />
                                     ))
                             )
                             :
@@ -335,6 +405,16 @@ const WebMyOrders = () => {
                     }
 
                 </Wrapper>
+                <Modal
+                    open={isModalStatus}
+                    centered
+                    okText={false}
+                    cancelText={"Đóng"}
+                    onCancel={() => { setIsModalStatus(false); setModalStatusInfo(undefined) }}
+                    width={1000}
+                >
+                    <Table columns={statusModalColumns} dataSource={modalStatusInfo?.statusDetail} pagination={false} />
+                </Modal>
             </Container>
         </Helmet>
     )

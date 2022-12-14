@@ -7,12 +7,11 @@ import LocalPhoneTwoToneIcon from "@mui/icons-material/LocalPhoneTwoTone";
 import EmailTwoToneIcon from "@mui/icons-material/EmailTwoTone";
 const Container = styled.div`
   width: 100%;
-  background-color: black;
+  background-color: lightgray;
   color: white;
   display: flex;
   padding: 20px;
   position: relative;
-  margin-top: 100px;
 `;
 
 const FooterColumn = styled.div`
@@ -100,12 +99,12 @@ const Footer = () => {
           <SupportListItem>Chính sách bảo hành</SupportListItem>
         </SupportList>
       </FooterColumn>
-      <FooterColumn>
+      {/* <FooterColumn>
         <Title>thanh toán</Title>
         <ImageContainer style={{ marginTop: "30px" }}>
           <Image src={footerPayment} />
         </ImageContainer>
-      </FooterColumn>
+      </FooterColumn> */}
     </Container>
   );
 };
