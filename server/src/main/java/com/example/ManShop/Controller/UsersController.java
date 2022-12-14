@@ -1,10 +1,12 @@
 package com.example.ManShop.Controller;
 
 import com.example.ManShop.DTOS.ChangePasswordDTO;
+import com.example.ManShop.DTOS.ChangepassDTO;
 import com.example.ManShop.DTOS.RegisterRequest;
 import com.example.ManShop.Entitys.*;
 import com.example.ManShop.JPAs.UserJPA;
 import com.example.ManShop.Service.EmailService;
+import net.bytebuddy.utility.RandomString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -152,24 +154,44 @@ public class UsersController {
         if(!userJPA.existsByEmail(email)){
             return  ResponseEntity.status(404).body("không tim thấy tài khoản nào khớp với email trong hệ thống");
         }else{
-            int leftLimit = 97; // letter 'a'
-            int rightLimit = 122; // letter 'z'
-            int len = 10;
-            Random random = new Random();
-            String generatedString = random.ints(leftLimit, rightLimit + 1)
-                    .limit(len)
-                    .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                    .toString();
-            System.out.println(generatedString);
+//            int leftLimit = 97; // letter 'a'
+//            int rightLimit = 122; // letter 'z'
+//            int len = 10;
+//            Random random = new Random();
+//            String generatedString = random.ints(leftLimit, rightLimit + 1)
+//                    .limit(len)
+//                    .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+//                    .toString();
+//            System.out.println(generatedString);
             Users user =  userJPA.findByEmail(email);
-            user.setPassword(passwordEncoder.encode(generatedString));
-            userJPA.save(user);
+//            user.setPassword(passwordEncoder.encode(generatedString));
+//            userJPA.save(user);
             EmailDetails e= new EmailDetails();
             e.setRecipient(user.getEmail());
-            e.setMgsBody("Thông tin tài khoản của quý khách"+"\n"+"                    Tài khoản : "+
-                    user.getUsername() +"\n"+"                   Mật khẩu : "+generatedString);
+            e.setMgsBody("Thông tin tài khoản của quý khách"+"\n"
+                    +"                   Tài khoản : "+user.getUsername() +"\n"
+                    +"                   Ma kich hoat : " +user.getVerificode()+"\n"
+                    +" Truy câp vap trang : http://localhost:3000/forgot-password/");
             emailService.sendSimpleleMail(e);
-            return ResponseEntity.ok("đã gửi mail");
+            return ResponseEntity.ok("đã gửi mã kích hoạt vui lòng kiểm tra  mail");
         }
     }
+
+    @PutMapping("/changepass")
+    public ResponseEntity<?> forgotPassword(@RequestBody ChangepassDTO changepassDTO) {
+        if (!userJPA.existsByVerificode(changepassDTO.getCode())) {
+            return ResponseEntity.status(404).body("Khong tim thay !!!!");
+        }
+        Users u = userJPA.findByVerificode(changepassDTO.getCode());
+        u.setPassword(passwordEncoder.encode(changepassDTO.getNewpass()));
+        u.setVerificode(RandomString.make(64));
+        try {
+            userJPA.save(u);
+            return ResponseEntity.ok("thay doi mat khau thanh cong");
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+
+    }
+
 }

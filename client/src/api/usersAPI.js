@@ -30,6 +30,14 @@ const usersAPI = {
     changePassword: (username, payload) => {
         const url = '/users/change-password/' + username;
         return axiosClient.post(url, payload);
+    },
+    receivedVerifyCodde: (payload) => {
+        const url = 'users/forgot-password/'+payload;
+        return axiosClient.post(url);
+    },
+    changePasswordWithVerifyCode: (payload) => {
+        const url = 'users/changepass';
+        return axiosClient.put(url, payload);
     }
 };
 

@@ -46,6 +46,7 @@ import ProtectedAdminLayout from "./layout/ProtectedAdminLayout";
 import WebAdmLogin from "./pages/website/WebAdmLogin";
 import AdmMyAccount from "./pages/admin/AdmMyAccount";
 import AdmChangePassword from "./pages/admin/AdmChangePassword";
+import WebForgotPassword from "./pages/website/WebForgotPassword";
 function App() {
   const store = createStore(rootReducer);
 
@@ -73,6 +74,7 @@ function App() {
             <Route path="/register" element={<WebRegister />} />
             <Route path="product/:id" element={<ProductDetailPage />} />
             <Route path="login" element={<WebLogin />} />
+            <Route path="forgot-password" element={<WebForgotPassword />} />
             <Route path="adm-login" element={<WebAdmLogin />} />
             <Route path="message" element={<WebMessage />} />
             <Route path="*" element={<div>Trang khong ton tai</div>} />

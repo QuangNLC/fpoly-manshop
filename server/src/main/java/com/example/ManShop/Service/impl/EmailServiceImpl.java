@@ -139,7 +139,7 @@ public class EmailServiceImpl implements EmailService {
     @Scheduled(fixedRate = 10*1000, initialDelay = 5000)
     public void run(){
         int success =0, error = 0;
-        while (!queue1.isEmpty()){
+        while (!queue1.isEmpty() && queue.size() > 0){
             MimeMessage message = queue.remove(0);
             SimpleMailMessage m = queue1.remove(0);
             try{
