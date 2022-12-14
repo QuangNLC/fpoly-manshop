@@ -174,8 +174,8 @@ public class PromotionsController {
                 }
                 Promotions prnew = promotionJPA.findById(uppromitons.getId()).get();
                 prnew.setPromotionProducts(s);
-                return ResponseEntity.ok("done");
-                // return ResponseEntity.ok().body(convertoDTO(prnew.getId()));
+//                return ResponseEntity.ok("done");
+                 return ResponseEntity.ok().body(convertoDTO(prnew.getId()));
             } catch (Exception e) {
                 e.printStackTrace();
                 return ResponseEntity.notFound().build();

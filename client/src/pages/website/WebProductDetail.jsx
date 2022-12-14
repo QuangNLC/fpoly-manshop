@@ -227,6 +227,16 @@ const ProductDetail = () => {
         setSelectedSizeIndex(value)
     }
 
+    const onClickChangeQuantity = (value) => {
+        if (value <= 0) {
+            setSelectedQuantity(1)
+        } else if (value > product.productsizes[selectedSizeIndex].quantity) {
+            setSelectedQuantity(product.productsizes[selectedSizeIndex].quantity)
+            openNotificationWithIcon('warning', 'Thông báo', `Trong kho hiện  còn lại ${product.productsizes[selectedSizeIndex].quantity}  sản phẩm!`)
+        } else {
+            setSelectedQuantity(value % 1 === 0 ? value : Math.floor(value))
+        }
+    }
 
     const onChangeQuantity = (e) => {
         if (e.target.value <= 0) {
@@ -312,14 +322,14 @@ const ProductDetail = () => {
 
                                         </Rating>
                                         <Desc>Giới thiệu đến bạn chiếc áo đảm bảo sự thanh lịch mã vẫn đảm bảo được sự vừa vặn và thoải mái, Coolmate đã có những cải tiến để đem đến cho bạn chiếc áo tốt hơn đó chính là với chất liệu Cotton USA chất lượng cao. Đem đến cho bạn chiếc áo với phiên bản cải tiến hơn và trải nghiệm thực sự ổn so với những chiếc áo bạn đang mặc; và chắc chắn đây sẽ là chiếc áo đưa sự thoải mái lên hàng đầu.</Desc>
-                                                {isDiscount &&  <Tag color="magenta">{`- ${product?.promotions[0]?.promition?.by_persent}  %`}</Tag>}
-                                                {isDiscount &&  <Tag color="orange">{`Khuyến Mại: ${product?.promotions[0]?.promition?.title}`}</Tag>}
+                                        {isDiscount && <Tag color="magenta">{`- ${product?.promotions[0]?.promition?.by_persent}  %`}</Tag>}
+                                        {isDiscount && <Tag color="orange">{`Khuyến Mại: ${product?.promotions[0]?.promition?.title}`}</Tag>}
                                         {
                                             isDiscount ?
                                                 (
-                                                    <div style={{width: '100%', display: 'flex', alignItems: 'center'}}>
-                                                        <Price>{formatter.format(product.export_price - product.export_price *( product?.promotions[0]?.promition?.by_persent / 100))}</Price>
-                                                        <Price style={{marginLeft: 20, textDecoration: 'line-through'}}>{formatter.format(product?.export_price)}</Price>
+                                                    <div style={{ width: '100%', display: 'flex', alignItems: 'center' }}>
+                                                        <Price>{formatter.format(product.export_price - product.export_price * (product?.promotions[0]?.promition?.by_persent / 100))}</Price>
+                                                        <Price style={{ marginLeft: 20, textDecoration: 'line-through' }}>{formatter.format(product?.export_price)}</Price>
                                                     </div>
                                                 )
                                                 :
@@ -343,7 +353,7 @@ const ProductDetail = () => {
                                         </FilterContainer>
                                         <AddContainer style={{ textAlign: "center" }}>
                                             <AmountContainer>
-                                                <Remove onClick={() => { setSelectedQuantity(selectedQuantity > 0 ? selectedQuantity - 1 : 0) }} />
+                                                <Remove onClick={() => { onClickChangeQuantity(selectedQuantity - 1) }} />
                                                 <Amount>
                                                     <AmountInput
                                                         type='number'
@@ -361,7 +371,7 @@ const ProductDetail = () => {
                                                         }}
                                                     />
                                                 </Amount>
-                                                <Add onClick={() => { setSelectedQuantity((((selectedQuantity + 1) >= product.productsizes[selectedSizeIndex].quantity) ? (selectedQuantity + 1) : product.productsizes[selectedSizeIndex].quantity)) }} />
+                                                <Add onClick={() => { onClickChangeQuantity(selectedQuantity + 1) }} />
                                             </AmountContainer>
                                         </AddContainer>
                                         <ButtonContainer>

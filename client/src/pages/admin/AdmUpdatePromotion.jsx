@@ -99,6 +99,7 @@ const AdmUpdatePromotion = () => {
     const [selectedListPr, setSelectedListPr] = useState([])
     const [form] = useForm()
     const [formInitValue, setFormInitValue] = useState(undefined)
+    const [isActive, setIsActive] = useState(false)
     const listPrColumn = [
         {
             title: 'STT',
@@ -285,6 +286,22 @@ const AdmUpdatePromotion = () => {
                     console.log(payload)
                     promotionsAPI.updatePromotion(payload)
                         .then(res => {
+                            console.log(res)
+                            setIsActive(res.isactive)
+                            if (res.promotionProductDTOList && res.promotionProductDTOList.length > 0) {
+                                setListPr([...res.promotionProductDTOList.map((item, index) => ({
+                                    index: index + 1,
+                                    key: item?.product?.id,
+                                    ...item?.product
+                                }))])
+                            }
+                            setFormInitValue({
+                                name: res?.title,
+                                discount: res?.by_persent,
+                                date_after: moment(res?.date_after),
+                                date_before: moment(res?.date_befor),
+                                isactive: res?.isactive
+                            })
                             if (!res.status) {
                                 Modal.success({ title: 'Hộp Thoại Thông Báo', content: 'Cập nhật thông tin khuyến mại thành công', okText: 'Xác Nhận' });
                             } else {
@@ -311,6 +328,26 @@ const AdmUpdatePromotion = () => {
             form.resetFields();
         }
     }, [formInitValue])
+
+
+    useEffect(() => {
+        if (isActive) {
+            promotionsAPI.getProductNotExist()
+                .then(res => {
+                    if (!res.status) {
+                        setProducts(res.map((item, index) => ({
+                            index: index + 1,
+                            key: item.id,
+                            ...item
+                        })))
+
+                    } else {
+                        console.log(res)
+                    }
+                })
+                .catch(err => console.log(err))
+        }
+    }, [isActive])
 
     useEffect(() => {
         // productAPI.getAll()
@@ -348,6 +385,7 @@ const AdmUpdatePromotion = () => {
                 .then(res => {
                     if (!res.status) {
                         console.log(res)
+                        setIsActive(res.isactive)
                         if (res.promotionProductDTOList && res.promotionProductDTOList.length > 0) {
                             setListPr([...res.promotionProductDTOList.map((item, index) => ({
                                 index: index + 1,
@@ -376,9 +414,9 @@ const AdmUpdatePromotion = () => {
         >
             <Container>
                 <div
-                    style={{ width: '100%', padding: '0 20px'}}
+                    style={{ width: '100%', padding: '0 20px' }}
                 >
-                    <Button type='primary' onClick={() => {navigate("/admin/promotions")}}>Danh Sách</Button>
+                    <Button type='primary' onClick={() => { navigate("/admin/promotions") }}>Danh Sách</Button>
                 </div>
                 <Wrapper>
                     <Left>
@@ -411,10 +449,13 @@ const AdmUpdatePromotion = () => {
                                         { required: true, message: 'Vui lòng nhập tên khuyến mại.' },
                                         ({ getFieldValue }) => ({
                                             validator(_, value) {
-                                                if (!value || value > 0) {
-                                                    return Promise.resolve()
+                                                if (value < 0) {
+                                                    return Promise.reject("Vui lòng nhập số lớn hơn 0.")
+                                                } else if (value > 100) {
+                                                    return Promise.reject("Vui lòng nhập số nhỏ hơn 100.")
+                                                } else {
+                                                    return Promise.resolve();
                                                 }
-                                                return Promise.reject('Vui lòng nhập số lớn hơn 0.')
                                             }
                                         })
                                     ]}
@@ -492,19 +533,24 @@ const AdmUpdatePromotion = () => {
                                 }}
                             />
                         </ListWrapper>
-                        <ProductsWrapper>
-                            <ProductsWrapperTitle>danh sách sản phẩm</ProductsWrapperTitle>
-                            <ProductsActionsWrapper>
-                                <Button type='primary' disabled={!selectedProducts || selectedProducts <= 0} onClick={handleAddSelectedProductsToList}>Thêm Sản Phẩm</Button>
-                            </ProductsActionsWrapper>
-                            <Table
-                                dataSource={products}
-                                columns={productsColumn}
-                                scroll={{
-                                    y: '40vh'
-                                }}
-                            />
-                        </ProductsWrapper>
+                        {
+                            isActive &&
+                            <>
+                                <ProductsWrapper>
+                                    <ProductsWrapperTitle>danh sách sản phẩm</ProductsWrapperTitle>
+                                    <ProductsActionsWrapper>
+                                        <Button type='primary' disabled={!selectedProducts || selectedProducts <= 0} onClick={handleAddSelectedProductsToList}>Thêm Sản Phẩm</Button>
+                                    </ProductsActionsWrapper>
+                                    <Table
+                                        dataSource={products}
+                                        columns={productsColumn}
+                                        scroll={{
+                                            y: '40vh'
+                                        }}
+                                    />
+                                </ProductsWrapper>
+                            </>
+                        }
                     </Right>
                 </Wrapper>
             </Container>

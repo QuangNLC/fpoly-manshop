@@ -190,7 +190,7 @@ const AdmTopbar = () => {
     const handleClose = () => {
         setAnchorEl(null);
         setIsNotiOpen(false)
-        navigate("/admin/order-list")
+        
     };
 
     useEffect(() => {
@@ -242,7 +242,9 @@ const AdmTopbar = () => {
                                                         <NotiItemImg>
                                                             <NotiImage />
                                                         </NotiItemImg>
-                                                        <NotiItemDetail>
+                                                        <NotiItemDetail
+                                                            onClick={() => {navigate("/admin/order-list")}}
+                                                        >
                                                             {item.message}
                                                         </NotiItemDetail>
                                                     </NotiItemWrapper>
