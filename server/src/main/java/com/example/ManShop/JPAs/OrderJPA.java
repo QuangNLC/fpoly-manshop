@@ -23,5 +23,8 @@ List<RevenueStatisticsResponeDTO> getTest(Integer yr);
 
 @Query(value="select count (*) from oders  where oders.orderdate like :date%", nativeQuery=true)
 Integer today(String date);
+    @Query(value = "  select sum(oders.total_price) from oders join status_order_detail \n" +
+            "  on oders.id = status_order_detail.orderid where status_order_detail.statusid = 4 and oders.orderdate like :date% ", nativeQuery=true)
+    Integer pricetoday (String date);
 
 }

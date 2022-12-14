@@ -4,6 +4,7 @@ import com.example.ManShop.DTOS.ChangePasswordDTO;
 import com.example.ManShop.DTOS.RegisterRequest;
 import com.example.ManShop.Entitys.*;
 import com.example.ManShop.JPAs.UserJPA;
+import com.example.ManShop.Service.EmailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.websocket.server.PathParam;
 import java.util.Optional;
+import java.util.Random;
+
 import com.example.ManShop.Service.FileService;
 
 @RestController
@@ -141,5 +144,32 @@ public class UsersController {
         }
 
 //        return ResponseEntity.ok("Đổi mật khẩu thành công!");
+    }
+    @Autowired
+    private EmailService emailService;
+    @PostMapping("/forgot-password/{email}")
+    public ResponseEntity<?> forgotPassword(@PathVariable(value="email") String  email){
+        if(!userJPA.existsByEmail(email)){
+            return  ResponseEntity.status(404).body("không tim thấy tài khoản nào khớp với email trong hệ thống");
+        }else{
+            int leftLimit = 97; // letter 'a'
+            int rightLimit = 122; // letter 'z'
+            int len = 10;
+            Random random = new Random();
+            String generatedString = random.ints(leftLimit, rightLimit + 1)
+                    .limit(len)
+                    .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                    .toString();
+            System.out.println(generatedString);
+            Users user =  userJPA.findByEmail(email);
+            user.setPassword(passwordEncoder.encode(generatedString));
+            userJPA.save(user);
+            EmailDetails e= new EmailDetails();
+            e.setRecipient(user.getEmail());
+            e.setMgsBody("Thông tin tài khoản của quý khách"+"\n"+"                    Tài khoản : "+
+                    user.getUsername() +"\n"+"                   Mật khẩu : "+generatedString);
+            emailService.sendSimpleleMail(e);
+            return ResponseEntity.ok("đã gửi mail");
+        }
     }
 }

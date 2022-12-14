@@ -183,7 +183,22 @@ public class OrderContoller {
         resNoti.setList(resList);
         resNoti.setCount(orderNotiJPA.getUnseenNotiCount());
         System.out.println("save noti");
+
         simpMessagingTemplate.convertAndSend("/noti/adm-order",resNoti);
+        //email
+//        Users user1 = userJPA.findById(user.getUsername()).get();
+//        EmailDetails e= new EmailDetails();
+//        System.out.println("check1"+user1.getEmail());
+//        e.setRecipient(user1.getEmail());
+//        System.out.println("check2");
+//        e.setMgsBody("Thông tin đơn hàng của quý khách"+"\n" +
+//                "--------------------------------------------------------------------------------------"+ "\n"+
+//                "Mã đơn hàng :" +responseOrder.getId()+" Giá tiền : " + responseOrder.getTotal_price() +"\n" +
+//                "Trạng thái đơn hàng : (Chờ xác nhận)" + " được tạo vào lúc " + dateFormat.format(new Date()) +"\n" +
+//                "Chi tiết truy cập vào trang : http://manshop:3000" +"\n" +
+//                "--------------------------------------------------------------------------------------");
+//        emailService.sendSimpleleMail(e);
+        //
         return ResponseEntity.ok().body("tao don hang thanh cong voi (id)= " +responseOrder.getId());
     }
 
@@ -262,6 +277,18 @@ public class OrderContoller {
                 statusDetail.setStatusOrder(statusOrderJPA.findByTitle(DTO.getStatusOrder()));
                 statusDetail.setUsersUpdate(DTO.getUsers());
                 orderDetailStatusJPA.save(statusDetail);
+                ////mail
+//                EmailDetails e= new EmailDetails();
+//                System.out.println(orders.getUsers().getEmail());
+//                e.setRecipient(orders.getUsers().getEmail());
+//                e.setMgsBody("Thông tin đơn hàng của quý khách"+"\n" +
+//                        "--------------------------------------------------------------------------------------"+ "\n"+
+//                        "Mã đơn hàng :" +id+" Giá tiền : " + orders.getTotal_price() +"\n" +
+//                        "Trạng thái đơn hàng : ("+DTO.getStatusOrder()+")" + " được tạo vào lúc " + dateFormat.format(new Date()) +"\n" +
+//                        "Chi tiết truy cập vào trang : http://manshop:3000" +"\n" +
+//                        "--------------------------------------------------------------------------------------");
+//                emailService.sendSimpleleMail(e);
+
                 if(DTO.getStatusOrder().equals(check)){
                     log.info("Đơn hàng với (id)= "+ id +" đã được kết thúc!");
                     List<OrderDetail> orderDetaillist = orders.getOrderDetail();

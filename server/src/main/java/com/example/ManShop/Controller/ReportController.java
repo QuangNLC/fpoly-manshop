@@ -92,12 +92,25 @@ public class ReportController {
 
     @GetMapping("/order-today")
     public Integer reportOrderToday(){
+        if(orderJPA.today(dateFormat.format(new Date())) ==null){
+            return 0;
+        }
         return orderJPA.today(dateFormat.format(new Date()));
     }
     @GetMapping("/product-Month")
     public Integer reportProduct(){
+        if(orderDetailJPA.getsll(dateFormat.format(new Date())) ==null){
+            return 0;
+        }
         return orderDetailJPA.getsll(dateFormat2.format(new Date()));
     }
 
+    @GetMapping("/totalprice-today")
+    public Integer reporttotalday() {
+        if(orderJPA.pricetoday(dateFormat.format(new Date())) ==null){
+            return 0;
+        }
+        return orderJPA.pricetoday(dateFormat.format(new Date()));
+    }
 //    @GetMapping("/")
 }
