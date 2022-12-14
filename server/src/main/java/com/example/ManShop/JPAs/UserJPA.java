@@ -19,6 +19,9 @@ public interface UserJPA extends JpaRepository<Users,String> {
     @Query(nativeQuery = true,
         value = "select users.* from users join messages on users.username = messages.sendeduser where messages.receiveduser = 'admchat' group by username, activated, address, email, fullname,password, photo,phone,verificode,role"
     )
+
     List<Users> getListMemberChatByAdm();
+
+        Users findByEmail(String email);
 }
 

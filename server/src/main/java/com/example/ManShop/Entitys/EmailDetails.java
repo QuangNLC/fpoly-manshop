@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class EmailDetails {
     private String recipient;
     private String mgsBody;
-    private String subject;
+    private String subject="Email thông báo từ ManShop";
     private String attachment;
 
 }

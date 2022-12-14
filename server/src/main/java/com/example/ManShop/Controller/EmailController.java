@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/email")
 public class EmailController {
 
-@Autowired
-     private EmailService emailService;
+    @Autowired
+    private EmailService emailService;
 
 //    public EmailController(EmailService emailService) {
 //        this.emailService = emailService;
@@ -25,10 +25,8 @@ public class EmailController {
     public String
     sendMail(@RequestBody EmailDetails details)
     {
-        String status
-                = emailService.sendSimpleleMail(details);
-
-        return status;
+        this.emailService.sendSimpleleMail(details);
+        return "Thành công";
     }
 
     // Sending email with attachment
@@ -36,9 +34,8 @@ public class EmailController {
     public String sendMailWithAttachment(
             @RequestBody EmailDetails details)
     {
-        String status
-                = emailService.sendMailWithAttachment(details);
+        this.emailService.sendMailWithAttachment(details);
 
-        return status;
+        return "thanh cong";
     }
 }

@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -146,6 +147,7 @@ public class ProductController {
     }
     @PreAuthorize("isAuthenticated()")
     @PutMapping("/update/{id}")
+    @Transactional
     public ResponseEntity<?> updateProduct(@PathVariable("id") Integer id, @RequestBody Product product) {
         if(!productJPA.existsById(id)){
             return ResponseEntity.status(77).body("khong tim thay (id)");
@@ -155,6 +157,12 @@ public class ProductController {
         product.setCategory(category);
         product.setUpdate_create_date(new Date());
         List<ProductSize> ProSizeList = product.getProductsizes();
+        try{
+            productsizeJPA.deletelist(id);
+        }catch(Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(113).body("Lỗi không xác định khi xoa' size");
+        }
         try{
             ProSizeList.forEach( Size -> {Size.setProduct(product);productsizeJPA.save(Size);});
         }catch (Exception e){
