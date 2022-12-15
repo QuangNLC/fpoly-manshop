@@ -227,7 +227,7 @@ const WebRegister = () => {
                                             rules={[
                                                 { required: true, message: 'Vui lòng nhập Email!' },
                                                 { whitespace: true, message: 'Vui lòng không nhập khoảng trống!' },
-                                                { type: 'email' }
+                                                { type: 'email', message: 'Vui lòng nhập đúng định dạng email.' }
                                             ]}
                                         >
                                             <Input placeholder='Email' type='email' />

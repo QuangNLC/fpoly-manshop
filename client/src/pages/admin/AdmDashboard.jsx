@@ -52,7 +52,8 @@ const BarChartSelectYear = styled.div`
     width: 100%;
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: flex-start;
+    padding: 20px 10px 20px 0px;
 `
 const BarCharWrapper = styled.div`
     width: 100%;
@@ -266,21 +267,22 @@ const AdmDashboard = () => {
                 </Widget>
             </WidgetContainer>
             <BarChartContainer>
-                <BarChartSelectYear>
-                    Năm:
-                    <Select value={barChartYear} onChange={onChangeBarChartYear}>
-                        <Select.Option value={2021}>
-                            2021
-                        </Select.Option>
-                        <Select.Option value={2022}>
-                            2022
-                        </Select.Option>
-                        <Select.Option value={2023}>
-                            2023
-                        </Select.Option>
-                    </Select>
-                </BarChartSelectYear>
+
                 <BarCharWrapper>
+                    <BarChartSelectYear>
+                        Năm:
+                        <Select value={barChartYear} onChange={onChangeBarChartYear}>
+                            <Select.Option value={2021}>
+                                2021
+                            </Select.Option>
+                            <Select.Option value={2022}>
+                                2022
+                            </Select.Option>
+                            <Select.Option value={2023}>
+                                2023
+                            </Select.Option>
+                        </Select>
+                    </BarChartSelectYear>
                     {
                         barChartLoading ?
                             (
