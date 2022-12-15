@@ -105,12 +105,12 @@ const Footer = () => {
           <SupportListItem>Chính sách bảo hành</SupportListItem>
         </SupportList>
       </FooterColumn>
-      <FooterColumn>
+      {/* <FooterColumn>
         <Title>thanh toán</Title>
         <ImageContainer>
           <Image src={footerPayment} />
         </ImageContainer>
-      </FooterColumn>
+      </FooterColumn> */}
     </Container>
   );
 };

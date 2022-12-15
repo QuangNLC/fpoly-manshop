@@ -182,17 +182,17 @@ const Order = ({ order, onClickViewStatusInfo }) => {
                     <OrderSummary>
                         <OrderSummaryDetail>
                             <div>
-                                <div style={{display: 'flex', alignItems:'center',justifyContent: 'space-between', width: '250px'}}>
+                                {/* <div style={{display: 'flex', alignItems:'center',justifyContent: 'space-between', width: '250px'}}>
                                     <div>Tổng Tiền</div>
                                     <div>{formatter.format(order.total_price)}</div>
                                 </div>
                                 <div style={{display: 'flex', alignItems:'center',justifyContent: 'space-between', width: '250px'}}>
                                     <div>Giảm Giá</div>
                                     <div>{formatter.format(order.reduce_price)}</div>
-                                </div>
+                                </div> */}
                                 <div style={{display: 'flex', alignItems:'center',justifyContent: 'space-between', width: '250px'}}>
                                     <div>Thanh Toán</div>
-                                    <div>{formatter.format(order.total_price - order.reduce_price)}</div>
+                                    <div>{formatter.format(order.total_price)}</div>
                                 </div>
                             </div>
                             <div>
