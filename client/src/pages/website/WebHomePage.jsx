@@ -298,7 +298,7 @@ const Button = styled.button`
 `;
 
 const ProductSection = styled.div`
-  margin-top: 120px;
+  margin-top: 50px;
 `;
 const ProductSectionTitle = styled.h2`
   font-size: 36px;
@@ -306,6 +306,7 @@ const ProductSectionTitle = styled.h2`
   width: 100%;
   text-align: center;
   margin-bottom: 10px;
+  letter-spacing: 2px;
 `;
 const ProductSectionNavigate = styled.div`
   margin-top: 30px;
@@ -316,7 +317,7 @@ const ProductSectionNavigate = styled.div`
 
 const NavButton = styled.button`
   padding: 10px 20px;
-  background-color: rgba(0, 0, 0, 0.85);
+  background-color: rgba(0, 0, 0, 0.7);
   border-radius: 4px;
   border: none;
   font-size: 20px;clea
@@ -325,7 +326,8 @@ const NavButton = styled.button`
   transition: all 0.25s ease-in;
   color: white;
   &:hover {
-    background-color: red;
+    background-color: rgba(0, 0, 0, 0.9);
+
   }
 `;
 

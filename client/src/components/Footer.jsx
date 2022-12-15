@@ -7,7 +7,7 @@ import LocalPhoneTwoToneIcon from "@mui/icons-material/LocalPhoneTwoTone";
 import EmailTwoToneIcon from "@mui/icons-material/EmailTwoTone";
 const Container = styled.div`
   width: 100%;
-  background-color: lightgray;
+  background-color: #000;
   color: white;
   display: flex;
   padding: 20px;
@@ -27,6 +27,7 @@ const Title = styled.h2`
   text-transform: capitalize;
   font-weight: 300;
   margin-bottom: 20px;
+  color: white;
 `;
 const AboutUs = styled.div`
   width: 100%;
@@ -49,6 +50,11 @@ const SupportListItem = styled.li`
   display: flex;
   align-items: center;
   margin: 10px 0;
+  color: #999;
+  &:hover {
+    color: white;
+    cursor: pointer;
+  }
 `;
 
 const Footer = () => {
@@ -70,7 +76,7 @@ const Footer = () => {
         <Title>liên hệ</Title>
         <ContactList>
           <ContactListItem>
-            <MapTwoToneIcon style={{ fontSize: "36px", marginRight: "10px" }} />
+            <MapTwoToneIcon style={{ fontSize: "30px", marginRight: "10px" }} />
             <Detail fullHeight={true}>
               Tòa nhà FPT Polytechnic, P.Trịnh Văn Bô, Xuân Phương, Nam Từ Liêm,
               Hà Nội
@@ -78,13 +84,13 @@ const Footer = () => {
           </ContactListItem>
           <ContactListItem>
             <LocalPhoneTwoToneIcon
-              style={{ fontSize: "36px", marginRight: "10px" }}
+              style={{ fontSize: "30px", marginRight: "10px" }}
             />
             <Detail fullHeight={true}>0346.410.888</Detail>
           </ContactListItem>
           <ContactListItem>
             <EmailTwoToneIcon
-              style={{ fontSize: "36px", marginRight: "10px" }}
+              style={{ fontSize: "30px", marginRight: "10px" }}
             />
             <Detail fullHeight={true}>s21manshop@gmail.com</Detail>
           </ContactListItem>
@@ -99,12 +105,12 @@ const Footer = () => {
           <SupportListItem>Chính sách bảo hành</SupportListItem>
         </SupportList>
       </FooterColumn>
-      {/* <FooterColumn>
+      <FooterColumn>
         <Title>thanh toán</Title>
-        <ImageContainer style={{ marginTop: "30px" }}>
+        <ImageContainer>
           <Image src={footerPayment} />
         </ImageContainer>
-      </FooterColumn> */}
+      </FooterColumn>
     </Container>
   );
 };
