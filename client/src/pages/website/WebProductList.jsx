@@ -195,37 +195,8 @@ const WebProductList = (props) => {
       .catch(err => console.log(err))
   }, [payloadOption, searchText])
 
-  // useEffect(() => {
-  //   if (searchText) {
-  //     if (searchText.trim() !== '') {
-  //       setPayloadOption({
-  //         ...payloadOption,
-  //         name: searchText
-  //       })
-  //     } else {
-  //       setPayloadOption({
-  //         ...payloadOption,
-  //         name: ''
-  //       })
-  //     }
-  //   } else {
-  //     setPayloadOption({
-  //       ...payloadOption,
-  //       name: ''
-  //     })
-  //   }
-  // }, [searchText])
 
   useEffect(() => {
-    // productAPI.getAll()
-    //   .then(res => {
-    //     if (!res.status) {
-    //       setFilterSize(res.length)
-    //     } else {
-    //       console.log(res)
-    //     }
-    //   })
-    //   .catch(err => console.log(err))
     productAPI.getFilterInfo()
       .then(res => {
         if (!res.status) {
