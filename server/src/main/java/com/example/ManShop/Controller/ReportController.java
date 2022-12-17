@@ -92,25 +92,40 @@ public class ReportController {
 
     @GetMapping("/order-today")
     public Integer reportOrderToday(){
-        if(orderJPA.today(dateFormat.format(new Date())) ==null){
-            return 0;
-        }
+//        if(orderJPA.today(dateFormat.format(new Date())) ==null){
+//            return 0;
+//        }
         return orderJPA.today(dateFormat.format(new Date()));
     }
     @GetMapping("/product-Month")
     public Integer reportProduct(){
-        if(orderDetailJPA.getsll(dateFormat.format(new Date())) ==null){
-            return 0;
-        }
+//        if(orderDetailJPA.getsll(dateFormat.format(new Date())) ==null){
+//            return 0;
+//        }
         return orderDetailJPA.getsll(dateFormat2.format(new Date()));
     }
 
     @GetMapping("/totalprice-today")
     public Integer reporttotalday() {
-        if(orderJPA.pricetoday(dateFormat.format(new Date())) ==null){
-            return 0;
-        }
+//        if(orderJPA.pricetoday(dateFormat.format(new Date())) ==null){
+//            return 0;
+//        }
         return orderJPA.pricetoday(dateFormat.format(new Date()));
     }
-//    @GetMapping("/")
+    @GetMapping("/product-out")
+    public ResponseEntity<?> getlistProductOut(){
+
+        return ResponseEntity.ok("ccc");
+    }
+    @GetMapping("/top5-product")
+    public ResponseEntity<?> tp5Product(){
+
+        return ResponseEntity.ok("ccc");
+    }
+    @GetMapping("/inventory-product")
+    public ResponseEntity<?> getInventoryProduct(){
+
+        return ResponseEntity.ok("ccc");
+    }
+
 }

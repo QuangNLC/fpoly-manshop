@@ -28,7 +28,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @CrossOrigin("*")
@@ -159,6 +158,7 @@ public class PromotionsController {
                 promotions1.setDate_befor(promotions.getDate_befor());
                 promotions1.setDate_after(promotions.getDate_after());
             }
+            promotions1.setUsers(userJPA.findById(promotions.getUsers().getUsername()).get());
             Promotions uppromitons = promotionJPA.save(promotions1);
 
             try {
@@ -172,10 +172,15 @@ public class PromotionsController {
                     productPromotionJPA.save(newls);
                     s.add(newls);
                 }
-                Promotions prnew = promotionJPA.findById(uppromitons.getId()).get();
-                prnew.setPromotionProducts(s);
-//                return ResponseEntity.ok("done");
-                 return ResponseEntity.ok().body(convertoDTO(prnew.getId()));
+//                Promotions prnew = promotionJPA.findById(uppromitons.getId()).get();l
+//                prnew.setPromotionProducts(s);
+//                prnew.setUsers(userJPA.findById(promotions.getUsers().getUsername()).get());
+  //              return ResponseEntity.ok("done");
+                             // PromotionResponeDTO sssss = convertoDTO(prnew.getId());
+                System.out.println("convert done");
+                //System.out.println(sssss);
+                return ResponseEntity.ok(convertoDTO(id));
+               //  return ResponseEntity.ok().body("done");
             } catch (Exception e) {
                 e.printStackTrace();
                 return ResponseEntity.notFound().build();
