@@ -12,6 +12,8 @@ import defaultAvt from '../../assets/imgs/default-avt.jpg';
 import DialogHOC from '../../hoc/DialogHOC'
 import { Checkbox, Input, Radio, Select, Button, Modal, notification } from 'antd';
 import authAPI from '../../api/authAPI';
+import AttachEmailOutlinedIcon from '@mui/icons-material/AttachEmailOutlined';
+import BadgeOutlinedIcon from '@mui/icons-material/BadgeOutlined';
 
 const Container = styled.div`
     width: 100%;
@@ -44,11 +46,10 @@ const UserContainer = styled.div`
     margin-top: 20px;
 `
 const UserShow = styled.div`
-    flex: 1;
+    flex: 2;
     padding: 20px;
     -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
     box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
-    margin-right: 20px;
     background-color: white;
     border-radius: 10px;
 `
@@ -93,7 +94,8 @@ const UserShowInfoIcon = styled.div`
 const UserShowInfoTitle = styled.span``
 
 const UserUpdate = styled.div`
-    flex: 2;
+    flex: 1;
+    margin-right: 20px;
     padding: 20px;
     -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
     box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
@@ -282,34 +284,6 @@ const AdmUserDetail = () => {
                         <>
                             {updateValue &&
                                 <UserContainer>
-                                    <UserShow>
-                                        <UserShowTop>
-                                            <UserShowTopImg src={`http://localhost:8080/api/file/images/${user?.photo}`} alt="" />
-                                            <UserShowTopTitle>
-                                                <UserShowTopUsername>{user.fullname}</UserShowTopUsername>
-                                            </UserShowTopTitle>
-                                        </UserShowTop>
-                                        <UserShowBottom>
-                                            <UserShowTitle>Thông tin tài khoản</UserShowTitle>
-                                            <UserShowInfo>
-                                                <UserShowInfoIcon><PermIdentityOutlinedIcon /></UserShowInfoIcon>
-                                                <UserShowInfoTitle>{user.username}</UserShowInfoTitle>
-                                            </UserShowInfo>
-                                            <UserShowInfo>
-                                                <UserShowInfoIcon><CalendarTodayOutlinedIcon /></UserShowInfoIcon>
-                                                <UserShowInfoTitle>10.12.1999</UserShowInfoTitle>
-                                            </UserShowInfo>
-                                            <UserShowTitle>Thông tin liên lạc</UserShowTitle>
-                                            <UserShowInfo>
-                                                <UserShowInfoIcon><PhoneAndroidOutlinedIcon /></UserShowInfoIcon>
-                                                <UserShowInfoTitle>{user.phone}</UserShowInfoTitle>
-                                            </UserShowInfo>
-                                            <UserShowInfo>
-                                                <UserShowInfoIcon><LocationSearchingOutlinedIcon /></UserShowInfoIcon>
-                                                <UserShowInfoTitle>New York | USA</UserShowInfoTitle>
-                                            </UserShowInfo>
-                                        </UserShowBottom>
-                                    </UserShow>
                                     <UserUpdate>
                                         <UserUpdateTitle>Chỉnh sửa quyền tài khoản</UserUpdateTitle>
                                         {/* <UserUpdateForm>
@@ -375,6 +349,39 @@ const AdmUserDetail = () => {
                                         </div>
 
                                     </UserUpdate>
+                                    <UserShow>
+                                        <UserShowTop>
+                                            <UserShowTopImg src={`http://localhost:8080/api/file/images/${user?.photo}`} alt="" />
+                                            <UserShowTopTitle>
+                                                <UserShowTopUsername>{user.fullname}</UserShowTopUsername>
+                                            </UserShowTopTitle>
+                                        </UserShowTop>
+                                        <UserShowBottom>
+                                            <UserShowTitle>Thông tin tài khoản</UserShowTitle>
+                                            <UserShowInfo>
+                                                <UserShowInfoIcon><PermIdentityOutlinedIcon /></UserShowInfoIcon>
+                                                <UserShowInfoTitle>{user.username}</UserShowInfoTitle>
+                                            </UserShowInfo>
+                                            <UserShowInfo>
+                                                <UserShowInfoIcon><AttachEmailOutlinedIcon /></UserShowInfoIcon>
+                                                <UserShowInfoTitle>{user?.email}</UserShowInfoTitle>
+                                            </UserShowInfo>
+                                            <UserShowTitle>Thông tin liên lạc</UserShowTitle>
+                                            <UserShowInfo>
+                                                <UserShowInfoIcon><BadgeOutlinedIcon /></UserShowInfoIcon>
+                                                <UserShowInfoTitle>{user.fullname}</UserShowInfoTitle>
+                                            </UserShowInfo>
+                                            <UserShowInfo>
+                                                <UserShowInfoIcon><PhoneAndroidOutlinedIcon /></UserShowInfoIcon>
+                                                <UserShowInfoTitle>{user.phone}</UserShowInfoTitle>
+                                            </UserShowInfo>
+                                            {/* <UserShowInfo>
+                                                <UserShowInfoIcon><LocationSearchingOutlinedIcon /></UserShowInfoIcon>
+                                                <UserShowInfoTitle>New York | USA</UserShowInfoTitle>
+                                            </UserShowInfo> */}
+                                        </UserShowBottom>
+                                    </UserShow>
+
                                 </UserContainer>
                             }
                         </>

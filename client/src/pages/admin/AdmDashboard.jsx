@@ -1,16 +1,11 @@
 import React from 'react'
 import styled from 'styled-components';
-import AdmChart from '../../components/AdmChart';
-import AdmFeaturedInfo from '../../components/AdmFeaturedInfo';
-import { userStatsData } from '../../assets/data/data';
-import VisibilityIcon from '@mui/icons-material/Visibility';
 import AdmPieChart from '../../components/AdmPieChart';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import reportAPI from '../../api/reportAPI';
 import AdmBarChart from '../../components/AdmBarChart';
 import { Select, Spin } from 'antd';
-import { formatter } from '../../utils';
 
 const Container = styled.div`
     width: 100%;
@@ -115,7 +110,6 @@ const getPieColor = (name) => {
 }
 
 const AdmDashboard = () => {
-    const [chartData, setChartData] = useState([])
 
     const [barChartData, setBarChartData] = useState([])
     const [barChartLoading, setbarChartLoading] = useState(true)
@@ -228,7 +222,6 @@ const AdmDashboard = () => {
 
     return (
         <Container>
-            {/* <AdmFeaturedInfo /> */}
             <WidgetContainer>
                 <Widget>
                     {

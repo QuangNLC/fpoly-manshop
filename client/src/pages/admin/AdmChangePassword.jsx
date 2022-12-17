@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from 'react'
-import { Button, Form, Input, Spin, Typography, Upload, Modal } from 'antd'
+import React, { useEffect } from 'react'
+import { Button, Form, Input, Spin, Typography, Modal } from 'antd'
 import Helmet from '../../components/Helmet'
 import styled from 'styled-components'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import usersAPI from '../../api/usersAPI'
-import { logOutAction, setAuthAction } from '../../redux/actions/AuthReducerAction'
+import { logOutAction } from '../../redux/actions/AuthReducerAction'
 import { useForm } from 'antd/lib/form/Form'
-import { Password } from '@mui/icons-material'
 
 
 
@@ -49,10 +48,7 @@ const AdmChangePassword = () => {
 
     const auth = useSelector(state => state.auth.auth);
     const isAuth = useSelector(state => state.auth.isAuth);
-    const { username } = auth ? auth.info : "";
     const navigate = useNavigate();
-    const location = useLocation();
-    const [form] = useForm();
     const dispatch = useDispatch();
 
     const onFinish = (value) => {

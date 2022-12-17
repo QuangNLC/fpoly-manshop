@@ -1,15 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import Helmet from '../../components/Helmet'
 import styled from 'styled-components'
-import { userRows } from '../../assets/data/data';
 import { DataGrid } from '@mui/x-data-grid';
-import { Link } from 'react-router-dom';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
-import usersAPI from '../../api/usersAPI';
-import defaultAvt from '../../assets/imgs/default-avt.jpg';
 import DialogHOC from '../../hoc/DialogHOC';
 import productAPI from '../../api/productsAPI';
-import { Button, Form, Input, Modal, notification } from 'antd';
+import {  Form, Input, Modal, notification } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 
 const Container = styled.div`
@@ -42,26 +38,6 @@ const FormTitle = styled.div`
 `
 const CateFormContainer = styled.div`
     width: 100%;
-`
-const CateForm = styled.form`
-    width: 100%;
-`
-const CateFormGroup = styled.div`
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 20px;
-`
-const CateFormGroupLabel = styled.label`
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 5px;
-`
-const CateFormGroupInput = styled.input`
-    border:none;
-    outline: none;
-    border-bottom: 1px solid lightgray;
-    padding: 10px;
 `
 const CateFormButton = styled.div`
     width: 200px;
@@ -115,18 +91,6 @@ const TitleButton = styled.button`
     &:hover{
         background-color:darkblue;
     }
-`
-
-const UserContainer = styled.div`
-    display: flex;
-    align-items: center;
-`
-const UserImg = styled.img`
-    width: 32px;
-    height: 32px;
-    border-radius: 50px;
-    object-fit: cover;
-    margin-right: 10px;
 `
 const ActionContainer = styled.div`
     display: flex;
@@ -230,43 +194,10 @@ const AdmMaterialList = () => {
     ];
 
 
-    const handleSubmitCreateForm = () => {
-        productAPI.createMaterial({ title: materialValue.title })
-            .then(res => {
-                if (!res.status) {
-                    const newData = [{ ...res }, ...data];
-                    setData(newData);
-                    haldeCloseForm();
-                } else {
-                    console.log(res);
-                }
-            })
-            .catch(err => console.log(err));
-    }
     const haldeCloseForm = () => {
         setIsOpenForm(false);
         setUpdatingId(undefined);
         setMaterialValue({ id: undefined, title: "" });
-    }
-
-
-    const handleUpdateMaterialDetails = (value) => {
-        productAPI.updateMaterialDetails(value)
-            .then(res => {
-                if (!res.status) {
-                    setData(data.map((item, index) => {
-                        if (item.id === res.id) {
-                            return { ...res };
-                        } else {
-                            return item;
-                        }
-                    }));
-                    haldeCloseForm();
-                } else {
-                    console.log(res)
-                }
-            })
-            .catch(err => console.log(err));
     }
 
     const toggleOpenForm = () => {
@@ -418,59 +349,6 @@ const AdmMaterialList = () => {
                         <FormWrapper>
                             <FormTitle>{updatingId ? "Cập nhật chất liệu" : "Tạo mới chất liệu"}</FormTitle>
                             <CateFormContainer>
-                                {/* <CateForm>
-                                    {
-                                        updatingId ?
-                                            (
-                                                <>
-                                                    <CateFormGroup>
-                                                        <CateFormGroupLabel>Id</CateFormGroupLabel>
-                                                        <CateFormGroupInput value={categoryValue.id} disabled />
-                                                    </CateFormGroup>
-                                                    <CateFormGroup>
-                                                        <CateFormGroupLabel>Title</CateFormGroupLabel>
-                                                        <CateFormGroupInput onChange={onChange} name="title" placeholder="Title" value={categoryValue.title} />
-                                                    </CateFormGroup>
-                                                    <CateFormGroup>
-                                                        <DialogHOC
-                                                            title="Confirm Dialog"
-                                                            content="Do you want to up date this category details?"
-                                                            onYes={() => { handleUpdateCategoryDetails(categoryValue) }}
-                                                        >
-                                                            <CateFormButton>Update</CateFormButton>
-                                                        </DialogHOC>
-                                                    </CateFormGroup>
-                                                    <CateFormGroup>
-                                                        <DialogHOC
-                                                            title="Confirm Dialog"
-                                                            content="Do you want to delete this category ?"
-                                                            onYes={() => handleDeleteCategory(updatingId)}
-                                                        >
-                                                            <CateFormButton>Delete</CateFormButton>
-                                                        </DialogHOC>
-                                                    </CateFormGroup>
-                                                    <CateFormGroup>
-                                                        <CateFormButton onClick={() => { haldeCloseForm() }}>Close</CateFormButton>
-                                                    </CateFormGroup>
-                                                </>
-                                            )
-                                            :
-                                            (<>
-                                                <CateFormGroup>
-                                                    <CateFormGroupLabel>Title</CateFormGroupLabel>
-                                                    <CateFormGroupInput onChange={onChange} name="title" placeholder="Title" value={categoryValue.title} />
-                                                </CateFormGroup>
-                                                <CateFormGroup>
-                                                    <CateFormButton onClick={handleSubmitCreateForm}>Create</CateFormButton>
-                                                </CateFormGroup>
-                                                <CateFormGroup>
-                                                    <CateFormButton onClick={() => { haldeCloseForm() }}>Close</CateFormButton>
-                                                </CateFormGroup>
-                                            </>
-                                            )
-                                    }
-
-                                </CateForm> */}
                                 <Form
                                     name='material'
                                     labelCol={{ span: 24 }}
