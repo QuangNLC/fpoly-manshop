@@ -68,6 +68,7 @@ public class ReportController {
         int ckeck3 =0;
         int ckeck4 =0;
         int ckeck5 =0;
+        int ckeck6 =0;
         for (RPResquestDTO a: objectList) {
             if(a.getTitle().equals("Chờ Xác Nhận")){
                 int check1=ckeck1 ++;
@@ -79,6 +80,8 @@ public class ReportController {
                 int check4=ckeck4 ++;
             }if(a.getTitle().equals("Đang Chờ")){
                 int check5=ckeck5 ++;
+            }if(a.getTitle().equals("Hủy đơn")){
+                int check6=ckeck6 ++;
             }
         }
         List<RPResponeseDTO> rpDTO = new ArrayList<>();
@@ -87,30 +90,46 @@ public class ReportController {
         rpDTO.add(new RPResponeseDTO("Đang Giao",ckeck3));
         rpDTO.add(new RPResponeseDTO("Hoàn Tất",ckeck4));
         rpDTO.add(new RPResponeseDTO("Đang Chờ",ckeck5));
+        rpDTO.add(new RPResponeseDTO("Hủy đơn",ckeck6));
         return ResponseEntity.ok(rpDTO);
     }
 
     @GetMapping("/order-today")
     public Integer reportOrderToday(){
-        if(orderJPA.today(dateFormat.format(new Date())) ==null){
-            return 0;
-        }
+//        if(orderJPA.today(dateFormat.format(new Date())) ==null){
+//            return 0;
+//        }
         return orderJPA.today(dateFormat.format(new Date()));
     }
     @GetMapping("/product-Month")
     public Integer reportProduct(){
-        if(orderDetailJPA.getsll(dateFormat.format(new Date())) ==null){
-            return 0;
-        }
+//        if(orderDetailJPA.getsll(dateFormat.format(new Date())) ==null){
+//            return 0;
+//        }
         return orderDetailJPA.getsll(dateFormat2.format(new Date()));
     }
 
     @GetMapping("/totalprice-today")
     public Integer reporttotalday() {
-        if(orderJPA.pricetoday(dateFormat.format(new Date())) ==null){
-            return 0;
-        }
+//        if(orderJPA.pricetoday(dateFormat.format(new Date())) ==null){
+//            return 0;
+//        }
         return orderJPA.pricetoday(dateFormat.format(new Date()));
     }
-//    @GetMapping("/")
+    @GetMapping("/product-out")
+    public ResponseEntity<?> getlistProductOut(){
+
+        return ResponseEntity.ok("ccc");
+    }
+    @GetMapping("/top5-product")
+    public ResponseEntity<?> tp5Product(){
+
+        return ResponseEntity.ok("ccc");
+    }
+    @GetMapping("/inventory-product")
+    public ResponseEntity<?> getInventoryProduct(){
+
+        return ResponseEntity.ok("ccc");
+    }
+
 }

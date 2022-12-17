@@ -12,10 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.internet.MimeMessage;
 import javax.transaction.Transactional;
 import javax.websocket.server.PathParam;
 import java.util.ArrayList;
@@ -508,4 +511,20 @@ public class OrderContoller {
 //    public ResponseEntity<?> getWatingOrder(){
 //        return  ResponseEntity.ok(orderJPA.findWaitingOrders());
 //    }
+//@Scheduled(fixedRate = 10*1000, initialDelay = 5000)
+//public void run(){
+//    int success =0, error = 0;
+//    while (!queue1.isEmpty() && queue.size() > 0){
+//        MimeMessage message = queue.remove(0);
+//        SimpleMailMessage m = queue1.remove(0);
+//        try{
+//            javaMailSender.send(m);
+//            javaMailSender.send(message);
+//            success++;
+//        }catch(Exception e){
+//            error++;
+//        }
+//        System.out.printf(">> Send: %d, Error: %d\r\n", success, error);
+//    }
+//}
 }

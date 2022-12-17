@@ -152,22 +152,24 @@ public class ProductController {
         if(!productJPA.existsById(id)){
             return ResponseEntity.status(77).body("khong tim thay (id)");
         }
+        Product pr = productJPA.findById(id).get();
         product.setId(id);
         Categorys category = categoryJPA.findById(product.getCategory().getId()).get();
         product.setCategory(category);
         product.setUpdate_create_date(new Date());
+        product.setCreate_date(pr.getCreate_date());
         List<ProductSize> ProSizeList = product.getProductsizes();
         try{
             productsizeJPA.deletelist(id);
         }catch(Exception e){
             e.printStackTrace();
-            return ResponseEntity.status(113).body("Lỗi không xác định khi xoa' size");
+            return ResponseEntity.status(404).body("Lỗi không xác định khi xoa' size");
         }
         try{
             ProSizeList.forEach( Size -> {Size.setProduct(product);productsizeJPA.save(Size);});
         }catch (Exception e){
             e.printStackTrace();
-            return ResponseEntity.status(113).body("Lỗi không xác định khi cập nhập size");
+            return ResponseEntity.status(404).body("Lỗi không xác định khi cập nhập size");
         }
         List<Images> imagesList= product.getImages();
         try {
