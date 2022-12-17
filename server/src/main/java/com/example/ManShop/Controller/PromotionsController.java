@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -94,7 +95,14 @@ public class PromotionsController {
                 newPromotion.setBy_price(promotions.getBy_price());
                 newPromotion.setBy_persent(0);
             }
-            newPromotion.setIsactive(true);
+            Date a = new Date();
+            a.compareTo(promotions.getDate_after());
+            if(a.compareTo(promotions.getDate_after()) >=0){
+                newPromotion.setIsactive(true);
+            }else {
+                newPromotion.setIsactive(false);
+            }
+            newPromotion.setIsauto(true);
             Promotions uppromitons= promotionJPA.save(newPromotion);
             try {
                 List<Product> proList= productJPA.findAllById(promotions.getListpr());
