@@ -1,0 +1,17 @@
+.web--login {
+    min-height: 100vh;
+    padding: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    &__form {
+        padding: 50px;
+        background: white;
+        border-radius: 20px;
+        height: max-content;
+        &--navlink {
+            color: rgba(42, 108, 250, 0.795);
+            text-decoration: underline;
+        }
+    }
+}

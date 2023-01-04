@@ -1,0 +1,22 @@
+.adm--wtorder--list{
+    width: 100%;
+    padding: 10px;
+    background: white;
+
+    &__actions{
+        padding: 10px;
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 20px;
+    }
+
+    &__table{
+
+        &--actionscl{
+            width: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+    }
+}

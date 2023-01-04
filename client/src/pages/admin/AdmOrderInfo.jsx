@@ -1046,7 +1046,6 @@ const AdmOrderInfo = () => {
             }
             setEdittingOrderItem(payload)
             setIsModalDesc(true)
-
         }
     }
 
@@ -1330,11 +1329,8 @@ const AdmOrderInfo = () => {
                                                                 Hủy
                                                             </Button>
                                                         </>
-
-
                                                     )
                                             }
-
                                         </CustomerInfoActions>
                                         {
                                             !isModalCustomerInfo ?

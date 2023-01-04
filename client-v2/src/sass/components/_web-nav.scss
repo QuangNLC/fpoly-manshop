@@ -1,0 +1,19 @@
+.web--nav {
+    height: $nav-height;
+    padding: 0 20px;
+    background-color: #615a55;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+
+    &__item {
+        padding: 0 10px;
+
+        &--link {
+
+            font-size: 20px;
+            font-weight: 500;
+            color: white;
+        }
+    }
+}

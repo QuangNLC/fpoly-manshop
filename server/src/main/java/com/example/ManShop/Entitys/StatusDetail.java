@@ -43,7 +43,6 @@ public class StatusDetail {
     @Column(name ="IsFinish")
     private boolean isFinish;
     @ManyToOne
-//    @JsonIgnore
     @JoinColumn(name = "Userupdate")
     private Users usersUpdate;
 

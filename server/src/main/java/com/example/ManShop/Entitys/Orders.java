@@ -48,10 +48,6 @@ public class Orders {
     @OneToMany(mappedBy = "orders")
     private List<OrderDetail> orderDetail;
 
-//    @ManyToOne
-//    @JsonIgnore
-//    @JoinColumn(name = "statusOrder")
-//    private StatusOrder statusOrders;
 
     @OneToMany(mappedBy = "orders")
     private List<OrderPayment> orderPayment;

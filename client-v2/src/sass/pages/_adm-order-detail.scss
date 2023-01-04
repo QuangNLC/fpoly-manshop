@@ -1,0 +1,126 @@
+.adm--order {
+    width: 100%;
+    padding: 20px;
+
+    &__actions {
+        margin-bottom: 20px;
+    }
+
+    &__status--timeline {
+        padding: 10px 20px;
+        background-color: white;
+        border-radius: 10px;
+        margin-bottom: 30px;
+
+        &__actions{
+            margin-top: 10px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            
+            &--updategr{
+                display: flex;
+
+                &__btn{
+                    margin-right: 20px;
+                }
+            }
+        }
+    }
+
+    &__info {
+        padding: 10px 20px;
+        background-color: white;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        width: 100%;
+
+        &--title {
+            margin-bottom: 5px;
+            border-bottom: 0.5px solid teal;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+        }
+
+        &--detail {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+
+            &__item {
+                width: 50%;
+                padding: 10px 20px;
+                display: flex;
+                align-items: top;
+                justify-content: flex-start;
+
+                &--label {
+                    width: 100px;
+                }
+            }
+        }
+    }
+
+    &__pay--timeline {
+        padding: 10px 20px;
+        background-color: white;
+        border-radius: 10px;
+        margin-bottom: 30px;
+
+        &__title{
+            margin-bottom: 5px;
+            border-bottom: 0.5px solid teal;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+        }
+
+       
+    }
+
+    &__cart{
+        padding: 10px 20px;
+        background-color: white;
+        border-radius: 10px;
+        margin-bottom: 30px;
+
+        &--title{
+            margin-bottom: 5px;
+            border-bottom: 0.5px solid teal;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+        }
+
+        &--detail{
+            padding: 10px 20px;
+            display: flex;
+
+            &__table{
+                width: 75%;
+                padding: 0px 10px;
+            }
+
+            &__pay{
+                width: 25%;
+                padding: 0px 10px;
+
+                &--item{
+                    width: 100%;
+                    display: flex;
+                    margin: 10px 0;
+                    align-items: center;
+                    justify-content: space-between;
+                    margin-bottom: 20px;
+                }
+            }
+        }
+    }
+
+}

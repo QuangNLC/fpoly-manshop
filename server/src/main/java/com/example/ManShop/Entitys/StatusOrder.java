@@ -21,7 +21,4 @@ public class StatusOrder {
     private Integer id;
     @Column(name = "title", columnDefinition = "NVARCHAR(200)")
     private String title;
-//    @JsonIgnore
-//    @OneToMany(mappedBy ="statusOrders")
-//    private List<Orders> orders;
 }

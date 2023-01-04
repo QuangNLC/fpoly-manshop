@@ -1,0 +1,24 @@
+.web--register{
+    min-height: 100vh;
+    padding: 20px;
+    &__form{
+        padding: 50px;
+        background: white;
+        border-radius: 20px;
+
+        &--ipcontainer{
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+        }
+        &--item{
+            width: 50%;
+            padding: 10px;
+        }
+
+        &--navlink{
+            color: rgba(42, 108, 250, 0.795);
+            text-decoration: underline;
+        }
+    }
+}

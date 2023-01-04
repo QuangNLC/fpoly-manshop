@@ -1,0 +1,149 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+
+$adm-sidebar-width: 300px;
+$header-height: 100px;
+$nav-height: 60px;
+
+
+$color-bg-white: #fff;
+$color-bg-light: #ededef;
+
+
+$color-primary: #93B3B5;
+$color-second: #9dd5d8;
+
+$color-text-gray: #999;
+$color-text-price : rgb(86, 26, 252);
+
+.web--header__container{
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 10;
+    background: white;
+}
+
+.web--outlet{
+    margin-top: calc( 100px + 60px);
+    padding: 20px;
+    background-color: rgb(236, 235, 235);
+    width: 100%;
+}
+
+.adm--layout{
+    width: 100%;
+    min-height: 100vh;
+    position: relative;
+
+    &__sidebar{
+        width: $adm-sidebar-width;
+        position: fixed;
+        height: 100vh;
+        top: 0;
+        left: 0;
+    }
+
+    &__outlet{
+        margin-left: $adm-sidebar-width;
+        padding: 20px 30px;
+    }
+}
+
+*{
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+}
+
+body{
+    font-size: 13px;
+    font-family: 'Roboto';
+}
+
+
+ul{
+    list-style: none;
+}
+
+input{
+    border: none;
+    outline: none;
+}
+
+a{
+    text-decoration: none;
+    color: #000;
+}
+
+a:hover{
+    color: $color-primary;
+}
+
+img{
+    max-width: 100%;
+}
+
+
+// .my-btn{
+//     width: max-content;
+//     min-width: 100px;
+//     transition: 0.4s ease;
+
+//     &:hover{
+//         background-color: #fff !important;
+//         color: $color-primary !important;
+//     }
+// }
+
+// .my-btn.my-btn--primary{
+//     background-color: $color-primary;
+//     color : #fff;
+//     font-size: 1rem;
+// }
+
+// .my-btn.my-btn--social{
+//     border-radius: 10px;
+//     min-width: 300px;
+// }
+
+// .my-btn.my-btn--danger{
+//     background-color: rgb(247, 72, 72);
+//     color : #fff;
+//     font-size: 1rem;
+// }
+
+// .ant-table-thead {
+//     tr {
+//         th {
+//             background-color: $color-primary;
+//             text-align: center;
+//         }
+//     }
+// }
+
+// .ant-table-cell-row-hover {
+//     background-color: $color-second !important;
+// }
+
+// .ant-input-number{
+//     width: 100%;
+// }
+
+
+// .ant-list-split .ant-list-item {
+//     border-bottom: 1px solid #999 !important;
+// }
+
+// .ant-card-head{
+//     background-color: $color-second;
+//     text-transform: capitalize;
+//     font-size: 1.25rem;
+// }
+
+
+// @mixin flex($justify-content, $align-items) {
+//     display: flex;
+//     justify-content: #{$justify-content};
+//     align-items: #{$align-items};
+// }

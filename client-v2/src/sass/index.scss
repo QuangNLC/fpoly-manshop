@@ -1,0 +1,39 @@
+@import './base';
+
+@import './components/web-header';
+@import './components/web-nav';
+@import './components/product-card';
+@import './components/product-details';
+@import './components/cart';
+@import './components/adm-sidebar';
+
+
+
+
+@import './pages/web-products';
+@import './pages/web-cart';
+@import './pages/web-register';
+@import './pages/web-login';
+@import './pages/adm-wtorder-list';
+@import './pages/adm-wtorder-detail';
+@import './pages/adm-order-list';
+@import './pages/adm-order-detail';
+
+// @import './components/layout/admin-layout';
+// @import './components/layout/web-layout';
+// @import './components/header';
+// @import './components/footer';
+// @import './components/web-section';
+// @import './components/web-product-page';
+
+
+// @import './feature/admin/adm-dashboard';
+// @import './feature/admin/adm-categories';
+// @import './feature/admin/adm-products';
+
+
+// @import './feature/website/web-home';
+// @import './feature/website/web-products';
+// @import './feature/website/web-product-detail';
+// @import './feature/website/web-login';
+// @import './feature/website/web-cart';
