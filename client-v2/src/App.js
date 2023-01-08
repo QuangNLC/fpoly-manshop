@@ -12,20 +12,27 @@ import AdmDashboard from './pages/admins/AdmDashboard';
 import AdmWaitingOrderDetail from './pages/admins/AdmWaitingOrderDetail';
 import AdmOrderList from './pages/admins/AdmOrderList';
 import AdmOrderDetail from './pages/admins/AdmOrderDetail';
+import WebHomePage from './pages/webs/WebHomePage';
+import AdmCategoryList from './pages/admins/AdmCategoryList';
+import AdmMaterialList from './pages/admins/AdmMaterialList';
+import AdmColorList from './pages/admins/AdmColorList';
+import AdmProductList from './pages/admins/AdmProductList';
+import AdmNewProduct from './pages/admins/AdmNewProduct';
+import AdmProductDetail from './pages/admins/AdmProductDetail';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<WebsiteLayout />}>
+          <Route index element={<WebHomePage />} />
           <Route path="products" element={<WebProducts />} />
           <Route path="product/:id" element={<WebProductDetail />} />
           <Route path="cart" element={<WebCart />} />
           <Route path="register" element={<WebRegister />} />
           <Route path="login" element={<WebLogin />} />
 
-          {/* <Route index element={<WebHomePage />} />
-          <Route path="products/search=:searchText" element={<WebProductList />} />
+          {/* <Route path="products/search=:searchText" element={<WebProductList />} />
           <Route path="my-orders" element={<WebMyOrders />} />
           <Route path="my-account" element={<WebMyAccount />} />
           <Route path="change-password" element={<WebChangePassword />} />
@@ -33,8 +40,8 @@ function App() {
           <Route path="contact" element={<WebContact />} />
           <Route path="forgot-password" element={<WebForgotPassword />} />
           <Route path="adm-login" element={<WebAdmLogin />} />
-          <Route path="message" element={<WebMessage />} />
-          <Route path="*" element={<div>Trang khong ton tai</div>} /> */}
+          <Route path="message" element={<WebMessage />} /> */}
+          <Route path="*" element={<div>Trang khong ton tai</div>} />
         </Route>
         <Route path="/admin" element={<AdmProtected><AdminLayout /></AdmProtected>}>
           <Route index element={<AdmDashboard />} />
@@ -42,14 +49,15 @@ function App() {
           <Route path="waiting-order/:id" element={<AdmWaitingOrderDetail />} />
           <Route path="order-list" element={<AdmOrderList />} />
           <Route path="order/:id" element={<AdmOrderDetail />} />
+          <Route path="category-list" element={<AdmCategoryList />} />
+          <Route path="material-list" element={<AdmMaterialList />} />
+          <Route path="color-list" element={<AdmColorList />} />
+          <Route path="product-list" element={<AdmProductList />} />
+          <Route path="product/new" element={<AdmNewProduct />} />
+          <Route path="product/edit/:id" element={<AdmProductDetail />} />
 
           {/* <Route path="user-list" element={<AdmUserList />} />
           <Route path="new-user" element={<AdmNewUser />} />
-          <Route path="category-list" element={<AdmCategoryList />} />
-          <Route path="material-list" element={<AdmMaterialList />} />
-          <Route path="product-list" element={<AdmProductList />} />
-          <Route path="new-product" element={<AdmNewProduct />} />
-          <Route path="edit-product/:productId" element={<AdmEditProductDetails />} />
           <Route path="user/:username" element={<AdmUserDetail />} />
           <Route path="message" element={<AdmMessage />} />
           <Route path="bills" element={<AdmBills />} />
@@ -57,8 +65,8 @@ function App() {
           <Route path="promotion/new" element={<AdmNewPromotions />} />
           <Route path="promotion/detail/:id" element={<AdmUpdatePromotion />} />
           <Route path="my-account" element={<AdmMyAccount />} />
-          <Route path="change-password" element={<AdmChangePassword />} />
-          <Route path="*" element={<div>Trang khong ton tai</div>} /> */}
+          <Route path="change-password" element={<AdmChangePassword />} /> */}
+          <Route path="*" element={<div>Trang khong ton tai</div>} />
         </Route>
       </Routes>
     </BrowserRouter>

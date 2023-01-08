@@ -2,6 +2,7 @@
 
 @import './components/web-header';
 @import './components/web-nav';
+@import './components/web-footer';
 @import './components/product-card';
 @import './components/product-details';
 @import './components/cart';
@@ -14,10 +15,18 @@
 @import './pages/web-cart';
 @import './pages/web-register';
 @import './pages/web-login';
+@import './pages/web-homepage';
 @import './pages/adm-wtorder-list';
 @import './pages/adm-wtorder-detail';
 @import './pages/adm-order-list';
 @import './pages/adm-order-detail';
+@import './pages/adm-cate-list';
+@import './pages/adm-mate-list';
+@import './pages/adm-pr-list';
+@import './pages/adm-new-pr';
+@import './pages/adm-pr-detail';
+
+
 
 // @import './components/layout/admin-layout';
 // @import './components/layout/web-layout';

@@ -26,9 +26,9 @@ $color-text-price : rgb(86, 26, 252);
 
 .web--outlet{
     margin-top: calc( 100px + 60px);
-    padding: 20px;
     background-color: rgb(236, 235, 235);
     width: 100%;
+    min-height: 100vh;
 }
 
 .adm--layout{

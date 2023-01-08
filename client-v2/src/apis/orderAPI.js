@@ -24,6 +24,18 @@ export const orderAPI = {
     updatePaymentInfo: (payload) => {
         const url = 'order/update-payment-info/'+payload.id;
         return axiosClient.put(url, payload); 
+    },
+    updateCartItem: (payload) => {
+        const url = 'order/update-cart-item/'+payload.id;
+        return axiosClient.put(url, payload);
+    },
+    deleteCartItem: (payload) => {
+        const url = 'order/delete-cart-item/'+payload.id;
+        return axiosClient.put(url, payload);
+    },
+    createCartItem: (payload) => {
+        const url = 'order/create/cart-item/'+payload.id;
+        return axiosClient.post(url, payload);
     }
 
 

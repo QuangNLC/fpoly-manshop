@@ -3,7 +3,6 @@ import React from 'react'
 import ProductCard from './ProductCard'
 
 const ProductList = ({list}) => {
-    console.log(list)
     return (
         <Row gutter={[32, 64]}>
             {list && list.length > 0 && 

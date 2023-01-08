@@ -864,7 +864,7 @@ const AdmWaitingOrderDetail = () => {
     const [usersData, setUsersData] = useState([])
     const [usersTableData, setUsersTableData] = useState([])
     const [isUsersTableModal, setIsUsersTableModal] = useState(false)
-
+    const [userFilterInputValue, setUserFilterInputValue] = useState('')
     const userColumns = [
         {
             title: 'Ảnh',
@@ -929,8 +929,33 @@ const AdmWaitingOrderDetail = () => {
         onCloseUsersTableModal()
     }
 
+    const onClickSearchUser = () => {
+        if(userFilterInputValue.trim() !== ''){
+            let newData = usersData.filter((u) => {
+                if(
+                    u.username.toLowerCase().includes(userFilterInputValue.trim().toLocaleLowerCase()) ||
+                    u.fullname.toLowerCase().includes(userFilterInputValue.trim().toLocaleLowerCase()) ||
+                    u.phone.toLowerCase().includes(userFilterInputValue.trim().toLocaleLowerCase()) ||
+                    u.email.toLowerCase().includes(userFilterInputValue.trim().toLocaleLowerCase())
+                ){
+                    return true;
+                }else{
+                    return false;
+                }
+            })
+            setUsersTableData(newData);
+        }
+    }
+
+    const onClearUserSearch = () => {
+        setUsersTableData(usersData);
+        setUserFilterInputValue('')
+    }
 
     //end modal usertable
+
+
+    
 
 
     useEffect(() => {
@@ -1449,10 +1474,10 @@ const AdmWaitingOrderDetail = () => {
                             >
                                 <div className="usersmodal--filters">
                                     <div className="usersmodal--filters__search">
-                                        <Input />
-                                        <Button icon={<SearchOutlined />} type='primary' onClick={onSearchText}>Tìm Kiếm</Button>
-                                        <Button icon={<ReloadOutlined />} danger onClick={() => { onClearFiler() }}>Làm Mới</Button>
-                                        <Button icon={<PlusOutlined />} type="primary" danger onClick={() => { onClearFiler() }}>Thêm Mới</Button>
+                                        <Input value={userFilterInputValue} onChange={e => setUserFilterInputValue(e.target.value)}/>
+                                        <Button icon={<SearchOutlined />} type='primary' onClick={onClickSearchUser}>Tìm Kiếm</Button>
+                                        <Button icon={<ReloadOutlined />} danger onClick={onClearUserSearch}>Làm Mới</Button>
+                                        <Button icon={<PlusOutlined />} type="primary" danger>Thêm Mới</Button>
                                     </div>
                                 </div>
                                 <div className="usersmodal--table">

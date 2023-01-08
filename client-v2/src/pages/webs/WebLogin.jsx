@@ -2,7 +2,7 @@ import { Button, Form, Input, notification, Typography } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import React from 'react'
 import { useDispatch } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { authAPI } from '../../apis/authAPI';
 import { userAPI } from '../../apis/userAPI';
 import Helmet from '../../components/Helmet';

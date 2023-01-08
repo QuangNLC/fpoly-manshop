@@ -52,6 +52,9 @@ public class OrderController {
     private PaymentDetailJPA paymentDetailJPA;
 
 
+    @Autowired
+    private ProductJPA productJPA;
+
     @PostMapping("/checkout")
     @Transactional
     public ResponseEntity<?> checkOut(@RequestBody CheckoutRequestDTO orderRequest){
@@ -198,6 +201,7 @@ public class OrderController {
             orders.setLocation(requestDTO.getLocation());
             orders.setShipfee(requestDTO.getShipfee());
             ordersJPA.save(orders);
+
             StatusDetail newStatusDetail = new StatusDetail();
             Users users = usersJPA.findById(requestDTO.getUpdatedUser()).get();
             newStatusDetail.setOrderStatus(statusOrderJPA.findById(7).get());
@@ -237,6 +241,131 @@ public class OrderController {
             newPaymentDetail.setPaymentFee(requestDTO.getPaymentfee());
             paymentDetailJPA.save(newPaymentDetail);
         }
+        return ResponseEntity.ok(ordersJPA.findById(id).get());
+    }
+
+    @PutMapping("/update-cart-item/{id}")
+    @Transactional
+    public ResponseEntity<?> updateOrderCartItem(@PathVariable("id") Integer id, @RequestBody UpdateOrderCartItemRequestDTO requestDTO){
+        if(!ordersJPA.existsById(requestDTO.getOrderId())){
+            return ResponseEntity.badRequest().body("Không tìm thấy đơn hàng với id: "+requestDTO.getOrderId());
+        }else if(!usersJPA.existsById(requestDTO.getUpdatedUser())){
+            return ResponseEntity.badRequest().body("Không tìm thấy tài khoản với uesrname"+requestDTO.getUpdatedUser());
+        }else if(!orderDetailJPA.existsById((id))){
+            return ResponseEntity.badRequest().body("Không tìm thấy order detail id: "+id);
+        }
+
+        OrderDetail orderDetail = orderDetailJPA.findById(id).get();
+        try {
+            ProductSize update = productSizeJPA.findBySize_IdAndProduct_Id(requestDTO.getSizeId(), orderDetail.getProduct().getId());
+            update.setId(update.getId());
+            update.setQuantity(update.getQuantity() + orderDetail.getQuantity() - requestDTO.getQuantity());
+            orderDetail.setQuantity(requestDTO.getQuantity());
+            productSizeJPA.save(update);
+            orderDetailJPA.save(orderDetail);
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(420).body("lỗi khi trừ số lượng sản phẩm");
+        }
+        StatusDetail newStatusDetail = new StatusDetail();
+        Users users = usersJPA.findById(requestDTO.getUpdatedUser()).get();
+        newStatusDetail.setOrderStatus(statusOrderJPA.findById(7).get());
+        newStatusDetail.setCreatedAt(new Date());
+        newStatusDetail.setOrders(ordersJPA.findById(requestDTO.getOrderId()).get());
+        newStatusDetail.setDescription(
+                "Cập nhật số lượng sản phẩm: "+"["+orderDetail.getProduct().getName()+"]"
+                        +" Mã SP: [ " +orderDetail.getProduct().getId() +" ] "
+                        + " - " + "x " + requestDTO.getQuantity() +" sản phẩm."
+        );
+        newStatusDetail.setCreatedUser(users);
+        statusDetailJPA.save(newStatusDetail);
+
+
+        return ResponseEntity.ok(ordersJPA.findById(requestDTO.getOrderId()).get());
+    }
+
+    @PutMapping("/delete-cart-item/{id}")
+    @Transactional
+    public ResponseEntity<?> deleteOrderCartItem(@PathVariable("id") Integer id, @RequestBody UpdateOrderCartItemRequestDTO requestDTO){
+        if(!ordersJPA.existsById(requestDTO.getOrderId())){
+            return ResponseEntity.badRequest().body("Không tìm thấy đơn hàng với id()"+requestDTO.getOrderId());
+        }else if(!usersJPA.existsById(requestDTO.getUpdatedUser())){
+            return ResponseEntity.badRequest().body("Không tìm thấy tài khoản với uesrname"+requestDTO.getUpdatedUser());
+        }else if(!orderDetailJPA.existsById((id))){
+            return ResponseEntity.badRequest().body("Không tìm thấy order detail id: "+id);
+        }
+
+        OrderDetail orderDetail = orderDetailJPA.findById(id).get();
+        try {
+            ProductSize update = productSizeJPA.findBySize_IdAndProduct_Id(requestDTO.getSizeId(), orderDetail.getProduct().getId());
+            update.setId(update.getId());
+            update.setQuantity(update.getQuantity() + orderDetail.getQuantity());
+            productSizeJPA.save(update);
+            orderDetailJPA.deleteById(id);
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(420).body("lỗi khi trừ số lượng sản phẩm");
+        }
+        StatusDetail newStatusDetail = new StatusDetail();
+        Users users = usersJPA.findById(requestDTO.getUpdatedUser()).get();
+        newStatusDetail.setOrderStatus(statusOrderJPA.findById(7).get());
+        newStatusDetail.setCreatedAt(new Date());
+        newStatusDetail.setOrders(ordersJPA.findById(requestDTO.getOrderId()).get());
+        newStatusDetail.setDescription(
+                "Xóa sản phẩm: "+"["+orderDetail.getProduct().getName()+"]"
+                        +" Mã SP: [ " +orderDetail.getProduct().getId() +" ] "
+                        + " - " + "Khỏi giỏ hàng"
+        );
+        newStatusDetail.setCreatedUser(users);
+        statusDetailJPA.save(newStatusDetail);
+
+
+        return ResponseEntity.ok(ordersJPA.findById(requestDTO.getOrderId()).get());
+    }
+
+    @PostMapping("/create/cart-item/{id}")
+    @Transactional
+    public ResponseEntity<?> createOrderCartItem(@PathVariable("id") Integer id, @RequestBody CreateCartItemRequestDTO requestDTO){
+        if(!ordersJPA.existsById(id)){
+            return ResponseEntity.badRequest().body("Không tìm thấy đơn hàng với id()"+id);
+        }else if(!usersJPA.existsById(requestDTO.getUpdatedUser())){
+            return ResponseEntity.badRequest().body("Không tìm thấy tài khoản với uesrname"+requestDTO.getUpdatedUser());
+        }else if(!productJPA.existsById(requestDTO.getProductId())){
+            return ResponseEntity.badRequest().body("Không tìm thấy sản phẩm với id: "+requestDTO.getProductId());
+        }
+
+        OrderDetail newOrder = new OrderDetail();
+        newOrder.setOrders(ordersJPA.findById(id).get());
+        newOrder.setQuantity(requestDTO.getQuantity());
+        newOrder.setSize(requestDTO.getSize());
+        newOrder.setPrice(requestDTO.getPrice());
+        newOrder.setPrDiscount(requestDTO.getDiscount());
+        newOrder.setStatus(true);
+        newOrder.setProduct(productJPA.findById(requestDTO.getProductId()).get());
+        try {
+            ProductSize update = productSizeJPA.findBySize_IdAndProduct_Id(requestDTO.getSizeId(), requestDTO.getProductId());
+            update.setId(update.getId());
+            update.setQuantity(update.getQuantity()- requestDTO.getQuantity());
+            productSizeJPA.save(update);
+            orderDetailJPA.save(newOrder);
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(420).body("lỗi khi trừ số lượng sản phẩm");
+        }
+        StatusDetail newStatusDetail = new StatusDetail();
+        Users users = usersJPA.findById(requestDTO.getUpdatedUser()).get();
+        newStatusDetail.setOrderStatus(statusOrderJPA.findById(7).get());
+        newStatusDetail.setCreatedAt(new Date());
+        newStatusDetail.setOrders(ordersJPA.findById(id).get());
+        newStatusDetail.setDescription(
+                "Thêm sản phẩm: "+"["+newOrder.getProduct().getName()+"]"
+                        +" Mã SP: [ " +newOrder.getProduct().getId() +" ] "
+                        + " - " + "x" + newOrder.getQuantity()
+        );
+        newStatusDetail.setCreatedUser(users);
+        statusDetailJPA.save(newStatusDetail);
+
+
         return ResponseEntity.ok(ordersJPA.findById(id).get());
     }
 

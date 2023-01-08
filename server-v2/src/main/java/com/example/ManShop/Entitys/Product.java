@@ -27,6 +27,8 @@ public class Product {
     private String name;
     @Column(name = "descTitle", columnDefinition = "NVARCHAR(2500)")
     private String descTitle;
+    @Column(name="isactive")
+    private Boolean isActive;
     @ManyToOne @JoinColumn(name="category")
     private Categories category;
 

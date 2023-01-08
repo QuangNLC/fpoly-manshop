@@ -1,0 +1,55 @@
+.adm--prlist {
+    width: 100%;
+    padding: 20px;
+
+    &__title {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    &__body {
+        padding: 20px;
+        background-color: white;
+        border-radius: 10px;
+
+        &--filters {
+            &__search {
+                width: 100%;
+                display: flex;
+
+                button {
+                    margin: 0px 10px;
+                }
+            }
+
+            &__options {
+                width: 100%;
+                margin-top: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                &--item {
+                    display: flex;
+                    align-items: center;
+                    margin: 0 20px;
+
+                    &__label {
+                        margin-right: 5px;
+                    }
+
+                    &__content {
+                        min-width: 100px;
+                    }
+                }
+            }
+        }
+
+        &--table {
+            margin-top: 20px;
+        }
+    }
+}

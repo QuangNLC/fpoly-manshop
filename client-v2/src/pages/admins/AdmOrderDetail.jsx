@@ -1,13 +1,14 @@
-import { Button, Empty, Modal, Spin, Steps, Table, Tag, Typography, InputNumber, Input, Form, Select, notification, Tooltip, Radio, Switch } from 'antd';
+import { Button, Empty, Modal, Spin, Steps, Table, Tag, Typography, InputNumber, Input, Form, Select, notification, Tooltip, Radio, Switch, Row, Col } from 'antd';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import { orderAPI } from '../../apis/orderAPI';
 import Helmet from '../../components/Helmet';
-import { EllipsisOutlined, FileDoneOutlined, FileOutlined, CarOutlined, ScheduleOutlined, SyncOutlined, FileExcelOutlined, FormOutlined } from '@ant-design/icons'
+import { EllipsisOutlined, FileDoneOutlined, FileOutlined, CarOutlined, ScheduleOutlined, SyncOutlined, FileExcelOutlined, FormOutlined, MinusOutlined, PlusOutlined, SearchOutlined, ReloadOutlined } from '@ant-design/icons'
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'antd/es/form/Form';
 import ghnFeeAPI from '../../apis/ghnFeeAPI';
+import { productAPI } from '../../apis/productAPI';
 
 const getIconByOrderStatus = (orderStatus) => {
 
@@ -163,21 +164,13 @@ const UpdateButtonGroup = ({ order, onClickUpdate }) => {
 }
 
 
-const Cart = ({ cart, order, onDeleteItem, onUpdateItemQuantity }) => {
+const Cart = ({ cart, order, onEditItem }) => {
 
     const dispatch = useDispatch()
     const [data, setData] = useState([])
 
-    const hanldeDeleteCartIem = (item) => {
-    }
-
-    const handleClickUpdateCartItemQuantity = (item, newQuantity) => {
-    }
-
-    const handleChangeCartItemQuantity = (e, item) => {
-    }
-
-    const handleBlurCartItemQuantityInput = (e, item) => {
+    const onClickEditIem = (item) => {
+        onEditItem(item)
     }
 
     const columns = [
@@ -248,7 +241,13 @@ const Cart = ({ cart, order, onDeleteItem, onUpdateItemQuantity }) => {
             render: (record) => {
                 return (
                     <div className="cart--item__actions">
-                        <Button danger onClick={() => { hanldeDeleteCartIem(record) }} disabled={order?.orderStatus?.id !== 1}>Cập Nhật</Button>
+
+                        <Button danger onClick={() => { onClickEditIem(record) }} disabled={order?.orderStatus?.id !== 1}>Cập Nhật</Button>
+                        {
+                            order?.orderStatus?.id !== 1
+                            &&
+                            <Button style={{ marginLeft: 10, backgroundColor: '#ad0e33', color: 'white' }}>Hoàn Trả</Button>
+                        }
                     </div>
                 )
             },
@@ -317,13 +316,162 @@ const Cart = ({ cart, order, onDeleteItem, onUpdateItemQuantity }) => {
                             new Intl.NumberFormat("vi-VN", {
                                 style: "currency",
                                 currency: "VND",
-                            }).format(order?.totalPrice + order?.shipfee - order?.discount)
+                            }).format(cart.reduce(((total, item) => total + item.product.price * item.quantity), 0) + order?.shipfee - order?.discount)
                         }
                     </div>
                 </div>
             </div>
         </>
 
+    )
+}
+
+
+const ProductDetail = ({ product, onAddToCart }) => {
+    const [previewImg, setPreviewImg] = useState(null)
+    const [selectedSize, setSelectedSize] = useState(undefined)
+    const [quantityInfo, setQuantityInfo] = useState(1)
+
+    const dispatch = useDispatch();
+
+    const onSelectSize = (size) => {
+        setSelectedSize(size)
+        setQuantityInfo(1)
+    }
+    const onChangeQuantityValue = (value) => {
+        if (!value) {
+            setQuantityInfo(1)
+        } else {
+            if (value <= 0) {
+                openNotificationWithIcon('info', 'Thông báo', 'Nhập lớn hơn 0')
+                setQuantityInfo(1)
+            } else if (Math.floor(value) > selectedSize.quantity) {
+                openNotificationWithIcon('info', 'Thông báo', `Hiện có sẵn ${selectedSize.quantity} sản phẩm.`)
+                setQuantityInfo(selectedSize.quantity)
+            } else {
+                setQuantityInfo(Math.floor(value))
+            }
+        }
+    }
+
+    const handleAddToCart = () => {
+        if (!selectedSize || !quantityInfo) {
+            openNotificationWithIcon('info', 'Thông báo', 'Vui lòng chọn size và số lượng.')
+        } else {
+            const payload = {
+                product,
+                selectedSize,
+                quantity: quantityInfo
+            }
+            onAddToCart(payload)
+        }
+    }
+
+
+
+    useEffect(() => {
+        setPreviewImg(`http://localhost:8080/api/file/images/${product?.images[0]?.photo}`)
+    }, [product])
+
+    return (
+        <Row className='product--details' gutter={[32, 0]}>
+            <Col span={12}>
+                <div className="show--img">
+                    <img src={previewImg} alt="" />
+                </div>
+                <div className="preview--imgs">
+                    {
+                        product.images && product.images.map((item, index) => {
+                            return (
+                                <div className="preview--imgs__item" key={item.id} onClick={() => { setPreviewImg(`http://localhost:8080/api/file/images/${item.photo}`) }}>
+                                    <img src={`http://localhost:8080/api/file/images/${item.photo}`} alt="" />
+                                </div>
+                            )
+                        })
+                    }
+
+                </div>
+            </Col>
+            <Col span={12}>
+                <Typography.Title level={2}>{product?.name}</Typography.Title>
+                <div className="details--gr">
+                    <div className="details--gr__title">
+                        <Typography.Text>Thể Loại</Typography.Text>
+                    </div>
+                    <div className="details--gr__content">
+                        <Typography.Title level={4} style={{ marginBottom: 0 }}>{product?.category?.title}</Typography.Title>
+                    </div>
+                </div>
+                <div className="details--gr">
+                    <div className="details--gr__title">
+                        <Typography.Text>Chất Liệu</Typography.Text>
+                    </div>
+                    <div className="details--gr__content">
+                        <Typography.Title level={4} style={{ marginBottom: 0 }}>{product?.material?.title}</Typography.Title>
+                    </div>
+                </div>
+                <div className="details--gr">
+                    <div className="details--gr__title">
+                        <Typography.Text>Mô Tả</Typography.Text>
+                    </div>
+                    <div className="details--gr__content">
+                        {product?.descTitle}
+                    </div>
+                </div>
+                <div className="details--price">
+                    {new Intl.NumberFormat("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                    }).format(product?.price)}
+                </div>
+                <div className="details--sizes">
+                    <div className="details--gr__title">
+                        <Typography.Title level={4}>Size</Typography.Title>
+                    </div>
+                    <div className="details--sizes__gr">
+                        {product.productsizes.map((item, index) => (
+                            <div className="details--sizes__gr--item" key={item.id}>
+                                <Button disabled={!item.isActive || item.quantity <= 0} className={`details--sizes__gr--item__btn ${selectedSize && selectedSize.id === item.id ? 'selected' : ''}`} onClick={() => onSelectSize(item)}>
+                                    {item.size.title}
+                                </Button>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                {selectedSize &&
+                    <div className='size--detail'>
+                        {`${selectedSize.quantity} sản phẩm có sẵn.`}
+                    </div>
+                }
+                <div className="details--actions">
+                    <div className="details--actions__top">
+                        <div className="details--actions__quantity">
+                            <div className="details--actions__quantity--minus">
+                                <MinusOutlined onClick={() => { onChangeQuantityValue(quantityInfo - 1) }} />
+                            </div>
+                            <div className="details--actions__quantity--info">
+                                <InputNumber value={quantityInfo} onChange={onChangeQuantityValue} style={{ border: 'none', textAlign: 'center' }} disabled={!selectedSize} />
+                            </div>
+                            <div className="details--actions__quantity--plus">
+                                <PlusOutlined onClick={() => { onChangeQuantityValue(quantityInfo + 1) }} />
+                            </div>
+                        </div>
+                        <div className="details--actions__add">
+                            {
+                                (!selectedSize || !quantityInfo) ?
+                                    (
+                                        <Button className="details--actions__add--btn" disabled>THÊM VÀO GIỎ HÀNG</Button>
+                                    )
+                                    :
+                                    (
+                                        <Button className="details--actions__add--btn" onClick={() => { handleAddToCart() }}>THÊM VÀO GIỎ HÀNG</Button>
+                                    )
+                            }
+                        </div>
+                    </div>
+                </div>
+            </Col>
+        </Row>
     )
 }
 
@@ -592,7 +740,7 @@ const AdmOrderDetail = () => {
         {
             title: 'Thời Gian',
             render: (record) => {
-                return(
+                return (
                     <div>
                         {moment(record.createdAt).format('DD/MM/YYYY, H:mm:ss')}
                     </div>
@@ -602,9 +750,9 @@ const AdmOrderDetail = () => {
         {
             title: 'Loại Giao Dịch',
             render: (record) => {
-                return(
+                return (
                     <div>
-                        <Tag color={record.paymentRefund ? 'orange': 'blue'}>{record.paymentStatus.title}</Tag>
+                        <Tag color={record.paymentRefund ? 'orange' : 'blue'}>{record.paymentStatus.title}</Tag>
                     </div>
                 )
             }
@@ -612,9 +760,9 @@ const AdmOrderDetail = () => {
         {
             title: 'Phương Thức Thanh Toán',
             render: (record) => {
-                return(
+                return (
                     <div>
-                        <Tag color={record.paymentType === 'tiền mặt' ? 'green': 'blue'}>{record.paymentType}</Tag>
+                        <Tag color={record.paymentType === 'tiền mặt' ? 'green' : 'blue'}>{record.paymentType}</Tag>
                     </div>
                 )
             }
@@ -622,7 +770,7 @@ const AdmOrderDetail = () => {
         {
             title: 'Ghi Chú',
             render: (record) => {
-                return(
+                return (
                     <div>
                         {record.description}
                     </div>
@@ -632,18 +780,18 @@ const AdmOrderDetail = () => {
         {
             title: 'Người Xác Nhận',
             render: (record) => {
-                return(
+                return (
                     <div>
                         {record.createdUser.username}
                     </div>
                 )
             }
         }
-        
+
     ]
     const onOpenCreatingPaymentModal = () => {
         createPaymentForm.setFieldsValue({
-            paymentfee: data?.totalPrice - data?.discount + data?.shipfee,
+            paymentfee: data?.orderDetail.reduce(((total, item) => total + item.product.price * item.quantity), 0) - data?.discount + data?.shipfee,
             paymenttype: "tiền mặt",
             description: '',
             paymentRefund: false
@@ -654,7 +802,7 @@ const AdmOrderDetail = () => {
     const onCloseCreatingPaymentModal = () => {
         setIsCreatingAddressModal(false);
         createPaymentForm.setFieldsValue({
-            paymentfee: data?.totalPrice - data?.discount + data?.shipfee,
+            paymentfee: data?.orderDetail.reduce(((total, item) => total + item.product.price * item.quantity), 0) - data?.discount + data?.shipfee,
             paymenttype: "tiền mặt",
             description: '',
             paymentRefund: false
@@ -689,6 +837,372 @@ const AdmOrderDetail = () => {
     //end modal creating payment
 
 
+    //modal edit order cart item
+    const [editingOrderCartItemModal, setEditingOrderCartItemModal] = useState(false)
+    const [editingOrderCartItem, setEditingOrderCartItem] = useState(undefined)
+
+    const onCloseEditCartItemModal = () => {
+        setEditingOrderCartItemModal(false);
+        setEditingOrderCartItem(undefined);
+    }
+
+    const onOpenEditCartItemModal = (item) => {
+        setEditingOrderCartItem(item);
+        setEditingOrderCartItemModal(true);
+    }
+
+    const handleChangeCartItemQuantity = (e, item) => {
+        setEditingOrderCartItem({
+            ...editingOrderCartItem,
+            quantity: e
+        })
+    }
+
+    const handleBlurCartItemQuantityInput = (e, item) => {
+        if (Number.isNaN(Number.parseInt(item.quantity))) {
+            editingOrderCartItem.quantity = 1;
+            setEditingOrderCartItem({ ...editingOrderCartItem })
+            openNotificationWithIcon('error', 'Lỗi nhập liệu', 'Vui lòng nhập  số lượng mua hàng là một số tự nhiên lớn hơn  0!')
+        } else {
+            if (Number.parseInt(item.quantity) <= 0) {
+                editingOrderCartItem.quantity = 1;
+                setEditingOrderCartItem({ ...editingOrderCartItem })
+                openNotificationWithIcon('error', 'Lỗi nhập liệu', 'Vui lòng nhập  số lượng mua hàng là một số tự nhiên lớn hơn  0!')
+            } else {
+                let quantity = Number.parseInt(item.quantity)
+                console.log(editingOrderCartItem?.product?.productsizes?.find(p => p.size.title === editingOrderCartItem.size))
+                if (quantity > editingOrderCartItem?.product?.productsizes?.find(p => p.size.title === editingOrderCartItem.size).quantity) {
+                    quantity = editingOrderCartItem?.product?.productsizes?.find(p => p.size.title === editingOrderCartItem.size).quantity
+                    editingOrderCartItem.quantity = quantity;
+                    setEditingOrderCartItem({ ...editingOrderCartItem })
+                    openNotificationWithIcon('warning', 'Thông báo', `Trong kho hiện  còn lại ${editingOrderCartItem?.product?.productsizes?.find(p => p.size.title === editingOrderCartItem.size).quantity}  sản phẩm!`)
+                } else {
+                    editingOrderCartItem.quantity = quantity;
+                    setEditingOrderCartItem({ ...editingOrderCartItem })
+                }
+            }
+        }
+    }
+
+    const onUpdateOrderCartItem = () => {
+        if (editingOrderCartItem) {
+
+            const payload = {
+                id: editingOrderCartItem?.id,
+                orderId: data?.id,
+                quantity: editingOrderCartItem?.quantity,
+                updatedUser: auth?.auth?.info?.username,
+                sizeId: editingOrderCartItem?.product?.productsizes?.find(p => p.size.title === editingOrderCartItem.size)?.size?.id
+            }
+            console.log(payload)
+            orderAPI.updateCartItem(payload)
+                .then(res => {
+                    if (!res.status) {
+                        setData({ ...res })
+                        openNotificationWithIcon('info', 'Thông Báo', 'Cập nhật thông tin sản phẩm.')
+                        onCloseEditCartItemModal()
+                    } else {
+                        console.log(res)
+                    }
+                })
+                .catch(err => console.log(err))
+        }
+    }
+
+    const onDeleteOrderCartItem = () => {
+        if (editingOrderCartItem) {
+            const payload = {
+                id: editingOrderCartItem?.id,
+                orderId: data?.id,
+                quantity: 0,
+                updatedUser: auth?.auth?.info?.username,
+                sizeId: editingOrderCartItem?.product?.productsizes?.find(p => p.size.title === editingOrderCartItem.size)?.size?.id
+            }
+            Modal.confirm({
+                title: "Hộp Thoại Xác Nhận",
+                content: "Bạn có muốn xóa sản phẩm không.",
+                okText: 'Xác Nhận',
+                cancelText: 'Hủy Bỏ',
+                onOk: () => {
+                    orderAPI.deleteCartItem(payload)
+                        .then(res => {
+                            if (!res.status) {
+                                setData({ ...res })
+                                openNotificationWithIcon('info', 'Thông Báo', 'Xóa sản phẩm khỏi đơn hàng.')
+                                onCloseEditCartItemModal()
+                            } else {
+                                console.log(res)
+                            }
+                        })
+                        .catch(err => console.log(err))
+                }
+            })
+
+        }
+    }
+    //add product to order cart
+    const [isProductModal, setIsProductModal] = useState(false)
+    const [productTableData, setProductTableData] = useState([])
+    const [productData, setProductData] = useState([])
+    const [categories, setCategories] = useState([])
+    const [sizes, setSizes] = useState([])
+    const [materials, setMaterials] = useState([])
+    const [colors, setcolors] = useState([])
+    const [searchInputValue, setSearchInputValue] = useState('')
+    const sortOptions = [
+        { id: 1, by: 'name', sort: 'asc', byTitle: 'Theo Tên Sản Phẩm', title: 'Từ A-Z' },
+        { id: 2, by: 'name', sort: 'desc', byTitle: 'Theo Tên Sản Phẩm', title: 'Từ Z-A' },
+        { id: 3, by: 'price', sort: 'asc', byTitle: 'Theo Giá Sản Phẩm', title: 'Giá tăng dần' },
+        { id: 4, by: 'price', sort: 'desc', byTitle: 'Theo Giá Sản Phẩm', title: 'Giá giảm dần' },
+        { id: 5, by: 'createdAt', sort: 'asc', byTitle: 'Theo Ngày Ra Mắt', title: 'Mới nhất' },
+        { id: 6, by: 'createdAt', sort: 'desc', byTitle: 'Theo Ngày Ra Mắt', title: 'Cũ nhất' }
+    ]
+    const [filterInfo, setFilterInfo] = useState({
+        categorId: 0,
+        materialId: 0,
+        sizeIds: [],
+        colorIds: [],
+        sortId: 1,
+        searchText: ''
+    })
+    const [selectedProduct, setSelectedProduct] = useState(undefined)
+    const prColumns = [
+        {
+            title: "Ảnh",
+            render: (record) => {
+                return (
+                    <div className="pr--table__imgcl">
+                        <img src={`http://localhost:8080/api/file/images/${record?.images[0]?.photo}`} alt={record?.name} />
+                    </div>
+                )
+            },
+            width: 120
+        },
+        {
+            title: "Id",
+            dataIndex: 'id',
+            key: 'id'
+        },
+        {
+            title: "Tên Sản Phẩm",
+            dataIndex: 'name'
+        },
+        {
+            title: "Giá",
+            render: (record) => {
+                return (
+                    <>{new Intl.NumberFormat("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                    }).format(record?.price)}</>
+                )
+            }
+        },
+        {
+            title: "Thao Tác",
+            render: (record) => {
+                return (
+                    <Button danger onClick={() => {
+                        // setIsProductModal(false)
+                        setSelectedProduct(record)
+                    }}>Chọn</Button>
+                )
+            }
+        }
+    ]
+
+
+    const onClickOpenProductModal = () => {
+        setProductTableData(filterProductData(productData, filterInfo))
+        setIsProductModal(true)
+    }
+    const onCloseProductModal = () => {
+        onClearFiler()
+        setIsProductModal(false)
+    }
+
+    const onAddToCart = (payload) => {
+        console.log(payload)
+        let index = data?.orderDetail.findIndex(o => (o?.product?.id === payload?.product?.id && o?.size === payload?.selectedSize?.size?.title))
+        if(index === -1){
+            let newPayload = {
+                price: payload?.product?.price,
+                discount: 0,
+                quantity: payload?.quantity,
+                size: payload?.selectedSize?.size?.title,
+                sizeId: payload?.selectedSize?.size?.id,
+                productId: payload?.product?.id,
+                updatedUser: auth?.auth?.info?.username,
+                id: data?.id
+            }
+            orderAPI.createCartItem(newPayload)
+            .then(res => {
+                if(!res.status){
+                    setData({...res})
+                    openNotificationWithIcon('info','Thông Báo','Thêm sản phẩm vào đơn hàng.')
+                    setSelectedProduct(undefined)
+                    onCloseProductModal()
+                }else{
+                    console.log(res)
+                }
+            })
+            .catch(err => console.log(err))
+        }
+        // let newDetails = [...data.orderDetail]
+        // let index = checkItemByProductIdAndSizeId(newDetails, payload.product.id, payload.selectedSize.id);
+        // if (index == -1) {
+        //     newDetails.push(payload);
+        // } else {
+        //     (newDetails[index].quantity + payload.quantity) > payload.selectedSize.quantity ? (newDetails.quantity = payload.selectedSize.quantity) : (newDetails[index].quantity += payload.quantity);
+        // };
+        // const newData = { ...data, orderDetail: [...newDetails] }
+        // dispatch(updateWaitingOrderDetailAction(newData))
+        // openNotificationWithIcon('info', 'Thông Báo', 'Thêm sản phẩm vào giỏ hàng.')
+        // setSelectedProduct(undefined)
+    }
+
+    const tagRender = (props) => {
+        const { label, value, closable, onClose } = props;
+        const onPreventMouseDown = (event) => {
+            console.log([event])
+            event.preventDefault();
+            event.stopPropagation();
+        };
+        return (
+            <Tag
+                color={'orange'}
+                onMouseDown={onPreventMouseDown}
+                closable={closable}
+                onClose={onClose}
+                style={{
+                    marginRight: 3,
+                }}
+            >
+                {label}
+            </Tag>
+        );
+    };
+
+    const onChangeProductFilterSizes = (e) => {
+        console.log([...e])
+    }
+
+    const onChangeProductFilterColors = (e) => {
+        setFilterInfo({
+            ...filterInfo,
+            colorIds: [...e]
+        })
+    }
+
+    const onChangeCategoryFilter = (categorId) => {
+        setFilterInfo({
+            ...filterInfo,
+            categorId: categorId
+        })
+    }
+
+    const onChangeMaterialFilter = (materialId) => {
+        setFilterInfo({
+            ...filterInfo,
+            materialId: materialId
+        })
+    }
+
+    const onChangeSortFilter = (sortId) => {
+        setFilterInfo({
+            ...filterInfo,
+            sortId: sortId
+        })
+    }
+
+    const onSearchText = () => {
+        if (searchInputValue.trim() !== '') {
+            setFilterInfo({
+                ...filterInfo,
+                searchText: searchInputValue
+            })
+        }
+    }
+
+    const onClearFiler = () => {
+        setSearchInputValue('')
+        setFilterInfo({
+            categorId: 0,
+            materialId: 0,
+            sizeIds: [],
+            colorIds: [],
+            sortId: 1,
+            searchText: ''
+        })
+    }
+
+    const filterProductData = (prList, filter) => {
+        let result = [...prList];
+
+        if (filter.searchText !== '') {
+            result = [...result.filter(i => i.name.toLowerCase().includes(filter.searchText.toLowerCase()))]
+        }
+
+        if (filter?.categorId !== 0) {
+            result = [...result.filter(i => i.category.id === filter.categorId)]
+        }
+        if (filter?.materialId !== 0) {
+            result = [...result.filter(i => i.material.id === filter.materialId)]
+        }
+        if (filter?.colorIds.length > 0) {
+            result = [...result.filter(i => {
+                let index = filter?.colorIds.findIndex(cId => cId === i.color.id)
+                if (index !== -1) {
+                    return true;
+                } else {
+                    return false;
+                }
+            })]
+        }
+
+
+        switch (filter.sortId) {
+            case (1): {
+                result = [...result.sort((a, b) => a.name > b.name ? 1 : -1)];
+                break;
+            }
+            case (2): {
+                result = [...result.sort((a, b) => a.name > b.name ? -1 : 1)];
+                break;
+            }
+            case (3): {
+                result = [...result.sort((a, b) => a.price - b.price)];
+                break;
+            }
+            case (4): {
+                result = [...result.sort((a, b) => b.price - a.price)];
+                break;
+            }
+            case (5): {
+                result = [...result.sort((a, b) => a.createdAt > b.createdAt ? 1 : -1)];
+                break;
+            }
+            case (6): {
+                result = [...result.sort((a, b) => b.createdAt > a.createdAt ? 1 : -1)];
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+
+        return result;
+    }
+
+
+    //end modal edit order cart item
+
+    useEffect(() => {
+        const newDataList = filterProductData(productData, filterInfo)
+        setProductTableData(newDataList)
+    }, [filterInfo])
+
+
     useEffect(() => {
         setLoadingData(true)
         orderAPI.getOrderInfo(id)
@@ -709,6 +1223,25 @@ const AdmOrderDetail = () => {
                         cityName: item?.ProvinceName,
                         cityCode: item?.ProvinceID
                     }))])
+                }
+            })
+            .catch(err => console.log(err))
+        productAPI.getFilterInfo()
+            .then(res => {
+                if (!res.status) {
+                    setCategories(res.categories)
+                    setSizes(res.sizes)
+                    setMaterials(res.materials)
+                    setcolors(res.colors)
+                } else {
+                    console.log(res);
+                }
+            })
+            .catch(err => console.log(err));
+        productAPI.getAllPr()
+            .then(res => {
+                if (!res.status) {
+                    setProductData(res)
                 }
             })
             .catch(err => console.log(err))
@@ -815,10 +1348,10 @@ const AdmOrderDetail = () => {
                             <div className="adm--order__cart">
                                 <div className="adm--order__cart--title">
                                     <Typography.Title level={4}>Thông Tin Giỏ Hàng</Typography.Title>
-                                    <Button type='primary' disabled={data?.orderStatus?.id !== 1}>Thêm Sản Phẩm</Button>
+                                    <Button type='primary' disabled={data?.orderStatus?.id !== 1} onClick={() => { onClickOpenProductModal() }}>Thêm Sản Phẩm</Button>
                                 </div>
                                 <div className="adm--order__cart--detail">
-                                    <Cart cart={data.orderDetail} order={data} />
+                                    <Cart cart={data.orderDetail} order={data} onEditItem={onOpenEditCartItemModal} />
                                 </div>
                             </div>
                             <Modal
@@ -1019,6 +1552,394 @@ const AdmOrderDetail = () => {
                                         <Input.TextArea />
                                     </Form.Item>
                                 </Form>
+                            </Modal>
+                            <Modal
+                                open={isProductModal}
+                                footer={false}
+                                onCancel={() => { onCloseProductModal() }}
+                                width={1200}
+                            >
+                                <div className="prmodal--filters">
+                                    <div className="prmodal--filters__search">
+                                        <Input value={searchInputValue} onChange={e => { setSearchInputValue(e.target.value) }} />
+                                        <Button icon={<SearchOutlined />} type='primary' onClick={onSearchText}>Tìm Kiếm</Button>
+                                        <Button icon={<ReloadOutlined />} danger onClick={() => { onClearFiler() }}>Làm Mới</Button>
+                                    </div>
+                                    <div className="prmodal--filters__options">
+                                        <div className="prmodal--filters__options--item">
+                                            <div className="prmodal--filters__options--item__label">
+                                                Thể Loại
+                                            </div>
+                                            <div className="prmodal--filters__options--item__content">
+                                                <Select
+                                                    showSearch
+                                                    placeholder="Thể Loại"
+                                                    optionFilterProp="children"
+                                                    style={{
+                                                        width: '100%',
+                                                    }}
+                                                    filterOption={(input, option) => {
+                                                        return (option?.children).toLowerCase().includes(input.toLowerCase())
+                                                    }
+                                                    }
+                                                    value={filterInfo?.categorId}
+                                                    onChange={onChangeCategoryFilter}
+                                                >
+                                                    <Select.Option value={0} key={0}>
+                                                        Tất cả
+                                                    </Select.Option>
+                                                    {
+                                                        categories.map((c) => (
+                                                            <Select.Option key={c.id} value={c.id}>
+                                                                {c.title}
+                                                            </Select.Option>
+                                                        ))
+                                                    }
+                                                </Select>
+                                            </div>
+                                        </div>
+                                        <div className="prmodal--filters__options--item">
+                                            <div className="prmodal--filters__options--item__label">
+                                                Chất Liệu
+                                            </div>
+                                            <div className="prmodal--filters__options--item__content">
+                                                <Select
+                                                    showSearch
+                                                    placeholder="Chất liệu"
+                                                    style={{
+                                                        width: '100%',
+                                                    }}
+                                                    optionFilterProp="children"
+                                                    filterOption={(input, option) => {
+                                                        return (option?.children).toLowerCase().includes(input.toLowerCase())
+                                                    }
+                                                    }
+                                                    value={filterInfo.materialId}
+                                                    onChange={onChangeMaterialFilter}
+
+                                                >
+                                                    <Select.Option value={0} key={0}>
+                                                        Tất cả
+                                                    </Select.Option>
+                                                    {
+                                                        materials.map((c) => (
+                                                            <Select.Option key={c.id} value={c.id}>
+                                                                {c.title}
+                                                            </Select.Option>
+                                                        ))
+                                                    }
+                                                </Select>
+                                            </div>
+                                        </div>
+                                        <div className="prmodal--filters__options--item">
+                                            <div className="prmodal--filters__options--item__label">
+                                                Size
+                                            </div>
+                                            <div className="prmodal--filters__options--item__content">
+                                                <Select
+                                                    showSearch
+                                                    mode="multiple"
+                                                    tagRender={tagRender}
+                                                    style={{
+                                                        width: '100%',
+                                                    }}
+                                                    filterOption={(input, option) => {
+                                                        return (option?.label).toLowerCase().includes(input.toLowerCase())
+                                                    }
+                                                    }
+                                                    options={[...sizes.map((c) => ({
+                                                        value: c.id,
+                                                        label: c.title,
+                                                        key: c.id
+                                                    }))]}
+                                                    onChange={onChangeProductFilterSizes}
+                                                >
+                                                </Select>
+                                            </div>
+                                        </div>
+                                        <div className="prmodal--filters__options--item">
+                                            <div className="prmodal--filters__options--item__label">
+                                                Màu Sắc
+                                            </div>
+                                            <div className="prmodal--filters__options--item__content">
+                                                <Select
+                                                    mode="multiple"
+                                                    style={{
+                                                        width: '100%',
+                                                    }}
+                                                    onChange={onChangeProductFilterColors}
+                                                    value={filterInfo.colorIds}
+                                                >
+                                                    {
+                                                        colors.map(c => (
+                                                            <Select.Option key={c.id} value={c.id}>
+                                                                <div style={{ width: 20, height: 20, backgroundColor: `${c.colorCode}` }}>
+                                                                </div>
+                                                            </Select.Option>
+                                                        ))
+                                                    }
+                                                </Select>
+                                            </div>
+                                        </div>
+                                        <div className="prmodal--filters__options--item">
+                                            <div className="prmodal--filters__options--item__label">
+                                                Sắp Xếp
+                                            </div>
+                                            <div className="prmodal--filters__options--item__content">
+                                                <Select
+                                                    style={{
+                                                        width: '100%',
+                                                    }}
+                                                    options={[...sortOptions.map((c) => ({
+                                                        value: c.id,
+                                                        label: `${c.byTitle} - ${c.title}`,
+                                                        key: c.id
+                                                    }))]}
+                                                    value={filterInfo.sortId}
+                                                    onChange={onChangeSortFilter}
+                                                >
+                                                </Select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="prmodal--table">
+                                    <Table columns={prColumns} dataSource={productTableData} scroll={{ y: '50vh' }} />
+                                </div>
+                            </Modal>
+                            <Modal
+                                open={isProductModal}
+                                footer={false}
+                                onCancel={() => { onCloseProductModal() }}
+                                width={1200}
+                            >
+                                <div className="prmodal--filters">
+                                    <div className="prmodal--filters__search">
+                                        <Input value={searchInputValue} onChange={e => { setSearchInputValue(e.target.value) }} />
+                                        <Button icon={<SearchOutlined />} type='primary' onClick={onSearchText}>Tìm Kiếm</Button>
+                                        <Button icon={<ReloadOutlined />} danger onClick={() => { onClearFiler() }}>Làm Mới</Button>
+                                    </div>
+                                    <div className="prmodal--filters__options">
+                                        <div className="prmodal--filters__options--item">
+                                            <div className="prmodal--filters__options--item__label">
+                                                Thể Loại
+                                            </div>
+                                            <div className="prmodal--filters__options--item__content">
+                                                <Select
+                                                    showSearch
+                                                    placeholder="Thể Loại"
+                                                    optionFilterProp="children"
+                                                    style={{
+                                                        width: '100%',
+                                                    }}
+                                                    filterOption={(input, option) => {
+                                                        return (option?.children).toLowerCase().includes(input.toLowerCase())
+                                                    }
+                                                    }
+                                                    value={filterInfo?.categorId}
+                                                    onChange={onChangeCategoryFilter}
+                                                >
+                                                    <Select.Option value={0} key={0}>
+                                                        Tất cả
+                                                    </Select.Option>
+                                                    {
+                                                        categories.map((c) => (
+                                                            <Select.Option key={c.id} value={c.id}>
+                                                                {c.title}
+                                                            </Select.Option>
+                                                        ))
+                                                    }
+                                                </Select>
+                                            </div>
+                                        </div>
+                                        <div className="prmodal--filters__options--item">
+                                            <div className="prmodal--filters__options--item__label">
+                                                Chất Liệu
+                                            </div>
+                                            <div className="prmodal--filters__options--item__content">
+                                                <Select
+                                                    showSearch
+                                                    placeholder="Chất liệu"
+                                                    style={{
+                                                        width: '100%',
+                                                    }}
+                                                    optionFilterProp="children"
+                                                    filterOption={(input, option) => {
+                                                        return (option?.children).toLowerCase().includes(input.toLowerCase())
+                                                    }
+                                                    }
+                                                    value={filterInfo.materialId}
+                                                    onChange={onChangeMaterialFilter}
+
+                                                >
+                                                    <Select.Option value={0} key={0}>
+                                                        Tất cả
+                                                    </Select.Option>
+                                                    {
+                                                        materials.map((c) => (
+                                                            <Select.Option key={c.id} value={c.id}>
+                                                                {c.title}
+                                                            </Select.Option>
+                                                        ))
+                                                    }
+                                                </Select>
+                                            </div>
+                                        </div>
+                                        <div className="prmodal--filters__options--item">
+                                            <div className="prmodal--filters__options--item__label">
+                                                Size
+                                            </div>
+                                            <div className="prmodal--filters__options--item__content">
+                                                <Select
+                                                    showSearch
+                                                    mode="multiple"
+                                                    tagRender={tagRender}
+                                                    style={{
+                                                        width: '100%',
+                                                    }}
+                                                    filterOption={(input, option) => {
+                                                        return (option?.label).toLowerCase().includes(input.toLowerCase())
+                                                    }
+                                                    }
+                                                    options={[...sizes.map((c) => ({
+                                                        value: c.id,
+                                                        label: c.title,
+                                                        key: c.id
+                                                    }))]}
+                                                    onChange={onChangeProductFilterSizes}
+                                                >
+                                                </Select>
+                                            </div>
+                                        </div>
+                                        <div className="prmodal--filters__options--item">
+                                            <div className="prmodal--filters__options--item__label">
+                                                Màu Sắc
+                                            </div>
+                                            <div className="prmodal--filters__options--item__content">
+                                                <Select
+                                                    mode="multiple"
+                                                    style={{
+                                                        width: '100%',
+                                                    }}
+                                                    onChange={onChangeProductFilterColors}
+                                                    value={filterInfo.colorIds}
+                                                >
+                                                    {
+                                                        colors.map(c => (
+                                                            <Select.Option key={c.id} value={c.id}>
+                                                                <div style={{ width: 20, height: 20, backgroundColor: `${c.colorCode}` }}>
+                                                                </div>
+                                                            </Select.Option>
+                                                        ))
+                                                    }
+                                                </Select>
+                                            </div>
+                                        </div>
+                                        <div className="prmodal--filters__options--item">
+                                            <div className="prmodal--filters__options--item__label">
+                                                Sắp Xếp
+                                            </div>
+                                            <div className="prmodal--filters__options--item__content">
+                                                <Select
+                                                    style={{
+                                                        width: '100%',
+                                                    }}
+                                                    options={[...sortOptions.map((c) => ({
+                                                        value: c.id,
+                                                        label: `${c.byTitle} - ${c.title}`,
+                                                        key: c.id
+                                                    }))]}
+                                                    value={filterInfo.sortId}
+                                                    onChange={onChangeSortFilter}
+                                                >
+                                                </Select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="prmodal--table">
+                                    <Table columns={prColumns} dataSource={productTableData} scroll={{ y: '50vh' }} />
+                                </div>
+                            </Modal>
+                            <Modal
+                                open={selectedProduct}
+                                footer={false}
+                                onCancel={() => { setSelectedProduct(undefined) }}
+                                width={1000}
+                            >
+                                <ProductDetail product={selectedProduct} onAddToCart={onAddToCart} />
+                            </Modal>
+                            <Modal
+                                open={editingOrderCartItemModal}
+                                centered
+                                width={1000}
+                                onCancel={onCloseEditCartItemModal}
+                                okText="Xác Nhận"
+                                cancelText="Hủy Bỏ"
+                                onOk={onUpdateOrderCartItem}
+                            >
+                                {
+                                    editingOrderCartItem &&
+                                    <div className='edit--cartitem--modal'>
+                                        <div className="edit--cartitem--modal__detail">
+                                            <div className="edit--cartitem--modal__detail--img">
+                                                <img src={`http://localhost:8080/api/file/images/${editingOrderCartItem?.product?.images[0]?.photo}`} />
+                                            </div>
+                                            <div className="edit--cartitem--modal__detail--info">
+                                                <div>
+                                                    <Typography.Title level={5}>{editingOrderCartItem?.product?.name}</Typography.Title>
+                                                </div>
+                                                <div>
+                                                    Size: <Tag color='green'>{editingOrderCartItem?.size}</Tag>
+                                                </div>
+                                                <div>
+                                                    {
+                                                        new Intl.NumberFormat("vi-VN", {
+                                                            style: "currency",
+                                                            currency: "VND",
+                                                        }).format(editingOrderCartItem?.price)
+                                                    }
+                                                </div>
+                                                <div>
+                                                    x{
+                                                        editingOrderCartItem?.quantity
+                                                    }
+                                                </div>
+                                            </div>
+                                            <div className="edit--cartitem--modal__detail--total">
+                                                <div>
+                                                    {
+                                                        new Intl.NumberFormat("vi-VN", {
+                                                            style: "currency",
+                                                            currency: "VND",
+                                                        }).format(editingOrderCartItem?.price * editingOrderCartItem?.quantity)
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="edit--cartitem--modal__quantity">
+                                            <div className="edit--cartitem--modal__quantity--detail">
+                                                <div className="edit--cartitem--modal__quantity--detail__minus">
+                                                    <MinusOutlined />
+                                                </div>
+                                                <div className="edit--cartitem--modal__quantity--detail__info">
+                                                    <InputNumber
+                                                        value={editingOrderCartItem?.quantity}
+                                                        style={{ border: 'none', textAlign: 'center' }}
+                                                        onChange={(e) => { handleChangeCartItemQuantity(e, editingOrderCartItem) }}
+                                                        onBlur={(e) => { handleBlurCartItemQuantityInput(e, editingOrderCartItem) }}
+                                                    />
+                                                </div>
+                                                <div className="edit--cartitem--modal__quantity--detail__plus">
+                                                    <PlusOutlined />
+                                                </div>
+                                            </div>
+                                            <div className="edit--cartitem--modal__quantity--delete">
+                                                <Button danger onClick={onDeleteOrderCartItem}>Xóa Sản Phẩm</Button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
                             </Modal>
                         </div>
                     )

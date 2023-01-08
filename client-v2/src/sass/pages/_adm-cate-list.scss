@@ -1,0 +1,39 @@
+.adm--catelist{
+    width: 100%;
+    padding: 20px;
+
+    &__title{
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    &__body{
+        padding: 20px;
+        background-color: white;
+        border-radius: 10px;
+        
+        &--filters{
+            &__search{
+                display: flex;
+            }
+
+            &__item{
+                width: fit-content;
+                margin: 10px;
+                margin-right: 20px;
+                display: inline-block;
+
+                &--content{
+                    width: fit-content;
+                }
+            }
+        }
+
+        &--table{
+            margin-top: 20px;
+        }
+    }
+}
