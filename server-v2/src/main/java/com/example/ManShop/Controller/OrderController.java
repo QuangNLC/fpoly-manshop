@@ -7,9 +7,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -54,6 +56,12 @@ public class OrderController {
 
     @Autowired
     private ProductJPA productJPA;
+
+    @Autowired
+    private OrderNotiJPA orderNotiJPA;
+
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     @PostMapping("/checkout")
     @Transactional
@@ -130,10 +138,32 @@ public class OrderController {
                 return ResponseEntity.status(420).body("lỗi khi trừ số lượng sản phẩm");
             }
         }
+
+
+        if(orderRequest.getOrderType().toLowerCase().equalsIgnoreCase("giao hàng")){
+            OrderNoti o = new OrderNoti();
+            o.setCreatedat(new Date());
+            o.setMessage(orderRequest.getFullname() + " Đã tạo đơn hàng mới.");
+            o.setStatus(false);
+            o.setOrderId(responseOrder.getId());
+            String link = "/admin/order/" + responseOrder.getId();
+            o.setNavigateLink(link);
+            OrderNoti savedNoti = orderNotiJPA.save(o);
+            AdmOrderNotiResponseDTO resNoti = new AdmOrderNotiResponseDTO();
+            List<OrderNoti> resList = new ArrayList<>();
+            resList.add(savedNoti);
+            resNoti.setList(resList);
+            resNoti.setCount(orderNotiJPA.getUnseenNotiCount());
+            System.out.println("save noti");
+            simpMessagingTemplate.convertAndSend("/noti/adm-order",resNoti);
+        }
+
         return ResponseEntity.ok().body(responseOrder.getId());
 
 //        return ResponseEntity.ok().body("test");
     }
+
+
 
 
     @GetMapping("/{id}")
@@ -367,6 +397,21 @@ public class OrderController {
 
 
         return ResponseEntity.ok(ordersJPA.findById(id).get());
+    }
+
+
+    @GetMapping("/order-noti")
+    public ResponseEntity<?> getOrderNotiList(){
+        AdmOrderNotiResponseDTO res = new AdmOrderNotiResponseDTO();
+        res.setList(orderNotiJPA.findAll());
+        res.setCount(orderNotiJPA.getUnseenNotiCount());
+        return  ResponseEntity.ok(res);
+    }
+
+    @GetMapping("/seen-noti")
+    public ResponseEntity<?> seenNotiByAdm(){
+        orderNotiJPA.seenNotiByAdm();
+        return ResponseEntity.ok("Seen noti");
     }
 
 

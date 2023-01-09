@@ -1,19 +1,20 @@
 package com.example.ManShop.Controller;
 
-import com.example.ManShop.DTOS.CreateProductRequestDTO;
-import com.example.ManShop.DTOS.CreateProductSizeRequestDTO;
-import com.example.ManShop.DTOS.FilterInfoResponseDTO;
+import com.example.ManShop.DTOS.*;
 import com.example.ManShop.Entitys.Categories;
 import com.example.ManShop.Entitys.Images;
 import com.example.ManShop.Entitys.Product;
 import com.example.ManShop.Entitys.ProductSize;
 import com.example.ManShop.JPAs.*;
+import com.example.ManShop.Service.FileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.websocket.server.PathParam;
 import java.util.Date;
 import java.util.List;
 
@@ -39,6 +40,12 @@ public class ProductController {
 
     @Autowired
     private ProductSizeJPA productSizeJPA;
+
+    @Autowired
+    private FileService fileService;
+
+    @Autowired
+    private ImagesJPA imagesJPA;
 
     @GetMapping("/getall")
     public ResponseEntity<?> getALL(){
@@ -140,6 +147,85 @@ public class ProductController {
         newPrSize.setQuantity(requestDTO.getQuantity());
         newPrSize.setIsActive(true);
         return ResponseEntity.ok(productSizeJPA.save(newPrSize));
+    }
+
+
+    @PostMapping("/upload-image/{id}")
+    public ResponseEntity<?> uploadProductImage(@PathVariable("id")Integer id, @PathParam("file") MultipartFile[] file){
+        if(!productJPA.existsById(id)){
+            return ResponseEntity.badRequest().body("Không tìm thấy sản phẩm với id: "+id);
+        }
+
+        Product product = productJPA.findById(id).get();
+
+        String  newPhoto  = fileService.save("images",file).get(0);
+        Images newImage = new Images();
+        newImage.setProduct(product);
+        newImage.setPhoto(newPhoto);
+        newImage.setIsdefault(false);
+
+        return ResponseEntity.ok(imagesJPA.save(newImage));
+    }
+
+    @PostMapping("/delete-image/{productId}")
+    public ResponseEntity<?> deleteProductImage(@PathVariable("productId") Integer productId, @RequestBody UpdateProductImageRequestDTO requestDTO){
+        if(!productJPA.existsById(productId)){
+            return ResponseEntity.badRequest().body("Không tìm thấy sản phẩm với id: "+productId);
+        }else if(!imagesJPA.existsById(requestDTO.getImgId())){
+            return ResponseEntity.badRequest().body("Không tìm thấy ảnh với id: "+requestDTO.getImgId());
+        }
+
+        fileService.delete("images",requestDTO.getPhoto());
+
+        imagesJPA.deleteById(requestDTO.getImgId());
+
+        return ResponseEntity.ok().body("Xóa thành công.");
+
+    }
+
+    @PutMapping("/set-default-img/{productId}")
+    public ResponseEntity<?> setDefaultProductImage(@PathVariable("productId") Integer productId, @RequestBody UpdateProductImageRequestDTO requestDTO){
+        if(!productJPA.existsById(productId)){
+            return ResponseEntity.badRequest().body("Không tìm thấy sản phẩm với id: "+productId);
+        }else if(!imagesJPA.existsById(requestDTO.getImgId())){
+            return ResponseEntity.badRequest().body("Không tìm thấy ảnh với id: "+requestDTO.getImgId());
+        }
+
+        imagesJPA.setAllImgNotDefault(productId);
+
+        Images defaultImage = imagesJPA.findById(requestDTO.getImgId()).get();
+
+        defaultImage.setIsdefault(true);
+
+        return ResponseEntity.ok(imagesJPA.save(defaultImage));
+    }
+
+
+    @PutMapping("/update-size/{productId}")
+    public ResponseEntity<?> updateProductSize(@PathVariable("productId") Integer productId, @RequestBody UpdateProductSizeRequestDTO requestDTO){
+        if(!productJPA.existsById(productId)){
+            return ResponseEntity.badRequest().body("Không tìm thấy sản phẩm với id: "+productId);
+        }else if(!productSizeJPA.existsById(requestDTO.getSizeId())){
+            return ResponseEntity.badRequest().body("Không tìm thấy productsize với id: "+requestDTO.getSizeId());
+        }
+
+        ProductSize updatedSize = productSizeJPA.findById(requestDTO.getSizeId()).get();
+        updatedSize.setIsActive(requestDTO.getIsActive());
+        updatedSize.setQuantity(requestDTO.getQuantity());
+
+        return ResponseEntity.ok(productSizeJPA.save(updatedSize));
+    }
+
+    @DeleteMapping("/delete-size/{sizeId}")
+    public ResponseEntity<?> updateProductSize(@PathVariable("sizeId") Integer sizeId){
+        if(!productSizeJPA.existsById(sizeId)){
+            return ResponseEntity.badRequest().body("Không tìm thấy productsize với id: "+sizeId);
+        }
+
+        productSizeJPA.deleteById(sizeId);
+
+
+        return ResponseEntity.ok().body("Xóa size thành công");
     }
 
 }

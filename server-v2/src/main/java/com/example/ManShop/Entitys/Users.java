@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -34,6 +35,8 @@ public class Users {
     @Column(name = "password")
     @JsonIgnore
     private String password;
+    @Column(name = "createdat")
+    private Date createdAt;
     @ManyToOne
     @JoinColumn(name = "role")
     private Role roles;

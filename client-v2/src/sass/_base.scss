@@ -46,7 +46,19 @@ $color-text-price : rgb(86, 26, 252);
 
     &__outlet{
         margin-left: $adm-sidebar-width;
-        padding: 20px 30px;
+        display: flex;
+        flex-direction: column;
+
+        &--topbar{
+            width: 100%;
+            padding: 10px;
+        }
+
+
+        &--body{
+            padding: 20px;
+            width: 100%;
+        }
     }
 }
 

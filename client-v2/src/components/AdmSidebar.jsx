@@ -63,6 +63,10 @@ const AdmSidebar = () => {
                 setSelectedKeys(['sub-4-i4'])
                 break;
             }
+            case ('/admin/user-list'): {
+                setSelectedKeys(['sub-5'])
+                break;
+            }
             default: {
                 if (location.pathname.includes('/admin/waiting-order/')) {
                     setSelectedKeys(['sub-2'])
@@ -78,6 +82,14 @@ const AdmSidebar = () => {
                 }
                 if (location.pathname.includes('/admin/product/edit/')) {
                     setSelectedKeys(['sub-4-i1'])
+                    break;
+                }
+                if (location.pathname.includes('/admin/user/new')) {
+                    setSelectedKeys(['sub-5'])
+                    break;
+                }
+                if (location.pathname.includes('/admin/user/detail/')) {
+                    setSelectedKeys(['sub-5'])
                     break;
                 }
                 setSelectedKeys([])

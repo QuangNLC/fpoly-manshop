@@ -127,7 +127,7 @@ const AvatarContainer = ({ auth }) => {
 
 const AdmTopbar = () => {
 
-    const [notiList, setNotiList] = useState(undefined)
+    
     const [isNotiOpen, setIsNotiOpen] = useState(false)
     const auth = useSelector(state => state.auth.auth);
     const navigate = useNavigate()

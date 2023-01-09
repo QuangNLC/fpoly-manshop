@@ -23,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -66,6 +67,7 @@ public class AuthController {
         users.setPhone(request.getPhone());
         users.setPhoto("default-avt.jpg");
         users.setActivated(true);
+        users.setCreatedAt(new Date());
         users.setVerificode(RandomString.make(64));
         users.setPassword(passwordEncoder.encode(request.getPassword()));
         Role roles = roleJPA.findById(3).get();

@@ -19,6 +19,9 @@ import AdmColorList from './pages/admins/AdmColorList';
 import AdmProductList from './pages/admins/AdmProductList';
 import AdmNewProduct from './pages/admins/AdmNewProduct';
 import AdmProductDetail from './pages/admins/AdmProductDetail';
+import AdmUserList from './pages/admins/AdmUserList';
+import AdmNewUser from './pages/admins/AdmNewUser';
+import AdmUserDetail from './pages/admins/AdmUserDetail';
 
 function App() {
   return (
@@ -55,6 +58,9 @@ function App() {
           <Route path="product-list" element={<AdmProductList />} />
           <Route path="product/new" element={<AdmNewProduct />} />
           <Route path="product/edit/:id" element={<AdmProductDetail />} />
+          <Route path="user-list" element={<AdmUserList />} />
+          <Route path="user/new" element={<AdmNewUser />} />
+          <Route path="user/detail/:username" element={<AdmUserDetail />} />
 
           {/* <Route path="user-list" element={<AdmUserList />} />
           <Route path="new-user" element={<AdmNewUser />} />

@@ -23,4 +23,5 @@ public class RegisterRequestDTO {
     @NotBlank(message = "ban chua nhap mat khau")
     private String password;
     private int role =3;
+    private Boolean isAdmin;
 }

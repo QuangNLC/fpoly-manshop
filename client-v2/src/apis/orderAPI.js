@@ -36,6 +36,14 @@ export const orderAPI = {
     createCartItem: (payload) => {
         const url = 'order/create/cart-item/'+payload.id;
         return axiosClient.post(url, payload);
+    },
+    seenNotiByAdm: () => {
+        const url = 'order/seen-noti';
+        return axiosClient.get(url);
+    },
+    getOrderNotiList: () => {
+        const url = 'order/order-noti';
+        return axiosClient.get(url);
     }
 
 
