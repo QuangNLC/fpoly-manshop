@@ -26,5 +26,9 @@ export const userAPI = {
                 }
             }
         );
+    },
+    setDefaultAddress: (payload) => {
+        const url = `users/set-default-address/${payload.username}?addressId=${payload.addressId}`;
+        return axiosClient.put(url)
     }
 }

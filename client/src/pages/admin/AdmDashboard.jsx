@@ -238,7 +238,6 @@ const AdmDashboard = () => {
 
                             )
                     }
-
                 </Widget>
                 <Widget>
                     {
@@ -260,7 +259,6 @@ const AdmDashboard = () => {
                 </Widget>
             </WidgetContainer>
             <BarChartContainer>
-
                 <BarCharWrapper>
                     <BarChartSelectYear>
                         Năm:

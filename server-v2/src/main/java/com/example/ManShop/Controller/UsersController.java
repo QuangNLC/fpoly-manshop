@@ -1,8 +1,10 @@
 package com.example.ManShop.Controller;
 
 import com.example.ManShop.DTOS.RegisterRequestDTO;
+import com.example.ManShop.Entitys.Address;
 import com.example.ManShop.Entitys.Role;
 import com.example.ManShop.Entitys.Users;
+import com.example.ManShop.JPAs.AddressJPA;
 import com.example.ManShop.JPAs.RoleJPA;
 import com.example.ManShop.JPAs.UsersJPA;
 import net.bytebuddy.utility.RandomString;
@@ -31,6 +33,9 @@ public class UsersController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private AddressJPA addressJPA;
 
     @GetMapping()
     public ResponseEntity<?> getUserById(@PathParam("username") String username) {
@@ -100,5 +105,22 @@ public class UsersController {
         return ResponseEntity.ok(users);
     }
 
+
+    @PutMapping("/set-default-address/{username}")
+    public ResponseEntity<?> setDefaultAddress(@PathVariable("username") String username,@PathParam("addressId") Integer addressId){
+        if(!usersJPA.existsById(username)) {
+            log.error("không thấy tài khoản" + username);
+            return ResponseEntity.notFound().build();
+        } else if (!addressJPA.existsById(addressId)) {
+            log.error("không thấy địa chỉ với id: " + addressId);
+            return ResponseEntity.notFound().build();
+        }
+        addressJPA.clearDefaultAddress();
+
+        Address updatedAddress = addressJPA.findById(addressId).get();
+        updatedAddress.setIsDefault(true);
+
+        return ResponseEntity.ok(addressJPA.save(updatedAddress));
+    }
 
 }
