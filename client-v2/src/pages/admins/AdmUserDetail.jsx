@@ -2,9 +2,16 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import Helmet from '../../components/Helmet'
 import { userAPI } from '../../apis/userAPI';
-import { Button, Modal, Tag, Typography, Upload } from 'antd';
+import { Button, Modal, notification, Tag, Typography, Upload } from 'antd';
 import moment from 'moment';
 import { DeleteOutlined } from '@ant-design/icons';
+
+const openNotificationWithIcon = (type, title, des) => {
+    notification[type]({
+        message: title,
+        description: des,
+    });
+};
 
 const AdmUserDetail = () => {
 
@@ -12,7 +19,31 @@ const AdmUserDetail = () => {
     const [info, setInfo] = useState(undefined);
     const navigate = useNavigate();
 
-
+    const onToggleUserActivated = () => {
+        Modal.confirm({
+            title: 'Hộp Thoại Xác Nhân',
+            content: `Bạn có muốn ${info?.activated ? 'hủy kích hoạt' : 'kích hoạt'} tài khoản không.`,
+            okText: 'Xác Nhận',
+            cancelText: 'Hủy Bỏ',
+            onOk: () => {
+                const payload = {
+                    username: info.username,
+                    activated: !info.activated ? 1 : -1
+                };
+                console.log(payload)
+                userAPI.updateUserActivated(payload)
+                    .then(res => {
+                        if (!res.status) {
+                            setInfo({ ...res })
+                            openNotificationWithIcon('info', 'Thông Báo', `${!res.activated ? 'Hủy kích hoạt' : 'Kích hoạt'} tài khoản thành công.`);
+                        } else {
+                            console.log(res);
+                        }
+                    })
+                    .catch(err => console.log(err))
+            }
+        })
+    }
 
 
     useEffect(() => {
@@ -35,7 +66,7 @@ const AdmUserDetail = () => {
             <div className="adm--userdetail">
                 <div className="adm--userdetail__title">
                     <Typography.Title level={4}>Thông Tin Tài Khoản</Typography.Title>
-                    <Button type='primary' onClick={() => {navigate("/admin/user-list")}}>Danh Sách</Button>
+                    <Button type='primary' onClick={() => { navigate("/admin/user-list") }}>Danh Sách</Button>
                 </div>
                 <div className="adm--userdetail__body">
                     <div className="adm--userdetail__body--avt">
@@ -66,6 +97,10 @@ const AdmUserDetail = () => {
                         <div className="adm--userdetail__body--info__item">
                             <div className="adm--userdetail__body--info__item--label">Trạng Thái</div>
                             <div className="adm--userdetail__body--info__item--content"><Tag color={info?.activated ? 'blue' : 'red'}>{info?.activated ? 'Kích Hoạt' : 'Hủy Kích Hoạt'}</Tag></div>
+                        </div>
+                        <div className="adm--userdetail__body--info__item">
+                            <div className="adm--userdetail__body--info__item--label">Thao Tác</div>
+                            <div className="adm--userdetail__body--info__item--content"><Button danger={info?.activated} type={'primary'} onClick={onToggleUserActivated}>{info?.activated ? 'Hủy Kích Hoạt' : 'Kích Hoạt'}</Button></div>
                         </div>
                     </div>
                 </div>
