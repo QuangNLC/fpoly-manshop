@@ -42,4 +42,7 @@ public class Product {
 
     @OneToMany(mappedBy = "product")
     private List<ProductSize> productsizes;
+
+    @OneToMany(mappedBy = "product")
+    private List<PromotionProduct> promotions;
 }

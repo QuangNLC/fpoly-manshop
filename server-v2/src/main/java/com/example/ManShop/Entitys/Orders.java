@@ -1,5 +1,6 @@
 package com.example.ManShop.Entitys;
 
+import com.example.ManShop.DTOS.RevenueStatisticsResponeDTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,6 +10,13 @@ import lombok.ToString;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
+@NamedNativeQuery(name = "Orders.getTest",
+        query = "SELECT  distinct (MONTH(orders.createdat)) as month , Sum(orders.totalprice) as turnover  from orders join status_order_detail on status_order_detail.orderid=orders.id join status_order on status_order_detail.statusid= status_order.id where status_order.id =4 and  YEAR(orders.createdat)=:yr  group by (MONTH(orders.createdat))",
+        resultSetMapping = "Mapping.RevenueStatisticsResponeDTO")
+@SqlResultSetMapping(name = "Mapping.RevenueStatisticsResponeDTO",
+        classes = @ConstructorResult(targetClass = RevenueStatisticsResponeDTO.class,
+                columns = {@ColumnResult(name = "month"),
+                        @ColumnResult(name = "turnover")}))
 
 @Entity
 @Data
