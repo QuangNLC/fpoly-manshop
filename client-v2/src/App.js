@@ -22,6 +22,12 @@ import AdmProductDetail from './pages/admins/AdmProductDetail';
 import AdmUserList from './pages/admins/AdmUserList';
 import AdmNewUser from './pages/admins/AdmNewUser';
 import AdmUserDetail from './pages/admins/AdmUserDetail';
+import WebMyAccount from './pages/webs/WebMyAccount';
+import WebChangePassword from './pages/webs/WebChangePassword';
+import WebMyOrders from './pages/webs/WebMyOrders';
+import WebMyOrderDetail from './pages/webs/WebMyOrderDetail';
+import AdmPromotionsList from './pages/admins/AdmPromotionsList';
+import AdmNewPromotion from './pages/admins/AdmNewPromotion';
 
 function App() {
   return (
@@ -34,11 +40,13 @@ function App() {
           <Route path="cart" element={<WebCart />} />
           <Route path="register" element={<WebRegister />} />
           <Route path="login" element={<WebLogin />} />
-
-          {/* <Route path="products/search=:searchText" element={<WebProductList />} />
-          <Route path="my-orders" element={<WebMyOrders />} />
           <Route path="my-account" element={<WebMyAccount />} />
           <Route path="change-password" element={<WebChangePassword />} />
+          <Route path="my-orders" element={<WebMyOrders />} />
+          <Route path="my-order/:id" element={<WebMyOrderDetail />} />
+
+
+          {/* <Route path="products/search=:searchText" element={<WebProductList />} />
           <Route path="about-us" element={<WebAboutUs />} />
           <Route path="contact" element={<WebContact />} />
           <Route path="forgot-password" element={<WebForgotPassword />} />
@@ -61,14 +69,12 @@ function App() {
           <Route path="user-list" element={<AdmUserList />} />
           <Route path="user/new" element={<AdmNewUser />} />
           <Route path="user/detail/:username" element={<AdmUserDetail />} />
+          <Route path="promotion-list" element={<AdmPromotionsList />} />
+          <Route path="promotion/new" element={<AdmNewPromotion />} />
 
-          {/* <Route path="user-list" element={<AdmUserList />} />
-          <Route path="new-user" element={<AdmNewUser />} />
-          <Route path="user/:username" element={<AdmUserDetail />} />
+
+          {/*
           <Route path="message" element={<AdmMessage />} />
-          <Route path="bills" element={<AdmBills />} />
-          <Route path="promotions" element={<AdmPromotions />} />
-          <Route path="promotion/new" element={<AdmNewPromotions />} />
           <Route path="promotion/detail/:id" element={<AdmUpdatePromotion />} />
           <Route path="my-account" element={<AdmMyAccount />} />
           <Route path="change-password" element={<AdmChangePassword />} /> */}

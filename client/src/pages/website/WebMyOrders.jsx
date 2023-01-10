@@ -304,7 +304,6 @@ const WebMyOrders = () => {
         } else {
             navigate("/login")
         }
-
     }, [auth])
 
     useEffect(() => {

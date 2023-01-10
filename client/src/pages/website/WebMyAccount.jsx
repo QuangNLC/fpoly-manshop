@@ -219,7 +219,6 @@ const WebMyAccount = () => {
             console.log(url)
             setPrevAvt(url)
         } else {
-
             auth && setPrevAvt(`http://localhost:8080/api/file/images/${auth.info.photo}`)
         }
     }, [uploadList])

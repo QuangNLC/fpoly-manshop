@@ -1,18 +1,43 @@
-.adm--wtorder--list{
+.adm--wtorder--list {
     width: 100%;
-    padding: 10px;
-    background: white;
-        
-    &__actions{
-        padding: 10px;
+
+    &__title {
+        width: 100%;
         display: flex;
-        justify-content: flex-end;
+        align-items: center;
+        justify-content: space-between;
         margin-bottom: 20px;
     }
 
-    &__table{
+    &__body {
+        padding: 20px;
+        background-color: white;
+        border-radius: 10px;
 
-        &--actionscl{
+        &--filters {
+            &__search {
+                display: flex;
+            }
+
+            &__item {
+                width: fit-content;
+                margin: 10px;
+                margin-right: 20px;
+                display: inline-block;
+
+                &--content {
+                    width: fit-content;
+                }
+            }
+        }
+
+        &--table {
+            margin-top: 20px;
+        }
+    }
+
+    &__table {
+        &--actionscl {
             width: 80px;
             display: flex;
             align-items: center;

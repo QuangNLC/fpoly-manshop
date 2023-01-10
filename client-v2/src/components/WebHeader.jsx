@@ -24,11 +24,18 @@ const WebHeader = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const items = [
+        {
+            label: 'Tài Khoản Của Tôi',
+            key: '1',
+            onClick: () => {
+                navigate("/my-account")
+            }
+        },
         auth?.info?.roles?.rolename &&
             auth?.info?.roles?.rolename === "ROLE_ADMIN" &&
         {
             label: 'Trang Quản Trị',
-            key: '1',
+            key: '2',
             onClick: () => {
                 navigate("/admin")
             }

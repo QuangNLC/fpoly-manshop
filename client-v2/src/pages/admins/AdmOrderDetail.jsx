@@ -1048,17 +1048,6 @@ const AdmOrderDetail = () => {
             })
             .catch(err => console.log(err))
         }
-        // let newDetails = [...data.orderDetail]
-        // let index = checkItemByProductIdAndSizeId(newDetails, payload.product.id, payload.selectedSize.id);
-        // if (index == -1) {
-        //     newDetails.push(payload);
-        // } else {
-        //     (newDetails[index].quantity + payload.quantity) > payload.selectedSize.quantity ? (newDetails.quantity = payload.selectedSize.quantity) : (newDetails[index].quantity += payload.quantity);
-        // };
-        // const newData = { ...data, orderDetail: [...newDetails] }
-        // dispatch(updateWaitingOrderDetailAction(newData))
-        // openNotificationWithIcon('info', 'Thông Báo', 'Thêm sản phẩm vào giỏ hàng.')
-        // setSelectedProduct(undefined)
     }
 
     const tagRender = (props) => {

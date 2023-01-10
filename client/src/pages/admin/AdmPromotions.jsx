@@ -198,7 +198,7 @@ const AdmPromotions = () => {
                         <Button type='primary' onClick={() => { navigate(`/admin/promotion/new`) }}>Tạo Khuyến Mại</Button>
                     </ActionsContainer>
                     <PromotionsContainer>
-                        <Table dataSource={promotions} columns={promotionsColumn} />
+                        <Table bordered dataSource={promotions} columns={promotionsColumn} />
                     </PromotionsContainer>
                 </Wrapper>
             </Container>

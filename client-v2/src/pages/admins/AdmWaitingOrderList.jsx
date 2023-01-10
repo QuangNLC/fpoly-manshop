@@ -41,12 +41,12 @@ const AdmWaitingOrderList = () => {
             title: 'Tổng Tiền',
             dataIndex: 'totalPrice',
             key: 'totalPrice',
-            render: (text) => (<>{text ? 
+            render: (text) => (<>{text ?
                 new Intl.NumberFormat("vi-VN", {
                     style: "currency",
                     currency: "VND",
                 }).format(text)
-             : 0}</>),
+                : 0}</>),
             sorter: (a, b) => a.total_price - b.total_price
         },
         {
@@ -121,12 +121,12 @@ const AdmWaitingOrderList = () => {
             title={"Bán Hàng Tại Quầy"}
         >
             <div className="adm--wtorder--list">
-                <Typography.Title level={3}>Danh Sách Đơn Chờ</Typography.Title>
-                <div className="adm--wtorder--list__actions">
+                <div className="adm--wtorder--list__title">
+                    <Typography.Title level={3}>Danh Sách Đơn Chờ</Typography.Title>
                     <Button type='primary' icon={<PlusOutlined />} onClick={() => { onClickCreateNewWaitingOrder() }}>Tạo Đơn Hàng</Button>
                 </div>
-                <div className="adm--wtorder--list__table">
-                    <Table columns={columns} dataSource={data} />
+                <div className="adm--wtorder--list__body">
+                    <Table bordered columns={columns} dataSource={data} />
                 </div>
             </div>
         </Helmet>

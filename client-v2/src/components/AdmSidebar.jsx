@@ -67,6 +67,10 @@ const AdmSidebar = () => {
                 setSelectedKeys(['sub-5'])
                 break;
             }
+            case ('/admin/promotion-list'): {
+                setSelectedKeys(['sub-6'])
+                break;
+            }
             default: {
                 if (location.pathname.includes('/admin/waiting-order/')) {
                     setSelectedKeys(['sub-2'])
@@ -90,6 +94,10 @@ const AdmSidebar = () => {
                 }
                 if (location.pathname.includes('/admin/user/detail/')) {
                     setSelectedKeys(['sub-5'])
+                    break;
+                }
+                if (location.pathname.includes('/admin/promotion/new')) {
+                    setSelectedKeys(['sub-6'])
                     break;
                 }
                 setSelectedKeys([])

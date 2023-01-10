@@ -1,0 +1,62 @@
+.web--myorders {
+    width: 100%;
+    padding: 20px 30px;
+    display: flex;
+
+    &__navs {
+        flex: 1;
+        padding: 20px;
+        background-color: white;
+        border-radius: 10px;
+
+        &--item {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            transition: all 0.25s ease-in;
+            border-radius: 10px;
+
+            &.active {
+                background-color: rgb(95, 105, 105);
+                color: white;
+            }
+
+            &__link {
+                width: 100%;
+                font-size: 18px;
+                text-transform: capitalize;
+            }
+
+            &:hover {
+                background-color: rgb(95, 105, 105);
+                color: white;
+            }
+        }
+    }
+
+    &__body {
+        flex: 4;
+        padding: 0 20px;
+
+        &--title {
+            padding: 10px;
+        }
+
+        &--content {
+            width: 100%;
+            padding: 20px 10px;
+            background-color: white;
+            border-radius: 10px;
+
+            &__filters{
+                width: 100%;
+                padding: 10px;
+                margin-bottom: 10px;
+                display: flex;
+                &--item{
+                    padding: 10px;
+                }
+            }
+        }
+    }
+}

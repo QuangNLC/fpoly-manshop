@@ -6,6 +6,8 @@ import com.example.ManShop.JPAs.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +16,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin("*")
@@ -414,5 +417,12 @@ public class OrderController {
         return ResponseEntity.ok("Seen noti");
     }
 
+
+    @GetMapping("/my-orders")
+    public ResponseEntity<List<Orders>> getMyOrders(@RequestParam("username") String username){
+        Pageable pagedefault = PageRequest.of(0,1000000);
+        List<Orders> resList = ordersJPA.findByUsers_Username(pagedefault,username).stream().collect(Collectors.toList());
+        return ResponseEntity.ok(resList);
+    }
 
 }

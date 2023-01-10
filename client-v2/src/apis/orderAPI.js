@@ -44,6 +44,10 @@ export const orderAPI = {
     getOrderNotiList: () => {
         const url = 'order/order-noti';
         return axiosClient.get(url);
+    },
+    getMyOrders: (username) => {
+        const url='order/my-orders?username='+username;
+        return axiosClient.get(url);
     }
 
 

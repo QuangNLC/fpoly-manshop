@@ -29,6 +29,18 @@ export const userAPI = {
     },
     setDefaultAddress: (payload) => {
         const url = `users/set-default-address/${payload.username}?addressId=${payload.addressId}`;
-        return axiosClient.put(url)
+        return axiosClient.put(url);
+    },
+    deleteAddress: (payload) => {
+        const url = `users/delete-address/${payload.username}?addressId=${payload.addressId}`;
+        return axiosClient.delete(url)
+    },
+    updateUserInfo: (payload) => {
+        const url = 'users/update-info/' + payload.username;
+        return axiosClient.put(url, payload);
+    },
+    changePassword: (username, payload) => {
+        const url = 'users/change-password/' + username;
+        return axiosClient.post(url, payload);
     }
 }

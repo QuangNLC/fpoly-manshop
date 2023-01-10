@@ -1,5 +1,6 @@
 package com.example.ManShop.Controller;
 
+import com.example.ManShop.DTOS.ChangePasswordRequestDTO;
 import com.example.ManShop.DTOS.RegisterRequestDTO;
 import com.example.ManShop.Entitys.Address;
 import com.example.ManShop.Entitys.Role;
@@ -7,13 +8,16 @@ import com.example.ManShop.Entitys.Users;
 import com.example.ManShop.JPAs.AddressJPA;
 import com.example.ManShop.JPAs.RoleJPA;
 import com.example.ManShop.JPAs.UsersJPA;
+import com.example.ManShop.Service.FileService;
 import net.bytebuddy.utility.RandomString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.websocket.server.PathParam;
@@ -36,6 +40,9 @@ public class UsersController {
 
     @Autowired
     private AddressJPA addressJPA;
+
+    @Autowired
+    private FileService fileService;
 
     @GetMapping()
     public ResponseEntity<?> getUserById(@PathParam("username") String username) {
@@ -123,4 +130,67 @@ public class UsersController {
         return ResponseEntity.ok(addressJPA.save(updatedAddress));
     }
 
+
+    @PostMapping ("/update-avatar/{username}")
+    public ResponseEntity<?> updateUserAvatar(@PathVariable(value = "username") String username ,@PathParam("file") MultipartFile[] file){
+
+        if(!usersJPA.existsById(username)){
+            return ResponseEntity.notFound().build();
+        }else{
+            Users user = usersJPA.findById(username).get();
+            if(user.getPhoto().equals("default-avt.jpg")){
+                String  newPhoto  = fileService.save("images",file).get(0);
+                user.setPhoto(newPhoto);
+                return ResponseEntity.ok(usersJPA.save(user));
+            }
+            fileService.delete("images",user.getPhoto());
+            String  newPhoto  = fileService.save("images",file).get(0);
+            user.setPhoto(newPhoto);
+            return ResponseEntity.ok(usersJPA.save(user));
+        }
+    }
+
+
+    @PutMapping("/update-info/{username}")
+    public ResponseEntity<?> updateUserInfo(@PathVariable(value = "username") String username, @RequestBody Users requestDTO){
+        if(!usersJPA.existsById(username)){
+            return ResponseEntity.notFound().build();
+        }
+        Users user = usersJPA.findById(username).get();
+        user.setPhone(requestDTO.getPhone());
+        user.setFullname(requestDTO.getFullname());
+
+        return ResponseEntity.ok(usersJPA.save(user));
+    }
+
+    @DeleteMapping("/delete-address/{username}")
+    public ResponseEntity<?> deleteAddress(@PathVariable(value = "username") String username, @PathParam("addressId") Integer addressId){
+        if(!usersJPA.existsById(username)) {
+            log.error("không thấy tài khoản" + username);
+            return ResponseEntity.notFound().build();
+        } else if (!addressJPA.existsById(addressId)) {
+            log.error("không thấy địa chỉ với id: " + addressId);
+            return ResponseEntity.notFound().build();
+        }
+        addressJPA.deleteById(addressId);
+
+        return ResponseEntity.ok().body("Xóa địa chỉ.");
+    }
+
+    @PostMapping("/change-password/{username}")
+    public ResponseEntity<?> changePassword(@PathVariable(value="username") String  username,@RequestBody ChangePasswordRequestDTO req){
+        if(!usersJPA.existsById(username)){
+            return  ResponseEntity.notFound().build();
+        }else{
+            Users user =  usersJPA.findById(username).get();
+            if(passwordEncoder.matches(req.getPassword(), user.getPassword())){
+                user.setPassword(passwordEncoder.encode(req.getNewPassword()));
+                usersJPA.save(user);
+                return ResponseEntity.ok("Đổi mật khẩu thành công!");
+            }else{
+                return ResponseEntity.badRequest().build();
+            }
+        }
+
+    }
 }

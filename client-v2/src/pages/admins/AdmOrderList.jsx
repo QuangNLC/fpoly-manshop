@@ -1,4 +1,4 @@
-import { Button, Table, Tag, Typography } from 'antd'
+import { Button, Select, Table, Tag, Typography } from 'antd'
 import React, { useEffect, useState } from 'react'
 import Helmet from '../../components/Helmet'
 import { EyeOutlined } from '@ant-design/icons';
@@ -50,9 +50,72 @@ const StatusBadge = (props) => {
     )
 }
 
+const orderStatusData = [
+    {
+        id: 1,
+        title: 'Chờ Xác Nhận'
+    },
+    {
+        id: 2,
+        title: 'Đã Xác Nhận'
+    },
+    {
+        id: 3,
+        title: 'Giao Hàng'
+    },
+    {
+        id: 4,
+        title: 'Hoàn Thành'
+    },
+    {
+        id: 5,
+        title: 'Hoàn Trả'
+    },
+    {
+        id: 6,
+        title: 'Hủy Đơn'
+    }
+]
+
+const sortData = [
+    {
+        id: 1,
+        title: 'Theo Ngày Tạo (Mới Nhất)'
+    },
+    {
+        id: 2,
+        title: 'Theo Ngày Tạo (Cũ Nhất)'
+    },
+    {
+        id: 3,
+        title: 'Theo Tổng Tiền (Cao Đến Thấp)'
+    },
+    {
+        id: 4,
+        title: 'Theo Tổng Tiền (Thấp Đến Cao)'
+    },
+    {
+        id: 5,
+        title: 'Theo Tổng Sản Phẩm (Cao Đến Thấp)'
+    },
+    {
+        id: 6,
+        title: 'Theo Tổng Sản Phẩm (Thấp Đến Cao)'
+    }
+]
+
+
 const AdmOrderList = () => {
     const navigate = useNavigate();
-    const [data, setData] = useState([]);
+
+    const [ordersData, setOrdersData] = useState([]);
+    const [ordersTableData, setOrdersTableData] = useState([]);
+    const [orderFilterInfo, setOrderFilterInfo] = useState({
+        statusId: 0,
+        orderType: 'tất cả',
+        sortId: 1
+    })
+
     const columns = [
         {
             title: 'STT',
@@ -153,19 +216,82 @@ const AdmOrderList = () => {
             }
         }
     ];
+    const onChangeFilterStatus = (value) => {
+        setOrderFilterInfo({ ...orderFilterInfo, statusId: value });
+    }
+
+    const onChangeFilterOrderType = (value) => {
+        setOrderFilterInfo({ ...orderFilterInfo, orderType: value });
+    }
+
+    const onChangeFilterSort = (value) => {
+        setOrderFilterInfo({ ...orderFilterInfo, sortId: value });
+    }
+
+    const onClearFilter = () => {
+        setOrderFilterInfo({
+            statusId: 0,
+            orderType: 'tất cả',
+            sortId: 1
+        });
+    }
+
+
+    const filterOrderData = (data, filter) => {
+        let list = [...data]
+
+        if (filter.statusId !== 0) {
+            list = [...list.filter(i => i.orderStatus.id === filter.statusId)]
+        }
+
+        if (filter.orderType.toLowerCase() !== 'tất cả') {
+            list = [...list.filter(i => i.orderType.toLowerCase() === filter.orderType.toLowerCase())]
+        }
+
+        switch (filter.sortId) {
+            case (1): {
+                list = [...list.sort((a, b) => a.createdAt > b.createdAt ? -1 : 1)]
+                break;
+            }
+            case (2): {
+                list = [...list.sort((a, b) => a.createdAt > b.createdAt ? 1 : -1)]
+                break;
+            }
+            case (3): {
+                list = [...list.sort((a, b) => a?.orderDetail.reduce(((total, curr) => (total + curr.quantity * curr.price)), 0) > b?.orderDetail.reduce(((total, curr) => (total + curr.quantity * curr.price)), 0) ? -1 : 1)]
+                break;
+            }
+            case (4): {
+                list = [...list.sort((a, b) => a?.orderDetail.reduce(((total, curr) => (total + curr.quantity * curr.price)), 0) > b?.orderDetail.reduce(((total, curr) => (total + curr.quantity * curr.price)), 0) ? 1 : -1)]
+                break;
+            }
+            case (5): {
+                list = [...list.sort((a, b) => a?.orderDetail.reduce(((total, curr) => (total + curr.quantity)), 0) > b?.orderDetail.reduce(((total, curr) => (total + curr.quantity)), 0) ? -1 : 1)]
+                break;
+            }
+            case (6): {
+                list = [...list.sort((a, b) => a?.orderDetail.reduce(((total, curr) => (total + curr.quantity)), 0) > b?.orderDetail.reduce(((total, curr) => (total + curr.quantity)), 0) ? 1 : -1)]
+                break;
+            }
+            default: {
+                list = [...list.sort((a, b) => a.createdAt > b.createdAt ? -1 : 1)]
+                break;
+            }
+        }
+
+        return list;
+    }
+
+    useEffect(() => {
+        setOrdersTableData(filterOrderData(ordersData, orderFilterInfo))
+    }, [ordersData, orderFilterInfo])
 
     useEffect(() => {
         orderAPI.getAllOrder()
             .then(res => {
                 if (!res.status) {
                     console.log(res)
-                    setData([...res.map((item, index) => ({
-                        ...item,
-                        key: item.id,
-                        createdAt: item.createdAt,
-                        totalQuantity: item?.orderDetail.reduce((total, curr) => (total + curr.quantity), 0),
-                        totalPrice: item?.orderDetail.reduce((total, curr) => (total + curr.quantity * curr.price), 0)
-                    }))])
+                    setOrdersData(res)
                 } else {
                     console.log(res)
                 }
@@ -180,8 +306,80 @@ const AdmOrderList = () => {
                 <div className="adm--orderlist__title">
                     <Typography.Title level={4}>Danh Sách Đơn Hàng</Typography.Title>
                 </div>
-                <div className="adm--orderlist__table">
-                    <Table columns={columns} dataSource={data.sort((a, b) => a.createdAt > b.createdAt ? -1 : 1)} bordered />
+                <div className="adm--orderlist__body">
+                    <div className="adm--orderlist__body--filters">
+                        <div className="adm--orderlist__body--filters__item">
+                            <div className="adm--orderlist__body--filters__item--label">Trạng Thái</div>
+                            <div className="adm--orderlist__body--filters__item--content">
+                                <Select
+                                    style={{ width: '140px' }}
+                                    value={orderFilterInfo.statusId}
+                                    onChange={onChangeFilterStatus}
+                                >
+                                    <Select.Option
+                                        value={0}
+                                    >
+                                        Tất Cả
+                                    </Select.Option>
+                                    {
+                                        orderStatusData.map(item => (
+                                            <Select.Option key={item.id} value={item.id}>
+                                                {item.title}
+                                            </Select.Option>
+                                        ))
+                                    }
+                                </Select>
+                            </div>
+                        </div>
+                        <div className="adm--orderlist__body--filters__item">
+                            <div className="adm--orderlist__body--filters__item--label">Loại Đơn Hàng</div>
+                            <div className="adm--orderlist__body--filters__item--content">
+                                <Select
+                                    style={{ width: '140px' }}
+                                    value={orderFilterInfo.orderType}
+                                    onChange={onChangeFilterOrderType}
+                                >
+                                    <Select.Option
+                                        value={'tất cả'}
+                                    >
+                                        Tất Cả
+                                    </Select.Option>
+                                    <Select.Option
+                                        value={'giao hàng'}
+                                    >
+                                        Giao Hàng
+                                    </Select.Option>
+                                    <Select.Option
+                                        value={'tại quầy'}
+                                    >
+                                        Tại Quầy
+                                    </Select.Option>
+                                </Select>
+                            </div>
+                        </div>
+                        <div className="adm--orderlist__body--filters__item">
+                            <div className="adm--orderlist__body--filters__item--label">Sắp Xếp</div>
+                            <div className="adm--orderlist__body--filters__item--content">
+                                <Select
+                                    style={{ width: '300px' }}
+                                    value={orderFilterInfo.sortId}
+                                    onChange={onChangeFilterSort}
+                                >
+                                    {sortData.map(item => (
+                                        <Select.Option key={item.id} value={item.id}>
+                                            {item.title}
+                                        </Select.Option>
+                                    ))}
+                                </Select>
+                            </div>
+                        </div>
+                        <div className="adm--orderlist__body--filters__item" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+                            <Button danger onClick={onClearFilter}>Làm Mới</Button>
+                        </div>
+                    </div>
+                    <div className="adm--orderlist__body--table">
+                        <Table columns={columns} dataSource={ordersTableData} bordered />
+                    </div>
                 </div>
             </div>
         </Helmet>
