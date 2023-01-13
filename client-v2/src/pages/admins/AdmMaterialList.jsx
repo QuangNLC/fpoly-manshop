@@ -1,5 +1,5 @@
-import { EditOutlined, FileSyncOutlined, PlusOutlined, RedoOutlined, SearchOutlined } from '@ant-design/icons'
-import { Button, Form, Input, Modal, notification, Select, Switch, Table, Tag, Typography } from 'antd'
+import { EditOutlined, FileDoneOutlined, FileExcelOutlined, FileSyncOutlined, PlusOutlined, RedoOutlined, SearchOutlined } from '@ant-design/icons'
+import { Button, Form, Input, Modal, notification, Select, Switch, Table, Tag, Tooltip, Typography } from 'antd'
 import { useForm } from 'antd/es/form/Form'
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
@@ -110,10 +110,26 @@ const AdmMaterialList = () => {
         },
         {
             title: '',
+            width: 120,
             render: (record) => {
                 return (
-                    <Button icon={<EditOutlined />} danger onClick={() => onClickEditMate(record)}>Cập Nhật</Button>
 
+                    <>
+                        <Tooltip title={'Cập Nhật'}>
+                            <Button icon={<EditOutlined />} type={'primary'} onClick={() => onClickEditMate(record)}></Button>
+                        </Tooltip>
+
+                        <Tooltip title={record?.isActive ? 'Ngừng Kinh Doanh' : 'Kích Hoạt'}>
+                            <Button
+                                style={{ marginLeft: 10 }}
+                                danger
+                                type={`${record?.isActive ? 'primary' : 'default'}`}
+                                icon={!record?.isActive ? <FileDoneOutlined /> : <FileExcelOutlined />}
+                                onClick={() => onToggleMaterialActive(record)}
+                            >
+                            </Button>
+                        </Tooltip>
+                    </>
                 )
             }
         }
@@ -202,7 +218,7 @@ const AdmMaterialList = () => {
                 .then(res => {
                     if (!res.status) {
                         setMateData([{ ...res }, ...mateData]);
-                        openNotificationWithIcon('info','Thông Báo','Tạo chất liệu thành công.');
+                        openNotificationWithIcon('info', 'Thông Báo', 'Tạo chất liệu thành công.');
                         onCloseMateModal();
                     }
                 })
@@ -235,6 +251,37 @@ const AdmMaterialList = () => {
                 }
             })
         }
+    }
+
+
+    const onToggleMaterialActive = (item) => {
+        const payload = {
+            ...item,
+            isActive: !item?.isActive
+        }
+        Modal.confirm({
+            title: 'Hộp Thoại Xác Nhận',
+            content: `Bạn có muốn ${item.isActive ? 'hủy kích hoạt' : 'kích hoạt'} thể loại không`,
+            okText: 'Xác Nhận',
+            cancelText: 'Hủy Bỏ',
+            onOk: () => {
+                materialAPI.updateMate(payload)
+                    .then(res => {
+                        if (!res.status) {
+                            let index = mateData.findIndex(c => c.id === res.id);
+                            if (index !== -1) {
+                                mateData[index] = { ...res };
+                                setMateData([...mateData]);
+                                openNotificationWithIcon('info', 'Thông Báo', 'Cập nhật thông tin chất liệu.');
+                                onCloseMateModal();
+                            }
+                        } else {
+                            console.log(res)
+                        }
+                    })
+                    .catch(err => console.log(err))
+            }
+        })
     }
 
     //end create && edit mate modal

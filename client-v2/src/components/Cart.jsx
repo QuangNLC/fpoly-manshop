@@ -3,6 +3,7 @@ import { Table, Typography, InputNumber, Button, Modal, notification } from 'ant
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import { changeCartItemQuantityAction, deleteCartItemAction } from '../redux/actions/CartReducerAction';
 import { useDispatch } from 'react-redux';
+import { Link } from 'react-router-dom';
 
 
 
@@ -32,7 +33,7 @@ const Cart = ({ cart }) => {
 
     const handleClickUpdateCartItemQuantity = (item, newQuantity) => {
         if (newQuantity <= 0) {
-            dispatch(deleteCartItemAction(item));
+            hanldeDeleteCartIem(item);
         } else {
             if (newQuantity > item.selectedSize.quantity) {
                 openNotificationWithIcon('warning', 'Thông báo', `Trong kho hiện  còn lại ${item.selectedSize.quantity}  sản phẩm!`);
@@ -119,7 +120,11 @@ const Cart = ({ cart }) => {
                 return (
                     <div className="cart--item__pr">
                         <div className="cart--item__pr--name">
-                            <Typography.Title level={5}>{record?.product?.name}</Typography.Title>
+                            <Typography.Title level={5}>
+                                <Link to={`/product/${record?.product?.id}`}>
+                                    {record?.product?.name}
+                                </Link>
+                            </Typography.Title>
                         </div>
                         <div className="cart--item__pr--price">
                             {new Intl.NumberFormat("vi-VN", {

@@ -26,6 +26,8 @@ public class Colors {
     private Date createdAt;
     @Column(name = "isactive")
     private Boolean isActive;
+    @Column(name = "description", columnDefinition = "NVARCHAR(500)")
+    private String description;
 
     @JsonIgnore
     @OneToMany(mappedBy = "color")

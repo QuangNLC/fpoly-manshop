@@ -36,6 +36,21 @@ const findDefaultIndex = (addressList) => {
     return result;
 }
 
+const findDefaultAddressIndex = (list) => {
+    let index = -1;
+
+    if (list.length > 0) {
+        for (let i = 0; i < list.length; i++) {
+            if (list[i].isDefault) {
+                index = i;
+                break;
+            }
+        }
+    }
+
+    return index;
+}
+
 const WebCart = () => {
     const cart = useSelector(state => state.cart);
     const auth = useSelector(state => state.auth);
@@ -187,7 +202,7 @@ const WebCart = () => {
                     ...auth.auth,
                     info: {
                         ...auth.auth.info,
-                        addressList: [...auth.auth.info.addressList, { ...res }]
+                        addressList: [...auth.auth.info.addressList.map(i => ({...i, isDefault: false})), { ...res, isDefault: true }]
                     }
                 }
                 console.log(authPayload)
@@ -244,6 +259,45 @@ const WebCart = () => {
             .catch(err => console.log(err))
     }
 
+    const onDeleteAddress = (address) => {
+        Modal.confirm({
+            title: 'Hộp Thoại Xác Nhận',
+            content: 'Bạn có muốn xóa địa chỉ không.',
+            okText: 'Xác Nhận',
+            cancelText: 'Hủy Bỏ',
+            onOk: () => {
+                const payload = {
+                    username: auth?.auth?.info?.username,
+                    addressId: address?.id
+                }
+                console.log(payload)
+                userAPI.deleteAddress(payload)
+                    .then(res => {
+                        if (!res.status) {
+                            console.log(res)
+                            const index = auth?.auth?.info?.addressList.findIndex(a => a.id === payload.addressId);
+                            const newAddressList = [...auth?.auth?.info?.addressList.map(a => ({ ...a }))]
+                            if (index !== -1) {
+                                newAddressList.splice(index, 1);
+                            }
+                            let authPayload = {
+                                ...auth?.auth,
+                                info: {
+                                    ...auth?.auth.info,
+                                    addressList: [...newAddressList]
+                                }
+                            }
+                            dispatch(setAuthAction(authPayload));
+                            openNotificationWithIcon('warning', 'Thông Báo', 'Xóa địa chỉ thành công.');
+                        } else {
+                            console.log(res);
+                        }
+                    })
+                    .catch(err => console.log(err))
+            }
+        })
+    }
+
     // checkoout
 
     const onClickCheckoutBtn = () => {
@@ -286,6 +340,7 @@ const WebCart = () => {
                     console.log(res)
                     dispatch(clearCartAction());
                     openNotificationWithIcon('success', 'Thông Báo', 'Đặt hàng thành công.');
+                    navigate(`/my-order/${res}`)
                 } else {
                     console.log(res)
                 }
@@ -351,12 +406,12 @@ const WebCart = () => {
 
     useEffect(() => {
         if (auth) {
-            // let index = findDefaultIndex(auth?.auth?.info?.addressList)
-            // if (index !== -1) {
-            //     setCheckoutAddress(auth?.auth?.info?.addressList[index])
-            // } else {
-            //     setCheckoutAddress(undefined)
-            // }
+            let index = findDefaultAddressIndex(auth?.auth?.info?.addressList);
+            if (index !== -1) {
+                setCheckoutAddress(auth?.auth?.info?.addressList[index])
+            } else {
+                setCheckoutAddress(undefined);
+            }
         }
     }, [auth])
 
@@ -727,10 +782,11 @@ const WebCart = () => {
                                                                     )
                                                                     :
                                                                     (
-                                                                        <Button danger style={{ marginRight: 10 }} onClick={() => onSetDefaultAddress(item)}>Đặt Mặc Định</Button>
+                                                                        <>
+                                                                            <Button danger style={{ marginRight: 10 }} onClick={() => onSetDefaultAddress(item)}>Đặt Mặc Định</Button>
+                                                                        </>
                                                                     )
                                                             }
-                                                            <Button type='primary' onClick={() => { onClickSelectCheckoutAddress(item) }}>Chọn Địa Chỉ</Button>
                                                         </div>
 
                                                     </div>
@@ -766,7 +822,11 @@ const WebCart = () => {
                                                                 )
                                                                 :
                                                                 (
-                                                                    <Button danger style={{ marginRight: 10 }} onClick={() => onSetDefaultAddress(item)}>Đặt Mặc Định</Button>
+                                                                    <>
+
+                                                                        <Button danger style={{ marginRight: 10 }} type={'primary'} icon={<DeleteOutlined />} onClick={() => { onDeleteAddress(item) }}></Button>
+                                                                        <Button danger style={{ marginRight: 10 }} onClick={() => onSetDefaultAddress(item)}>Đặt Mặc Định</Button>
+                                                                    </>
                                                                 )
                                                         }
                                                         <Button type='primary' onClick={() => { onClickSelectCheckoutAddress(item) }}>Chọn Địa Chỉ</Button>

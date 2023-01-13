@@ -1,12 +1,11 @@
-import { EditOutlined, FileSyncOutlined, PlusOutlined, RedoOutlined, SearchOutlined } from '@ant-design/icons'
-import { Button, Form, Input, Modal, notification, Select, Switch, Table, Tag, Typography } from 'antd'
+import { EditOutlined, FileDoneOutlined, FileExcelOutlined, FileSyncOutlined, PlusOutlined, RedoOutlined, SearchOutlined } from '@ant-design/icons'
+import { Button, Form, Input, Modal, notification, Select, Switch, Table, Tag, Tooltip, Typography } from 'antd'
 import { useForm } from 'antd/es/form/Form'
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
 import colorAPI from '../../apis/colorAPI'
-import materialAPI from '../../apis/materialAPI'
 import Helmet from '../../components/Helmet'
-
+import { SketchPicker } from 'react-color'
 
 const openNotificationWithIcon = (type, title, des) => {
     notification[type]({
@@ -74,7 +73,15 @@ const AdmColorList = () => {
             title: 'Màu',
             render: (record) => {
                 return (
-                    <div style={{width: 30, height: 30, backgroundColor: `${record?.colorCode}`}}></div>
+                    <div style={{ width: 30, height: 30, backgroundColor: `${record?.colorCode}` }}></div>
+                )
+            }
+        },
+        {
+            title: 'Mô tả',
+            render: (record) => {
+                return (
+                    <Tag>{record?.description}</Tag>
                 )
             }
         },
@@ -113,8 +120,23 @@ const AdmColorList = () => {
             title: '',
             render: (record) => {
                 return (
-                    <Button icon={<EditOutlined />} danger onClick={() => onClickEditMate(record)}>Cập Nhật</Button>
 
+                    <>
+                        <Tooltip title={'Cập Nhật'}>
+                            <Button icon={<EditOutlined />} type={'primary'} onClick={() => onClickEditColor(record)}></Button>
+                        </Tooltip>
+
+                        <Tooltip title={record?.isActive ? 'Ngừng Kinh Doanh' : 'Kích Hoạt'}>
+                            <Button
+                                style={{ marginLeft: 10 }}
+                                danger
+                                type={`${record?.isActive ? 'primary' : 'default'}`}
+                                icon={!record?.isActive ? <FileDoneOutlined /> : <FileExcelOutlined />}
+                                onClick={() => onToggleColorActive(record)}
+                            >
+                            </Button>
+                        </Tooltip>
+                    </>
                 )
             }
         }
@@ -128,7 +150,7 @@ const AdmColorList = () => {
         let result = [...cateList];
 
         if (filter.searchText !== '') {
-            result = [...result.filter(i => i.colorCode.toLowerCase().includes(filter.searchText.toLowerCase()))]
+            result = [...result.filter(i => (i.colorCode.toLowerCase().includes(filter.searchText.toLowerCase()) || i.description.toLowerCase().includes(filter.searchText.toLowerCase())))]
         }
 
         if (filter?.actitveType !== 0) {
@@ -168,73 +190,114 @@ const AdmColorList = () => {
     }
 
 
-
-    // create && edit mate modal 
-    const [isMateModal, setIsMateModal] = useState(false);
-    const [editingMate, setEditingMate] = useState(undefined);
-    const [mateForm] = useForm();
-
-
-    const onClickCreateMateBtn = () => {
-        setEditingMate(undefined);
-        setIsMateModal(true);
-    }
-
-    const onCloseMateModal = () => {
-        setIsMateModal(false);
-        setEditingMate(undefined);
-    }
-
-    const onClickEditMate = (mate) => {
-        console.log(mate)
-        setEditingMate(mate);
-        mateForm.setFieldsValue({
-            id: mate.id,
-            title: mate?.title,
-            descriptions: mate?.descriptions,
-            isActive: mate?.isActive
+    const onToggleColorActive = (item) => {
+        const payload = {
+            ...item,
+            isActive: !item?.isActive
+        }
+        Modal.confirm({
+            title: 'Hộp Thoại Xác Nhận',
+            content: `Bạn có muốn ${item.isActive ? 'hủy kích hoạt' : 'kích hoạt'} màu không`,
+            okText: 'Xác Nhận',
+            cancelText: 'Hủy Bỏ',
+            onOk: () => {
+                colorAPI.updateColor(payload)
+                    .then(res => {
+                        if (!res.status) {
+                            let index = colorData.findIndex(c => c.id === res.id);
+                            if (index !== -1) {
+                                colorData[index] = { ...res };
+                                setColorData([...colorData]);
+                                openNotificationWithIcon('info', 'Thông Báo', `${!res.activated ? 'Hủy kích hoạt' : 'Kích hoạt'} màu thành công.`);
+                            }
+                        } else {
+                            console.log(res)
+                        }
+                    })
+                    .catch(err => console.log(err))
+            }
         })
-        setIsMateModal(true);
     }
 
-    const onFinishMateForm = (value) => {
-        if (!editingMate) {
-            // materialAPI.createMate({ title: value.title, descriptions: value?.descriptions ? value?.descriptions : '' })
-            //     .then(res => {
-            //         if (!res.status) {
-            //             setMateData([{ ...res }, ...mateData]);
-            //             openNotificationWithIcon('info','Thông Báo','Tạo chất liệu thành công.');
-            //             onCloseMateModal();
-            //         }
-            //     })
+
+    // create && edit color modal 
+    const [isColorModal, setIsColorModal] = useState(false);
+    const [editingColor, setEditingColor] = useState(undefined);
+    const [colorForm] = useForm();
+    const [selectColor, setSelectColor] = useState("#fff");
+
+    const onClickCreateColorBtn = () => {
+        setEditingColor(undefined);
+        colorForm.setFieldValue('colorCode', selectColor);
+        setIsColorModal(true);
+    }
+
+    const onCloseColorModal = () => {
+        setIsColorModal(false);
+        setEditingColor(undefined);
+    }
+
+    const onClickEditColor = (color) => {
+        console.log(color)
+        setEditingColor(color);
+        setSelectColor(color.colorCode);
+        colorForm.setFieldsValue({
+            id: color.id,
+            colorCode: color?.colorCode,
+            description: color?.description,
+            isActive: color?.isActive
+        })
+        setIsColorModal(true);
+    }
+
+    const onChangeColorCode = (color) => {
+        setSelectColor(color.hex);
+        colorForm.setFieldValue('colorCode', color.hex)
+    }
+
+    const onFinishColorForm = (value) => {
+        if (!editingColor) {
+            let payload = {
+                ...value
+            }
+            console.log(value)
+            colorAPI.createColor(payload)
+                .then(res => {
+                    if (!res.status) {
+                        setColorData([{ ...res }, ...colorData]);
+                        openNotificationWithIcon('info', 'Thông Báo', 'Thêm màu mới thành công.');
+                        onCloseColorModal();
+                    }
+                })
         } else {
             let payload = {
                 ...value,
+                id: editingColor?.id
             }
             console.log(payload)
-            // Modal.confirm({
-            //     title: "Hộp Thoại Xác Nhận",
-            //     content: "Bạn có muốn cập nhật thông tin chất liệu không.",
-            //     okText: 'Xác Nhận',
-            //     cancelText: 'Hủy Bỏ',
-            //     onOk: () => {
-            //         materialAPI.updateMate(payload)
-            //             .then(res => {
-            //                 if (!res.status) {
-            //                     let index = mateData.findIndex(c => c.id === res.id);
-            //                     if (index !== -1) {
-            //                         mateData[index] = { ...res };
-            //                         setMateData([...mateData]);
-            //                         openNotificationWithIcon('info', 'Thông Báo', 'Cập nhật thông tin chất liệu.');
-            //                         onCloseMateModal();
-            //                     }
-            //                 } else {
-            //                     console.log(res)
-            //                 }
-            //             })
-            //             .catch(err => console.log(err))
-            //     }
-            // })
+            Modal.confirm({
+                title: "Hộp Thoại Xác Nhận",
+                content: "Bạn có muốn cập nhật thông tin màu.",
+                okText: 'Xác Nhận',
+                cancelText: 'Hủy Bỏ',
+                onOk: () => {
+                    colorAPI.updateColor(payload)
+                        .then(res => {
+                            if (!res.status) {
+                                let index = colorData.findIndex(c => c.id === res.id);
+                                if (index !== -1) {
+                                    colorData[index] = { ...res };
+                                    setColorData([...colorData]);
+                                    openNotificationWithIcon('info', 'Thông Báo', 'Cập nhật thông tin màu.');
+                                    onCloseColorModal();
+                                }
+                            } else {
+                                console.log(res)
+                            }
+                        })
+                        .catch(err => console.log(err))
+                }
+            })
         }
     }
 
@@ -264,7 +327,7 @@ const AdmColorList = () => {
             <div className="adm--matelist">
                 <div className="adm--matelist__title">
                     <Typography.Title level={4}>Danh Sách Màu Sắc</Typography.Title>
-                    <Button icon={<PlusOutlined />} type={'primary'} onClick={onClickCreateMateBtn}>Thêm Mới</Button>
+                    <Button icon={<PlusOutlined />} type={'primary'} onClick={onClickCreateColorBtn}>Thêm Mới</Button>
                 </div>
                 <div className="adm--matelist__body">
                     <div className="adm--matelist__body--filters">
@@ -334,41 +397,34 @@ const AdmColorList = () => {
                 </div>
             </div>
             <Modal
-                open={isMateModal}
+                open={isColorModal}
                 centered
                 width={800}
                 footer={false}
-                onCancel={onCloseMateModal}
+                onCancel={onCloseColorModal}
             >
                 <Form
-                    form={mateForm}
+                    form={colorForm}
                     layout={'vertical'}
-                    onFinish={onFinishMateForm}
+                    onFinish={onFinishColorForm}
                 >
                     {
-                        editingMate ?
+                        editingColor ?
                             (
                                 <>
-                                    <Typography.Title level={4}>Cập Nhật Chất Liệu</Typography.Title>
-                                    <Form.Item
-                                        label="Mã Chất Liệu"
-                                        name="id"
-                                    >
-                                        <Input value={editingMate.id} disabled />
+                                    <Typography.Title level={4}>Cập Nhật Màu</Typography.Title>
+                                    <Form.Item>
+                                        <SketchPicker onChangeComplete={onChangeColorCode} color={selectColor} />
                                     </Form.Item>
                                     <Form.Item
-                                        label="Tên Chất Liệu"
-                                        name="title"
-                                        rules={[
-                                            { required: true, message: 'Vui lòng nhập tên chất liệu.!' },
-                                            { whitespace: true, message: 'Vui lòng không nhập khoảng trống.!' }
-                                        ]}
+                                        label="Code"
+                                        name="colorCode"
                                     >
-                                        <Input placeholder='Nhập tên chất liệu' />
+                                        <Input placeholder='Nhập hex code' value={selectColor} disabled />
                                     </Form.Item>
                                     <Form.Item
                                         label="Mô Tả"
-                                        name="descriptions"
+                                        name="description"
                                     >
                                         <Input.TextArea placeholder='Nhập mô tả' />
                                     </Form.Item>
@@ -391,20 +447,27 @@ const AdmColorList = () => {
                             :
                             (
                                 <>
-                                    <Typography.Title level={4}>Tạo Chất Liệu Mới</Typography.Title>
+                                    <Typography.Title level={4}>Thêm Màu Mới</Typography.Title>
+                                    <Form.Item>
+                                        <SketchPicker onChangeComplete={onChangeColorCode} color={selectColor} />
+                                    </Form.Item>
                                     <Form.Item
-                                        label="Tên Chất Liệu"
-                                        name="title"
+                                        label="Code"
+                                        name="colorCode"
                                         rules={[
                                             { required: true, message: 'Vui lòng nhập tên chất liệu.!' },
                                             { whitespace: true, message: 'Vui lòng không nhập khoảng trống.!' }
                                         ]}
                                     >
-                                        <Input placeholder='Nhập tên chất liệu' />
+                                        <Input placeholder='Nhập hex code' value={selectColor} disabled />
                                     </Form.Item>
                                     <Form.Item
                                         label="Mô Tả"
-                                        name="descriptions"
+                                        name="description"
+                                        rules={[
+                                            { required: true, message: 'Vui lòng nhập mô tả màu.!' },
+                                            { whitespace: true, message: 'Vui lòng không nhập khoảng trống.!' }
+                                        ]}
                                     >
                                         <Input.TextArea placeholder='Nhập mô tả' />
                                     </Form.Item>

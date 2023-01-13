@@ -1,5 +1,5 @@
-import { PlusOutlined, EditOutlined, SearchOutlined, RedoOutlined, FileSyncOutlined } from '@ant-design/icons'
-import { Button, Form, Input, Modal, notification, Select, Switch, Table, Tag, Typography } from 'antd'
+import { PlusOutlined, EditOutlined, SearchOutlined, RedoOutlined, FileSyncOutlined, FileDoneOutlined, FileExcelOutlined } from '@ant-design/icons'
+import { Button, Form, Input, Modal, notification, Select, Switch, Table, Tag, Tooltip, Typography } from 'antd'
 import React, { useEffect, useState } from 'react'
 import categoryAPI from '../../apis/categoryAPI'
 import Helmet from '../../components/Helmet'
@@ -101,8 +101,22 @@ const AdmCategoryList = () => {
             title: '',
             render: (record) => {
                 return (
-                    <Button icon={<EditOutlined />} danger onClick={() => onClickEditCate(record)}>Cập Nhật</Button>
+                    <>
+                        <Tooltip title={'Cập Nhật'}>
+                            <Button icon={<EditOutlined />} type={'primary'} onClick={() => onClickEditCate(record)}></Button>
+                        </Tooltip>
 
+                        <Tooltip title={record?.isActive ? 'Ngừng Kinh Doanh' : 'Kích Hoạt'}>
+                            <Button
+                                style={{ marginLeft: 10 }}
+                                danger
+                                type={`${record?.isActive ? 'primary' : 'default'}`}
+                                icon={!record?.isActive ? <FileDoneOutlined /> : <FileExcelOutlined />}
+                                onClick={() => onToggleCategoryActive(record)}
+                            >
+                            </Button>
+                        </Tooltip>
+                    </>
                 )
             }
         }
@@ -217,180 +231,209 @@ const AdmCategoryList = () => {
                         .catch(err => console.log(err))
                 }
             })
+        }
     }
-}
 
-//end create && edit cate modal
-
-
-
-
-useEffect(() => {
-    const newData = filterCateData(cateData, filterInfo)
-    setCateTableData(newData.map((item) => ({ ...item, key: item.id })))
-}, [cateData, filterInfo])
-
-useEffect(() => {
-    categoryAPI.getAllCate()
-        .then(res => {
-            if (!res.status) {
-                setCateData(res)
-            } else {
-                console.log(res)
+    const onToggleCategoryActive = (item) => {
+        const payload = {
+            ...item,
+            isActive: !item?.isActive
+        }
+        Modal.confirm({
+            title: 'Hộp Thoại Xác Nhận',
+            content: `Bạn có muốn ${item.isActive ? 'hủy kích hoạt' : 'kích hoạt'} thể loại không`,
+            okText: 'Xác Nhận',
+            cancelText: 'Hủy Bỏ',
+            onOk: () => {
+                categoryAPI.updateCate(payload)
+                    .then(res => {
+                        if (!res.status) {
+                            let index = cateData.findIndex(c => c.id === res.id);
+                            if (index !== -1) {
+                                cateData[index] = { ...res };
+                                setCateData([...cateData]);
+                                openNotificationWithIcon('info', 'Thông Báo', `${!res.activated ? 'Hủy kích hoạt' : 'Kích hoạt'} thể loại thành công.`);
+                            }
+                        } else {
+                            console.log(res)
+                        }
+                    })
+                    .catch(err => console.log(err))
             }
         })
-        .catch(err => console.log(err))
-}, [])
-return (
-    <Helmet
-        title={"Quản Lý Thể Loại"}
-    >
-        <div className="adm--catelist">
-            <div className="adm--catelist__title">
-                <Typography.Title level={4}>Danh Sách Thể Loại</Typography.Title>
-                <Button icon={<PlusOutlined />} type={'primary'} onClick={onClickCreateCateBtn}>Thêm Mới</Button>
-            </div>
-            <div className="adm--catelist__body">
-                <div className="adm--catelist__body--filters">
-                    <div className="adm--catelist__body--filters__search">
-                        <Input value={inputValue} onChange={e => setInputValue(e.target.value)} />
-                        <Button type='primary' icon={<SearchOutlined />} style={{ marginLeft: 20 }} onClick={onSearchText}>Tìm Kiếm</Button>
-                        <Button type='dashed' icon={<RedoOutlined />} style={{ marginLeft: 20 }} onClick={onClearFilter}>Làm Mới</Button>
-                    </div>
-                    <div className="adm--catelist__body--filters__item">
-                        <div className="adm--catelist__body--filters__item--label">
-                            Sắp Xếp
-                        </div>
-                        <div className="adm--catelist__body--filters__item--content">
-                            <Select
-                                style={{
-                                    width: '100%',
-                                }}
-                                options={[...sortOptions.map((c) => ({
-                                    value: c.id,
-                                    label: `${c.byTitle} - ${c.title}`,
-                                    key: c.id
-                                }))]}
-                                value={filterInfo.sortId}
-                                onChange={onChangeSortFilter}
-                            >
-                            </Select>
-                        </div>
-                    </div>
-                    <div className="adm--catelist__body--filters__item">
-                        <div className="adm--catelist__body--filters__item--label">
-                            Trạng Thái
-                        </div>
-                        <div className="adm--catelist__body--filters__item--content">
-                            <Select
-                                style={{
-                                    width: '100%',
-                                }}
-                                value={filterInfo.actitveType}
-                                onChange={onChangeActiveFilter}
-                            >
-                                <Select.Option
-                                    value={0}
-                                >
-                                    Tất Cả
-                                </Select.Option>
-                                <Select.Option
-                                    value={1}
-                                >
-                                    Kinh Doanh
-                                </Select.Option>
-                                <Select.Option
-                                    value={-1}
-                                >
-                                    Ngừng Kinh Doanh
-                                </Select.Option>
-                            </Select>
-                        </div>
-                    </div>
-                </div>
-                <div className="adm--catelist__body--table">
-                    <Table
-                        columns={cateColumns}
-                        dataSource={cateTableData}
-                        bordered
-                    />
-                </div>
-            </div>
-        </div>
-        <Modal
-            open={isCateModal}
-            centered
-            width={800}
-            footer={false}
-            onCancel={onCloseCateModal}
-        >
-            <Form
-                form={cateForm}
-                layout={'vertical'}
-                onFinish={onFinishCateForm}
-            >
-                {
-                    editingCate ?
-                        (
-                            <>
-                                <Typography.Title level={4}>Cập Nhật Thể Loại</Typography.Title>
-                                <Form.Item
-                                    label="Mã Thể Loại"
-                                    name="id"
-                                >
-                                    <Input value={editingCate.id} disabled />
-                                </Form.Item>
-                                <Form.Item
-                                    label="Tên Thể Loại"
-                                    name="title"
-                                    rules={[
-                                        { required: true, message: 'Vui lòng nhập tên thể loại.!' },
-                                        { whitespace: true, message: 'Vui lòng không nhập khoảng trống.!' }
-                                    ]}
-                                >
-                                    <Input placeholder='Nhập tên thể loại' />
-                                </Form.Item>
-                                <Form.Item
-                                    label="Trạng Thái"
-                                    name="isActive"
-                                    valuePropName='checked'
-                                >
-                                    <Switch
-                                        checkedChildren={<Tag color='green'>Kinh Doanh</Tag>}
-                                        unCheckedChildren={<Tag color='red'>Ngừng Kinh Doanh</Tag>}
-                                    />
-                                </Form.Item>
-                                <Form.Item
-                                >
-                                    <Button icon={<FileSyncOutlined />} danger htmlType='submit'>Cập Nhật</Button>
-                                </Form.Item>
-                            </>
-                        )
-                        :
-                        (
-                            <>
-                                <Typography.Title level={4}>Tạo Thể Loại Mới</Typography.Title>
-                                <Form.Item
-                                    label="Tên Thể Loại"
-                                    name="title"
-                                    rules={[
-                                        { required: true, message: 'Vui lòng nhập tên thể loại.!' },
-                                        { whitespace: true, message: 'Vui lòng không nhập khoảng trống.!' }
-                                    ]}
-                                >
-                                    <Input placeholder='Nhập tên thể loại' />
-                                </Form.Item>
-                                <Form.Item
-                                >
-                                    <Button icon={<PlusOutlined />} type={'primary'} htmlType='submit'>Tạo Mới</Button>
-                                </Form.Item>
-                            </>
-                        )
+    }
+
+    //end create && edit cate modal
+
+
+
+
+    useEffect(() => {
+        const newData = filterCateData(cateData, filterInfo)
+        setCateTableData(newData.map((item) => ({ ...item, key: item.id })))
+    }, [cateData, filterInfo])
+
+    useEffect(() => {
+        categoryAPI.getAllCate()
+            .then(res => {
+                if (!res.status) {
+                    setCateData(res)
+                } else {
+                    console.log(res)
                 }
-            </Form>
-        </Modal>
-    </Helmet>
-)
+            })
+            .catch(err => console.log(err))
+    }, [])
+    return (
+        <Helmet
+            title={"Quản Lý Thể Loại"}
+        >
+            <div className="adm--catelist">
+                <div className="adm--catelist__title">
+                    <Typography.Title level={4}>Danh Sách Thể Loại</Typography.Title>
+                    <Button icon={<PlusOutlined />} type={'primary'} onClick={onClickCreateCateBtn}>Thêm Mới</Button>
+                </div>
+                <div className="adm--catelist__body">
+                    <div className="adm--catelist__body--filters">
+                        <div className="adm--catelist__body--filters__search">
+                            <Input value={inputValue} onChange={e => setInputValue(e.target.value)} />
+                            <Button type='primary' icon={<SearchOutlined />} style={{ marginLeft: 20 }} onClick={onSearchText}>Tìm Kiếm</Button>
+                            <Button type='dashed' icon={<RedoOutlined />} style={{ marginLeft: 20 }} onClick={onClearFilter}>Làm Mới</Button>
+                        </div>
+                        <div className="adm--catelist__body--filters__item">
+                            <div className="adm--catelist__body--filters__item--label">
+                                Sắp Xếp
+                            </div>
+                            <div className="adm--catelist__body--filters__item--content">
+                                <Select
+                                    style={{
+                                        width: '100%',
+                                    }}
+                                    options={[...sortOptions.map((c) => ({
+                                        value: c.id,
+                                        label: `${c.byTitle} - ${c.title}`,
+                                        key: c.id
+                                    }))]}
+                                    value={filterInfo.sortId}
+                                    onChange={onChangeSortFilter}
+                                >
+                                </Select>
+                            </div>
+                        </div>
+                        <div className="adm--catelist__body--filters__item">
+                            <div className="adm--catelist__body--filters__item--label">
+                                Trạng Thái
+                            </div>
+                            <div className="adm--catelist__body--filters__item--content">
+                                <Select
+                                    style={{
+                                        width: '100%',
+                                    }}
+                                    value={filterInfo.actitveType}
+                                    onChange={onChangeActiveFilter}
+                                >
+                                    <Select.Option
+                                        value={0}
+                                    >
+                                        Tất Cả
+                                    </Select.Option>
+                                    <Select.Option
+                                        value={1}
+                                    >
+                                        Kinh Doanh
+                                    </Select.Option>
+                                    <Select.Option
+                                        value={-1}
+                                    >
+                                        Ngừng Kinh Doanh
+                                    </Select.Option>
+                                </Select>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="adm--catelist__body--table">
+                        <Table
+                            columns={cateColumns}
+                            dataSource={cateTableData}
+                            bordered
+                        />
+                    </div>
+                </div>
+            </div>
+            <Modal
+                open={isCateModal}
+                centered
+                width={800}
+                footer={false}
+                onCancel={onCloseCateModal}
+            >
+                <Form
+                    form={cateForm}
+                    layout={'vertical'}
+                    onFinish={onFinishCateForm}
+                >
+                    {
+                        editingCate ?
+                            (
+                                <>
+                                    <Typography.Title level={4}>Cập Nhật Thể Loại</Typography.Title>
+                                    <Form.Item
+                                        label="Mã Thể Loại"
+                                        name="id"
+                                    >
+                                        <Input value={editingCate.id} disabled />
+                                    </Form.Item>
+                                    <Form.Item
+                                        label="Tên Thể Loại"
+                                        name="title"
+                                        rules={[
+                                            { required: true, message: 'Vui lòng nhập tên thể loại.!' },
+                                            { whitespace: true, message: 'Vui lòng không nhập khoảng trống.!' }
+                                        ]}
+                                    >
+                                        <Input placeholder='Nhập tên thể loại' />
+                                    </Form.Item>
+                                    <Form.Item
+                                        label="Trạng Thái"
+                                        name="isActive"
+                                        valuePropName='checked'
+                                    >
+                                        <Switch
+                                            checkedChildren={<Tag color='green'>Kinh Doanh</Tag>}
+                                            unCheckedChildren={<Tag color='red'>Ngừng Kinh Doanh</Tag>}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item
+                                    >
+                                        <Button icon={<FileSyncOutlined />} danger htmlType='submit'>Cập Nhật</Button>
+                                    </Form.Item>
+                                </>
+                            )
+                            :
+                            (
+                                <>
+                                    <Typography.Title level={4}>Tạo Thể Loại Mới</Typography.Title>
+                                    <Form.Item
+                                        label="Tên Thể Loại"
+                                        name="title"
+                                        rules={[
+                                            { required: true, message: 'Vui lòng nhập tên thể loại.!' },
+                                            { whitespace: true, message: 'Vui lòng không nhập khoảng trống.!' }
+                                        ]}
+                                    >
+                                        <Input placeholder='Nhập tên thể loại' />
+                                    </Form.Item>
+                                    <Form.Item
+                                    >
+                                        <Button icon={<PlusOutlined />} type={'primary'} htmlType='submit'>Tạo Mới</Button>
+                                    </Form.Item>
+                                </>
+                            )
+                    }
+                </Form>
+            </Modal>
+        </Helmet>
+    )
 }
 
 export default AdmCategoryList

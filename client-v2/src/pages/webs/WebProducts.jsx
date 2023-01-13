@@ -7,6 +7,17 @@ import Helmet from '../../components/Helmet';
 import ProductList from '../../components/ProductList';
 import { SearchOutlined, ReloadOutlined } from '@ant-design/icons'
 
+
+const checkProductExistSize = (product, sizeId) => {
+    let index = -1;
+
+    if (product?.productsizes.length > 0) {
+        index = product?.productsizes.findIndex(s => ((s.size.id === sizeId) && s.isActive && s.quantity > 0));
+    }
+
+    return index;
+}
+
 const WebProducts = () => {
     const [productData, setProductData] = useState([])
     const [showData, setShowData] = useState([])
@@ -31,8 +42,27 @@ const WebProducts = () => {
         sizeIds: [],
         colorIds: [],
         sortId: 1,
-        searchText: ''
+        searchText: '',
+        minPrice: 0,
+        maxPrice: 0
     })
+
+    const onChangeRangeOfPrice = ([value1, value2]) => {
+        if (value1 > value2) {
+            setFilterInfo({
+                ...filterInfo,
+                minPrice: value2,
+                maxPrice: value1
+            })
+        } else {
+            setFilterInfo({
+                ...filterInfo,
+                minPrice: value1,
+                maxPrice: value2
+            })
+        }
+    }
+
 
     const onChangeProductFilterColors = (e) => {
         setFilterInfo({
@@ -87,7 +117,9 @@ const WebProducts = () => {
             sizeIds: [],
             colorIds: [],
             sortId: 1,
-            searchText: ''
+            searchText: '',
+            minPrice: 0,
+            maxPrice: 0
         })
     }
 
@@ -118,6 +150,31 @@ const WebProducts = () => {
                 }
             })]
         }
+
+        if (filter?.sizeIds.length > 0) {
+            result = [...result.filter(i => {
+                let total = 0;
+                for (let index = 0; index < filter?.sizeIds.length; index++) {
+                    const check = checkProductExistSize(i, filter?.sizeIds[index]);
+                    if(check !== -1){
+                        total = total + 1;
+                    }
+                }
+                if(total > 0){
+                    return true;
+                }else{
+                    return false;
+                }
+            })]
+        }
+
+        if (filter.maxPrice !== 0) {
+            result = [...result.filter(i => {
+                return ((i.price >= filter.minPrice && i.price <= filter.maxPrice))
+            })]
+        }
+
+
 
 
         switch (filter.sortId) {
@@ -156,7 +213,7 @@ const WebProducts = () => {
     const getListByPage = (prList, page) => {
         let result = []
 
-        result = prList.slice((page - 1)*8, page*8)
+        result = prList.slice((page - 1) * 8, page * 8)
 
         return result;
     }
@@ -184,6 +241,7 @@ const WebProducts = () => {
 
         productAPI.getAllPr()
             .then(res => {
+                console.log(res)
                 if (!res.status) {
                     setProductData(res)
                 }
@@ -200,13 +258,6 @@ const WebProducts = () => {
                     gutter={[16, 16]}
                 >
                     <Col span={4} className='web--products__filters'>
-                        <div className="web--products__filters--item search">
-                            <Input value={searchInputValue} onChange={e => { setSearchInputValue(e.target.value) }} />
-                            <div style={{width: '100%', display: 'flex', justifyContent: 'space-between'}}>
-                                <Button style={{margin: 10}} icon={<SearchOutlined />} type='primary' onClick={onSearchText}>Tìm Kiếm</Button>
-                                <Button style={{margin: 10}} icon={<ReloadOutlined />} danger onClick={() => { onClearFiler() }}>Làm Mới</Button>
-                            </div>
-                        </div>
                         <div className="web--products__filters--item">
                             <div className="web--products__filters--item__title">
                                 Sắp Xếp
@@ -304,6 +355,7 @@ const WebProducts = () => {
                                     }}
                                     onChange={onChangeProductFilterColors}
                                     value={filterInfo.colorIds}
+                                    placeholder="Chọn Màu"
                                 >
                                     {
                                         colors.map(c => (
@@ -338,6 +390,7 @@ const WebProducts = () => {
                                     }))]}
                                     onChange={onChangeProductFilterSizes}
                                     value={filterInfo.sizeIds}
+                                    placeholder="Chọn Size"
                                 >
                                 </Select>
                             </div>
@@ -349,30 +402,66 @@ const WebProducts = () => {
                             <div className="web--products__filters--item__body">
                                 <Slider
                                     range
-                                    step={10}
-                                    defaultValue={[0, 100000]}
+                                    value={[filterInfo.minPrice, filterInfo.maxPrice]}
+                                    min={0} max={5000000}
+                                    onChange={onChangeRangeOfPrice}
+                                    step={10000}
                                 />
+                                {
+                                    filterInfo.maxPrice !== 0 &&
+                                    <div>
+                                        <div>
+                                            Từ: {
+                                                new Intl.NumberFormat("vi-VN", {
+                                                    style: "currency",
+                                                    currency: "VND",
+                                                }).format(filterInfo.minPrice)
+                                            }
+                                        </div>
+                                        <div>
+                                            Đến: {
+                                                new Intl.NumberFormat("vi-VN", {
+                                                    style: "currency",
+                                                    currency: "VND",
+                                                }).format(filterInfo.maxPrice)
+                                            }
+                                        </div>
+                                    </div>
+                                }
                             </div>
                         </div>
                     </Col>
                     <Col span={20} className='web--products__list'>
-                        {
-                            showData.length > 0 ?
-                                (
-                                    <ProductList list={getListByPage(showData, currentPage)} />
-                                )
-                                :
-                                (
-                                    <Empty description={`Không tìm thấy sản phẩm : '${searchInputValue}'`} />
-                                )
-                        }
-                        <Pagination
-                            total={showData.length}
-                            current={currentPage}
-                            showSizeChanger={false}
-                            pageSize={8}
-                            onChange={onChangePage}
-                        />
+                        <div className="web--products__list--search">
+                            <div className="web--products__list--search__container">
+                                <Input value={searchInputValue} onChange={e => { setSearchInputValue(e.target.value) }} placeholder="Nhập tên sản phẩm" />
+                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                    <Button style={{ margin: 10 }} icon={<SearchOutlined />} type='primary' onClick={onSearchText}>Tìm Kiếm</Button>
+                                    <Button style={{ margin: 10 }} icon={<ReloadOutlined />} danger onClick={() => { onClearFiler() }}>Làm Mới</Button>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="web--products__list--content">
+                            {
+                                showData.length > 0 ?
+                                    (
+                                        <ProductList list={getListByPage(showData, currentPage)} />
+                                    )
+                                    :
+                                    (
+                                        <Empty description={`Không tìm thấy sản phẩm : '${searchInputValue}'`} />
+                                    )
+                            }
+                        </div>
+                        <div className="web--products__list--pagination">
+                            <Pagination
+                                total={showData.length}
+                                current={currentPage}
+                                showSizeChanger={false}
+                                pageSize={8}
+                                onChange={onChangePage}
+                            />
+                        </div>
                     </Col>
                 </Row>
             </div>

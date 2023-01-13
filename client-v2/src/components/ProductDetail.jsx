@@ -1,8 +1,9 @@
-import { Button, Col, InputNumber, notification, Row, Tooltip, Typography } from 'antd'
+import { Button, Col, InputNumber, notification, Row, Tag, Tooltip, Typography } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
-import {useDispatch} from 'react-redux';
-import {addToCartAction} from '../redux/actions/CartReducerAction.js'
+import { useDispatch } from 'react-redux';
+import { addToCartAction } from '../redux/actions/CartReducerAction.js'
+import { useNavigate } from 'react-router-dom';
 
 const openNotificationWithIcon = (type, title, des) => {
     notification[type]({
@@ -11,11 +12,28 @@ const openNotificationWithIcon = (type, title, des) => {
     });
 };
 
+
+const findFirstValidSizeIndex = (product) => {
+    let index = -1;
+
+    if (product?.productsizes.length > 0) {
+        for (let i = 0; i < product?.productsizes.length; i++) {
+            if(product?.productsizes[i].isActive && (product?.productsizes[i].quantity > 0)){
+                index = i;
+                break;
+            }
+        }
+    }
+
+    return index;
+}
+
+
 const ProductDetail = ({ product }) => {
     const [previewImg, setPreviewImg] = useState(null)
     const [selectedSize, setSelectedSize] = useState(undefined)
     const [quantityInfo, setQuantityInfo] = useState(1)
-
+    const navigate = useNavigate();
     const dispatch = useDispatch();
 
     const onSelectSize = (size) => {
@@ -47,9 +65,24 @@ const ProductDetail = ({ product }) => {
                 selectedSize,
                 quantity: quantityInfo
             }
-            openNotificationWithIcon('success','Thông báo','Thêm sản phẩm vào giỏ hàng thành côngg.')
+            openNotificationWithIcon('success', 'Thông báo', 'Thêm sản phẩm vào giỏ hàng thành côngg.')
             dispatch(addToCartAction(payload));
 
+        }
+    }
+
+    const handleBuyNow = () => {
+        if (!selectedSize || !quantityInfo) {
+            openNotificationWithIcon('info', 'Thông báo', 'Vui lòng chọn size và số lượng.')
+        } else {
+            const payload = {
+                product,
+                selectedSize,
+                quantity: quantityInfo
+            }
+            dispatch(addToCartAction(payload));
+            openNotificationWithIcon('success', 'Thông báo', 'Thêm sản phẩm vào giỏ hàng thành côngg.')
+            navigate("/cart")
         }
     }
 
@@ -98,6 +131,32 @@ const ProductDetail = ({ product }) => {
                 </div>
                 <div className="details--gr">
                     <div className="details--gr__title">
+                        <Typography.Text>Trạng Thái</Typography.Text>
+                    </div>
+                    <div className="details--gr__content">
+                        {
+                            product?.isActive ?
+                                (
+                                    <Tag color='green'>Kinh Doanh</Tag>
+
+                                )
+                                :
+                                (
+                                    <Tag color='red'>Ngừng Kinh Doanh</Tag>
+                                )
+                        }
+                    </div>
+                </div>
+                <div className="details--gr">
+                    <div className="details--gr__title">
+                        <Typography.Text>Màu Sắc</Typography.Text>
+                    </div>
+                    <div className="details--gr__content">
+                        <div style={{ width: 30, height: 30, backgroundColor: `${product?.color?.colorCode}` }}></div>
+                    </div>
+                </div>
+                <div className="details--gr">
+                    <div className="details--gr__title">
                         <Typography.Text>Mô Tả</Typography.Text>
                     </div>
                     <div className="details--gr__content">
@@ -129,6 +188,19 @@ const ProductDetail = ({ product }) => {
                         {`${selectedSize.quantity} sản phẩm có sẵn.`}
                     </div>
                 }
+                {
+                    (!selectedSize || !quantityInfo) ?
+                        (
+                            <>
+                                <Typography.Text level={5}>Vui lòng chọn size để mua sắm</Typography.Text>
+                            </>
+                        )
+
+                        :
+                        (
+                            <></>
+                        )
+                }
                 <div className="details--actions">
                     <div className="details--actions__top">
                         <div className="details--actions__quantity">
@@ -146,11 +218,16 @@ const ProductDetail = ({ product }) => {
                             {
                                 (!selectedSize || !quantityInfo) ?
                                     (
-                                        <Button className="details--actions__add--btn" disabled>THÊM VÀO GIỎ HÀNG</Button>
+                                        <>
+                                            <Button className="details--actions__add--btn" disabled type='primary'>
+                                                THÊM VÀO GIỎ HÀNG
+                                            </Button>
+                                        </>
                                     )
+
                                     :
                                     (
-                                        <Button className="details--actions__add--btn" onClick={() => { handleAddToCart() }}>THÊM VÀO GIỎ HÀNG</Button>
+                                        <Button className="details--actions__add--btn" onClick={() => { handleAddToCart() }} type='primary'>THÊM VÀO GIỎ HÀNG</Button>
                                     )
                             }
                         </div>
@@ -159,12 +236,13 @@ const ProductDetail = ({ product }) => {
                         {
                             (!selectedSize || !quantityInfo) ?
                                 (
-                                    <Button className="details--actions__bottom--btn" disabled>MUA NGAY</Button>
+                                    <>
+                                        <Button className="details--actions__bottom--btn" disabled type='primary'>MUA NGAY</Button>
+                                    </>
                                 )
                                 :
                                 (
-
-                                    <Button className="details--actions__bottom--btn">MUA NGAY</Button>
+                                    <Button className="details--actions__bottom--btn" type='primary' onClick={() => { handleBuyNow() }} >MUA NGAY</Button>
                                 )
                         }
                     </div>

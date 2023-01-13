@@ -31,6 +31,7 @@ public class ColorController {
         newColor.setColorCode(reqColor.getColorCode());
         newColor.setCreatedAt(new Date());
         newColor.setIsActive(true);
+        newColor.setDescription(reqColor.getDescription());
         try{
             Colors resColor = colorsJPA.save(newColor);
             return ResponseEntity.ok(resColor);
@@ -48,6 +49,7 @@ public class ColorController {
         Colors updatedColor = colorsJPA.findById(colorId).get();
         updatedColor.setColorCode(reqColor.getColorCode());
         updatedColor.setIsActive(reqColor.getIsActive());
+        updatedColor.setDescription(reqColor.getDescription());
         Colors resColor = colorsJPA.save(updatedColor);
         return ResponseEntity.ok(resColor);
     }

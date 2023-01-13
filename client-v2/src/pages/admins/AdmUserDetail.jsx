@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import Helmet from '../../components/Helmet'
 import { userAPI } from '../../apis/userAPI';
-import { Button, Modal, notification, Tag, Typography, Upload } from 'antd';
+import { Button, Modal, notification, Radio, Tag, Typography, Upload } from 'antd';
 import moment from 'moment';
 import { DeleteOutlined } from '@ant-design/icons';
 
@@ -41,6 +41,31 @@ const AdmUserDetail = () => {
                         }
                     })
                     .catch(err => console.log(err))
+            }
+        })
+    }
+
+    const onChangeUserRole = (e) => {
+        Modal.confirm({
+            title: 'Hộp Thoại Xác Nhân',
+            content: `Bạn có muốn chỉnh quyền hạn thành ${e.target.value === 1 ? 'quản trị viên' : 'người dùng'} không.`,
+            okText: 'Xác Nhận',
+            cancelText: 'Hủy Bỏ',
+            onOk: () => {
+                const payload = {
+                    username: info?.username,
+                    roleId: e.target.value
+                }
+                userAPI.updateRole(payload)
+                .then(res => {
+                    if(!res.status){
+                        openNotificationWithIcon('info','Thông Báo',`Chỉnh sửa quyền hạn thành ${res?.roles?.id === 1 ? 'quản trị viên' : 'người dùng'}`);
+                        setInfo({...res});
+                    }else{
+                        console.log(res);
+                    }
+                })
+                .catch(err => console.log(err))
             }
         })
     }
@@ -101,6 +126,18 @@ const AdmUserDetail = () => {
                         <div className="adm--userdetail__body--info__item">
                             <div className="adm--userdetail__body--info__item--label">Thao Tác</div>
                             <div className="adm--userdetail__body--info__item--content"><Button danger={info?.activated} type={'primary'} onClick={onToggleUserActivated}>{info?.activated ? 'Hủy Kích Hoạt' : 'Kích Hoạt'}</Button></div>
+                        </div>
+                        <div className="adm--userdetail__body--info__item">
+                            <div className="adm--userdetail__body--info__item--label">Quyền Hạn</div>
+                            <div className="adm--userdetail__body--info__item--content">
+                                <Radio.Group
+                                    value={info?.roles?.id}
+                                    onChange={onChangeUserRole}
+                                >
+                                    <Radio value={3}>Người Dùng</Radio>
+                                    <Radio value={1}>Quản Trị Viên</Radio>
+                                </Radio.Group>
+                            </div>
                         </div>
                     </div>
                 </div>

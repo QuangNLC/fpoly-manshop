@@ -42,5 +42,10 @@ export const userAPI = {
     changePassword: (username, payload) => {
         const url = 'users/change-password/' + username;
         return axiosClient.post(url, payload);
+    },
+    updateRole: (payload) => {
+        const url = `users/update-role/${payload.username}?roleId=${payload.roleId}`;
+        return axiosClient.put(url);
     }
+    
 }

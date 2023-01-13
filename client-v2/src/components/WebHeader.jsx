@@ -2,7 +2,7 @@ import { Avatar, Badge, Button, Col, Dropdown, Input, notification, Row } from '
 import React from 'react'
 import logoImg from '../assets/imgs/logo.png'
 import { ShoppingCartOutlined } from '@ant-design/icons';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearCartAction } from '../redux/actions/CartReducerAction';
 import { logOutAction } from '../redux/actions/AuthReducerAction';
@@ -23,6 +23,7 @@ const WebHeader = () => {
     const auth = useSelector((state) => state.auth.auth);
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const location = useLocation();
     const items = [
         {
             label: 'Tài Khoản Của Tôi',
@@ -110,22 +111,22 @@ const WebHeader = () => {
             </div>
             <Row className='web--nav'>
                 <div className="web--nav__item">
-                    <Link to="/" className="web--nav__item--link">
+                    <Link to="/" className={`web--nav__item--link ${location.pathname === "/" ? 'active' : ''}`}>
                         Trang chủ
                     </Link>
                 </div>
                 <div className="web--nav__item">
-                    <Link to="/products" className="web--nav__item--link">
+                    <Link to="/products" className={`web--nav__item--link ${((location.pathname === "/products" || location.pathname.includes("/product/"))) ? 'active' : ''}`}>
                         Sản phẩm
                     </Link>
                 </div>
                 <div className="web--nav__item">
-                    <Link to="/about-us" className="web--nav__item--link">
+                    <Link to="/about-us"  className={`web--nav__item--link ${location.pathname === "/about-us" ? 'active' : ''}`}>
                         Giới thiệu
                     </Link>
                 </div>
                 <div className="web--nav__item">
-                    <Link to="/contact" className="web--nav__item--link">
+                    <Link to="/contact"  className={`web--nav__item--link ${location.pathname === "/contact" ? 'active' : ''}`}>
                         Liên hệ
                     </Link>
                 </div>

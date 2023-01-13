@@ -1,11 +1,18 @@
-import { EditOutlined, PlusOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons'
-import { Button, Input, Select, Table, Tag, Typography } from 'antd'
+import { EditOutlined, FileDoneOutlined, FileExcelOutlined, PlusOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons'
+import { Button, Input, Modal, notification, Select, Table, Tag, Tooltip, Typography } from 'antd'
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { productAPI } from '../../apis/productAPI'
 import Helmet from '../../components/Helmet'
 
+
+const openNotificationWithIcon = (type, title, des) => {
+    notification[type]({
+        message: title,
+        description: des,
+    });
+};
 const AdmProductList = () => {
 
 
@@ -74,10 +81,40 @@ const AdmProductList = () => {
             }
         },
         {
+            title: 'Trạng Thái',
+            render: (record) => {
+                return (
+                    record?.isActive ?
+                        (
+                            <Tag color='green'>Kinh Doanh</Tag>
+                        )
+                        :
+                        (
+                            <Tag color='red'>Ngừng Kinh Doanh</Tag>
+                        )
+                )
+            }
+        },
+        {
             title: "Thao Tác",
             render: (record) => {
                 return (
-                    <Button danger onClick={() => {navigate(`/admin/product/edit/${record.id}`)}} icon={<EditOutlined />}>Cập Nhật</Button>
+                    <>
+                        <Tooltip title={'Cập Nhật'}>
+                            <Button type='primary' onClick={() => { navigate(`/admin/product/edit/${record.id}`) }} icon={<EditOutlined />}></Button>
+                        </Tooltip>
+
+                        <Tooltip title={record?.isActive ? 'Ngừng Kinh Doanh' : 'Kích Hoạt'}>
+                            <Button
+                                style={{ marginLeft: 10 }}
+                                danger
+                                type={`${record?.isActive ? 'primary' : 'default'}`}
+                                icon={!record?.isActive ? <FileDoneOutlined /> : <FileExcelOutlined />}
+                                onClick={() => onToggleProductActive(record)}
+                            >
+                            </Button>
+                        </Tooltip>
+                    </>
                 )
             }
         }
@@ -141,6 +178,39 @@ const AdmProductList = () => {
     }
 
 
+    const onToggleProductActive = (item) => {
+        console.log(item)
+        Modal.confirm({
+            title: 'Hộp Thoại Xác Nhận',
+            content: `Bạn có muốn ${item.isActive ? 'hủy kích hoạt' : 'kích hoạt'} sản phẩm không`,
+            okText: 'Xác Nhận',
+            cancelText: 'Hủy Bỏ',
+            onOk: () => {
+                const payload = {
+                    ...item,
+                    isActive: !item.isActive,
+                    categoryId: item?.category?.id,
+                    materialId: item?.material?.id,
+                    colorId: item?.color?.id,
+                    description: item?.descTitle
+                }
+                console.log(payload)
+                productAPI.updateProduct(payload)
+                    .then(res => {
+                        if (!res.status) {
+                            let index = productData.findIndex(p => p.id === res.id);
+                            if (index !== -1) {
+                                const newData = [...productData];
+                                newData[index] = { ...res };
+                                setProductData([...newData]);
+                            }
+                            openNotificationWithIcon('info', 'Thông Báo', `${!res.activated ? 'Hủy kích hoạt' : 'Kích hoạt'} sản phẩm thành công.`);
+                        }
+                    })
+            }
+        })
+    }
+
 
     const filterProductData = (prList, filter) => {
         let result = [...prList];
@@ -202,7 +272,7 @@ const AdmProductList = () => {
 
     useEffect(() => {
         const newDataList = filterProductData(productData, filterInfo)
-        setProductTableData(newDataList.map((item) => ({key: item?.id, ...item})))
+        setProductTableData(newDataList.map((item) => ({ key: item?.id, ...item })))
     }, [filterInfo, productData])
 
     useEffect(() => {

@@ -163,6 +163,23 @@ public class UsersController {
         return ResponseEntity.ok(usersJPA.save(user));
     }
 
+    @PutMapping("/update-role/{username}")
+    public ResponseEntity<?> updateUserInfo(@PathVariable(value = "username") String username, @PathParam("roleId") Integer roleId){
+        if(!usersJPA.existsById(username)){
+            return ResponseEntity.notFound().build();
+        }else if(!roleJPA.existsById(roleId)){
+            log.error("không thấy role với id: " + roleId);
+            return ResponseEntity.notFound().build();
+        }
+        Users user = usersJPA.findById(username).get();
+        Role role = roleJPA.findById(roleId).get();
+
+        user.setRoles(role);
+
+
+        return ResponseEntity.ok(usersJPA.save(user));
+    }
+
     @DeleteMapping("/delete-address/{username}")
     public ResponseEntity<?> deleteAddress(@PathVariable(value = "username") String username, @PathParam("addressId") Integer addressId){
         if(!usersJPA.existsById(username)) {

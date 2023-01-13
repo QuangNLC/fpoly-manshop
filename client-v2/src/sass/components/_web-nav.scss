@@ -1,7 +1,7 @@
 .web--nav {
     height: $nav-height;
     padding: 0 20px;
-    background-color: #615a55;
+    background-color: #33302d;
     display: flex;
     justify-content: flex-start;
     align-items: center;
@@ -10,10 +10,19 @@
         padding: 0 10px;
 
         &--link {
-
+            
             font-size: 20px;
             font-weight: 500;
             color: white;
+            transition: all 0.25s ease-in;
+
+            &.active{
+               color: rgb(248, 71, 71);
+            }
+
+            &:hover{
+                color: rgb(248, 71, 71);
+            }
         }
     }
 }
