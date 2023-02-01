@@ -100,6 +100,10 @@ const AdmSidebar = () => {
                     setSelectedKeys(['sub-6'])
                     break;
                 }
+                if (location.pathname.includes('/admin/promotion/detail/')) {
+                    setSelectedKeys(['sub-6'])
+                    break;
+                }
                 setSelectedKeys([])
                 break;
             }

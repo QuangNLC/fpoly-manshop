@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Table, Typography, InputNumber, Button, Modal, notification } from 'antd'
+import { Table, Typography, InputNumber, Button, Modal, notification, Tag } from 'antd'
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import { changeCartItemQuantityAction, deleteCartItemAction } from '../redux/actions/CartReducerAction';
 import { useDispatch } from 'react-redux';
@@ -13,8 +13,23 @@ const openNotificationWithIcon = (type, title, des) => {
         description: des,
     });
 };
-const Cart = ({ cart }) => {
 
+const checkPr = (product) => {
+    let result = false;
+    let now = new Date();
+    if (product && product.promotions) {
+        if (product.promotions.length > 0) {
+            if (product.promotions[0]?.promition.isactive) {
+                result = (now >= new Date(product.promotions[0]?.promition.date_after) && now <= new Date(product.promotions[0]?.promition.date_befor))
+            }
+        }
+    }
+
+    return result
+}
+
+const Cart = ({ cart }) => {
+    console.log(cart)
     const dispatch = useDispatch()
     const [data, setData] = useState([])
 
@@ -127,10 +142,40 @@ const Cart = ({ cart }) => {
                             </Typography.Title>
                         </div>
                         <div className="cart--item__pr--price">
-                            {new Intl.NumberFormat("vi-VN", {
-                                style: "currency",
-                                currency: "VND",
-                            }).format(record?.product?.price)}
+                            {
+                                !checkPr(record?.product) ?
+                                    (
+                                        <>
+                                            <div className="cart--item__pr--price__old">
+                                                {new Intl.NumberFormat("vi-VN", {
+                                                    style: "currency",
+                                                    currency: "VND",
+                                                }).format(record?.product?.price)}
+                                                <Tag style={{marginLeft: 10}}>{`- ${(record?.product?.promotions[0]?.promition?.bypersent)} %`}</Tag>
+                                            </div>
+                                            <div className="cart--item__pr--price__new">
+                                                {new Intl.NumberFormat("vi-VN", {
+                                                    style: "currency",
+                                                    currency: "VND",
+                                                }).format(record?.product.price - record?.product.price * (record?.product?.promotions[0]?.promition?.bypersent / 100))}
+                                                
+                                            </div>
+
+                                        </>
+                                    )
+                                    :
+                                    (
+                                        <>
+                                            <div className="cart--item__pr--price--new">
+                                                {new Intl.NumberFormat("vi-VN", {
+                                                    style: "currency",
+                                                    currency: "VND",
+                                                }).format((record?.product.price - record?.product.price * (record?.product?.promotions[0]?.promition?.bypersent / 100)))}
+                                            </div>
+                                        </>
+                                    )
+                            }
+
                         </div>
                         <div className="cart--item__pr--size">
                             Size: <b>{record?.selectedSize?.size?.title}</b>
@@ -171,7 +216,7 @@ const Cart = ({ cart }) => {
                         {new Intl.NumberFormat("vi-VN", {
                             style: "currency",
                             currency: "VND",
-                        }).format(record?.product?.price * record?.quantity)}
+                        }).format((record?.product.price - record?.product.price * (record?.product?.promotions[0]?.promition?.bypersent / 100)) * record?.quantity)}
                     </div>
                 )
             },

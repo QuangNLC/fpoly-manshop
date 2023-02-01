@@ -18,6 +18,22 @@ const checkProductExistSize = (product, sizeId) => {
     return index;
 }
 
+const checkPrActive = (pr) => {
+    let result = true;
+
+    if(!pr?.category?.isActive){
+        return false;
+    }else if(!pr?.material?.isActive){
+        return false;
+    }else if(!pr?.color?.isActive){
+        return false;
+    }else if(!pr?.isActive){
+        return false;
+    }
+
+    return result;
+}
+
 const WebProducts = () => {
     const [productData, setProductData] = useState([])
     const [showData, setShowData] = useState([])
@@ -128,7 +144,7 @@ const WebProducts = () => {
     }
 
     const filterProductData = (prList, filter) => {
-        let result = [...prList];
+        let result = [...prList.filter(p => (checkPrActive(p)))];
 
         if (filter.searchText !== '') {
             result = [...result.filter(i => i.name.toLowerCase().includes(filter.searchText.toLowerCase()))]
@@ -221,6 +237,7 @@ const WebProducts = () => {
     useEffect(() => {
         const newDataList = filterProductData(productData, filterInfo)
         setCurrentPage(1)
+        console.log(newDataList)
         setShowData(newDataList)
     }, [filterInfo, productData])
 
@@ -241,7 +258,6 @@ const WebProducts = () => {
 
         productAPI.getAllPr()
             .then(res => {
-                console.log(res)
                 if (!res.status) {
                     setProductData(res)
                 }
@@ -301,9 +317,10 @@ const WebProducts = () => {
                                         Tất cả
                                     </Select.Option>
                                     {
-                                        categories.map((c) => (
-                                            <Select.Option key={c.id} value={c.id}>
+                                        categories.sort((a,b) => (b.isActive - a.isActive)).map((c) => (
+                                            <Select.Option key={c.id} value={c.id} disabled={!c.isActive}>
                                                 {c.title}
+                                                
                                             </Select.Option>
                                         ))
                                     }
@@ -334,8 +351,8 @@ const WebProducts = () => {
                                         Tất cả
                                     </Select.Option>
                                     {
-                                        materials.map((c) => (
-                                            <Select.Option key={c.id} value={c.id}>
+                                        materials.sort((a,b) => (b.isActive - a.isActive)).map((c) => (
+                                            <Select.Option key={c.id} value={c.id} disabled={!c.isActive}>
                                                 {c.title}
                                             </Select.Option>
                                         ))
@@ -359,7 +376,7 @@ const WebProducts = () => {
                                 >
                                     {
                                         colors.map(c => (
-                                            <Select.Option key={c.id} value={c.id}>
+                                            <Select.Option key={c.id} value={c.id} disabled={!c.isActive}>
                                                 <div style={{ width: 20, height: 20, backgroundColor: `${c.colorCode}` }}>
                                                 </div>
                                             </Select.Option>

@@ -45,7 +45,7 @@ const WebHeader = () => {
             type: 'divider',
         },
         {
-            label: 'Đăng Xuât',
+            label: 'Đăng Xuất',
             key: '3',
             onClick: () => {
                 openNotificationWithIcon('info','Thông Báo','Đăng xuất thành công.')

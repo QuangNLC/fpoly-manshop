@@ -52,6 +52,15 @@
         color: red;
         font-weight: 500;
         margin-top: 20px;
+        display: flex;
+        align-items: center;
+        &__old{
+            font-weight: 400;
+            font-size: 28px;
+            color: rgb(184, 149, 149);
+            text-decoration: line-through;
+            margin-left: 20px;
+        }
     }
 
     .details--sizes{

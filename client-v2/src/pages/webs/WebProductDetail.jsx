@@ -4,6 +4,8 @@ import {useParams} from 'react-router-dom';
 import { productAPI } from '../../apis/productAPI';
 import ProductDetail from '../../components/ProductDetail';
 
+
+
 const WebProductDetail = () => {
     const {id} = useParams();
     const [product, setProduct] = useState(undefined)
@@ -13,6 +15,7 @@ const WebProductDetail = () => {
         productAPI.getProductById(id)
         .then(res => {
             if(!res.status){
+                console.log(res)
                 setProduct(res)
             }
         })

@@ -39,7 +39,7 @@ const findDefaultIndex = (addressList) => {
 const findDefaultAddressIndex = (list) => {
     let index = -1;
 
-    if (list.length > 0) {
+    if (list && list.length > 0) {
         for (let i = 0; i < list.length; i++) {
             if (list[i].isDefault) {
                 index = i;
@@ -49,6 +49,20 @@ const findDefaultAddressIndex = (list) => {
     }
 
     return index;
+}
+
+const checkPr = (product) => {
+    let result = false;
+    let now = new Date();
+    if (product && product.promotions) {
+        if (product.promotions.length > 0) {
+            if (product.promotions[0]?.promition.isactive) {
+                result = (now >= new Date(product.promotions[0]?.promition.date_after) && now <= new Date(product.promotions[0]?.promition.date_befor))
+            }
+        }
+    }
+
+    return result
 }
 
 const WebCart = () => {
@@ -202,7 +216,7 @@ const WebCart = () => {
                     ...auth.auth,
                     info: {
                         ...auth.auth.info,
-                        addressList: [...auth.auth.info.addressList.map(i => ({...i, isDefault: false})), { ...res, isDefault: true }]
+                        addressList: [...auth.auth.info.addressList.map(i => ({ ...i, isDefault: false })), { ...res, isDefault: true }]
                     }
                 }
                 console.log(authPayload)
@@ -307,7 +321,7 @@ const WebCart = () => {
                     product: { id: item?.product?.id },
                     size: item?.selectedSize?.size?.title,
                     price: item?.product?.price,
-                    prDiscount: 0,
+                    prDiscount: !checkPr(item?.product) ? item?.product?.price*(item?.product?.promotions[0]?.promition?.bypersent / 100): 0,
                     quantity: item?.quantity,
                     status: 1
                 })
@@ -549,6 +563,19 @@ const WebCart = () => {
                                             }
                                         </div>
                                     </div>
+                                    <div className="web--cart__payinfo--price__item">
+                                        <div className="web--cart__payinfo--price__item--title">
+                                            Giảm Giá
+                                        </div>
+                                        <div className="web--cart__payinfo--price__item--content">
+                                            {
+                                                new Intl.NumberFormat("vi-VN", {
+                                                    style: "currency",
+                                                    currency: "VND",
+                                                }).format(cart.cart.reduce(((total, item) => (total + (!checkPr(item?.product) ? item?.product?.price*(item?.product?.promotions[0]?.promition?.bypersent / 100)*item?.quantity : 0))), 0))
+                                            }
+                                        </div>
+                                    </div>
                                     {
                                         shipFeeInfo &&
                                         <div className="web--cart__payinfo--price__item">
@@ -574,7 +601,7 @@ const WebCart = () => {
                                                 new Intl.NumberFormat("vi-VN", {
                                                     style: "currency",
                                                     currency: "VND",
-                                                }).format(cart.cart.reduce(((total, item) => total + item.product.price * item.quantity), 0) + (shipFeeInfo?.total ? shipFeeInfo?.total : 0))
+                                                }).format(cart.cart.reduce(((total, item) => (total + (item?.product.price - item?.product.price * (item?.product?.promotions[0]?.promition?.bypersent / 100)) * item?.quantity)), 0) + (shipFeeInfo?.total ? shipFeeInfo?.total : 0))
                                             }
                                         </div>
                                     </div>

@@ -17,11 +17,63 @@
         &--form{
             width: 25%;
             padding: 10px;
+            background-color: white;
+            border-radius: 10px;
         }
 
         &--tables{
             width: 75%;
-            padding: 10px;
+            padding: 0 10px;
+
+            &__discountpr{
+                padding: 10px;
+                background-color: white;
+                border-radius: 10px;
+                margin-bottom: 20px;
+
+                &--title{
+                    width: 100%;
+                    display: flex;
+                    padding: 10px;
+                    align-items: center;
+                    justify-content: space-between;
+                }
+            }
+
+            &__undiscountpr{
+                padding: 10px;
+                background-color: white;
+                border-radius: 10px;
+                margin-bottom: 20px;
+
+                &--title{
+                    width: 100%;
+                    display: flex;
+                    padding: 10px;
+                    align-items: center;
+                    justify-content: space-between;
+                }
+
+                &--filters{
+                    width: 100%;
+                    padding: 10px;
+                    &__search{
+                        width: 100%;
+                        display: flex;
+                        align-items: center;    
+                    }
+
+                    &__options{
+                        width: 100%;
+                        display: flex;
+
+                        &--item{
+                            width: 200px;
+                            padding: 0 10px;
+                        }
+                    }
+                }
+            }
         }
     }
 }

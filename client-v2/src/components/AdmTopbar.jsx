@@ -1,23 +1,29 @@
 import { BellOutlined, FileAddOutlined } from '@ant-design/icons';
-import { Avatar, Badge, Dropdown, Empty } from 'antd'
+import { Avatar, Badge, Dropdown, Empty, notification } from 'antd'
 import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { orderAPI } from '../apis/orderAPI';
 import logoImg from '../assets/imgs/logo.png'
 import SockJS from 'sockjs-client';
 import { over } from 'stompjs';
 import moment from 'moment';
-
+import { clearCartAction } from '../redux/actions/CartReducerAction';
+import { logOutAction } from '../redux/actions/AuthReducerAction';
 var stompClient = null;
 
-
+const openNotificationWithIcon = (type, title, des) => {
+    notification[type]({
+        message: title,
+        description: des,
+    });
+};
 const AdmTopbar = () => {
 
     const auth = useSelector((state) => state.auth.auth);
     const navigate = useNavigate();
     const [notiList, setNotiList] = useState(undefined);
-
+    const dispatch = useDispatch();
 
     const connectListOrderNoti = () => {
         let Sock = new SockJS("http://localhost:8080/ws");
@@ -47,24 +53,21 @@ const AdmTopbar = () => {
         auth?.info?.roles?.rolename &&
         auth?.info?.roles?.rolename === "ROLE_ADMIN" &&
         {
-            label: 'Trang Quản Trị',
+            label: 'Tài Khoản Của Tôi',
             key: '1',
-            // onClick: () => {
-            //     navigate("/admin")
-            // }
         },
         {
             type: 'divider',
         },
         {
-            label: 'Đăng Xuât',
+            label: 'Đăng Xuất',
             key: '3',
-            // onClick: () => {
-            //     openNotificationWithIcon('info','Thông Báo','Đăng xuất thành công.')
-            //     navigate("/");
-            //     dispatch(clearCartAction());
-            //     dispatch(logOutAction());
-            // }
+            onClick: () => {
+                dispatch(clearCartAction());
+                dispatch(logOutAction());
+                openNotificationWithIcon('info', 'Thông Báo', 'Đăng xuất thành công.');
+                navigate("/adm-login");
+            }
         },
     ];
 
@@ -91,10 +94,10 @@ const AdmTopbar = () => {
             return list.sort((a, b) => a.createdat > b.createdat ? -1 : 1).map((item, index) => ({
                 label: (
                     <div
-                        style={{padding: 10, display: 'flex', flexDirection: 'column'}}
+                        style={{ padding: 10, display: 'flex', flexDirection: 'column' }}
                     >
                         <div
-                            style={{width: '100%'}}
+                            style={{ width: '100%' }}
                         >
                             {item?.message}
                         </div>
@@ -105,9 +108,9 @@ const AdmTopbar = () => {
                 ),
                 icon: (
                     <div
-                        style={{padding: 10}}
+                        style={{ padding: 10 }}
                     >
-                        <FileAddOutlined style={{fontSize: 24, color: 'blue'}}/>
+                        <FileAddOutlined style={{ fontSize: 24, color: 'blue' }} />
                     </div>
                 ),
                 onClick: () => {

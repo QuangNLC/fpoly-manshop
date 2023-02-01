@@ -18,7 +18,7 @@ const findFirstValidSizeIndex = (product) => {
 
     if (product?.productsizes.length > 0) {
         for (let i = 0; i < product?.productsizes.length; i++) {
-            if(product?.productsizes[i].isActive && (product?.productsizes[i].quantity > 0)){
+            if (product?.productsizes[i].isActive && (product?.productsizes[i].quantity > 0)) {
                 index = i;
                 break;
             }
@@ -28,11 +28,36 @@ const findFirstValidSizeIndex = (product) => {
     return index;
 }
 
+const checkPrDiscount = (prm) => {
+    let result = false;
+    let now = new Date();
+    if (prm.isactive) {
+        result = (now >= new Date(prm.dateafter) && now <= new Date(prm.datebefor))
+    }
+    return result
+}
+
+const checkPrActive = (pr) => {
+    let result = true;
+
+    if(!pr?.category?.isActive){
+        return false;
+    }else if(!pr?.material?.isActive){
+        return false;
+    }else if(!pr?.color?.isActive){
+        return false;
+    }else if(!pr?.isActive){
+        return false;
+    }
+
+    return result;
+}
 
 const ProductDetail = ({ product }) => {
     const [previewImg, setPreviewImg] = useState(null)
     const [selectedSize, setSelectedSize] = useState(undefined)
     const [quantityInfo, setQuantityInfo] = useState(1)
+    const [isDiscount, setIsDiscount] = useState(false);
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
@@ -90,6 +115,20 @@ const ProductDetail = ({ product }) => {
 
     useEffect(() => {
         setPreviewImg(`http://localhost:8080/api/file/images/${product?.images[0]?.photo}`)
+
+        if (product && product.promotions) {
+            if (product.promotions.length > 0) {
+                if (checkPrDiscount(product.promotions[0].promition)) {
+                    console.log(product.promotions[0])
+                    setIsDiscount(
+                        true
+                    )
+                }
+
+            } else {
+                setIsDiscount(false)
+            }
+        }
     }, [product])
 
     return (
@@ -163,11 +202,56 @@ const ProductDetail = ({ product }) => {
                         {product?.descTitle}
                     </div>
                 </div>
+                {
+                    isDiscount &&
+                    (
+                        <div className="details--gr">
+                            <div className="details--gr__title">
+                                <Typography.Text>Khuyến Mại</Typography.Text>
+                            </div>
+                            <div className="details--gr__content">
+                                {isDiscount && <Tag color="orange">{`Khuyến Mại: ${product?.promotions[0]?.promition?.title}`}</Tag>}
+                                {isDiscount && <Tag color="magenta">{`- ${product?.promotions[0]?.promition?.bypersent}  %`}</Tag>}
+                            </div>
+                        </div>
+                    )
+                }
+
                 <div className="details--price">
-                    {new Intl.NumberFormat("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                    }).format(product?.price)}
+
+                    {
+                        isDiscount ?
+                            (
+                                <>
+                                    <div className="details--price__new">
+                                        {new Intl.NumberFormat("vi-VN", {
+                                            style: "currency",
+                                            currency: "VND",
+                                        }).format(product.price - product.price * (product?.promotions[0]?.promition?.bypersent / 100))}
+                                    </div>
+                                    <div className="details--price__old">
+                                        {new Intl.NumberFormat("vi-VN", {
+                                            style: "currency",
+                                            currency: "VND",
+                                        }).format(product?.price)}
+                                    </div>
+                                </>
+
+                            )
+                            :
+                            (
+                                <>
+                                    <div className="details--price__new">
+                                        {new Intl.NumberFormat("vi-VN", {
+                                            style: "currency",
+                                            currency: "VND",
+                                        }).format(product?.price)}
+                                    </div>
+                                </>
+                            )
+                    }
+
+
                 </div>
                 <div className="details--sizes">
                     <div className="details--gr__title">
@@ -189,10 +273,14 @@ const ProductDetail = ({ product }) => {
                     </div>
                 }
                 {
-                    (!selectedSize || !quantityInfo) ?
+                    (!selectedSize || !quantityInfo || !checkPrActive(product)) ?
                         (
                             <>
                                 <Typography.Text level={5}>Vui lòng chọn size để mua sắm</Typography.Text>
+                                
+                                {!product?.material?.isActive && <><br/><Tag>Chất liệu {product?.material?.title} hiện ngừng kinh doanh</Tag></>}
+                                {!product?.color?.isActive && <><br/><Tag>Màu {product?.color?.description} hiện ngừng kinh doanh</Tag></>}
+                                {!product?.category?.isActive && <><br/><Tag>Thể loại {product?.category?.title} hiện ngừng kinh doanh</Tag></>}
                             </>
                         )
 
@@ -216,7 +304,7 @@ const ProductDetail = ({ product }) => {
                         </div>
                         <div className="details--actions__add">
                             {
-                                (!selectedSize || !quantityInfo) ?
+                                (!selectedSize || !quantityInfo || !checkPrActive(product)) ?
                                     (
                                         <>
                                             <Button className="details--actions__add--btn" disabled type='primary'>
@@ -234,7 +322,7 @@ const ProductDetail = ({ product }) => {
                     </div>
                     <div className="details--actions__bottom">
                         {
-                            (!selectedSize || !quantityInfo) ?
+                            (!selectedSize || !quantityInfo || !checkPrActive(product)) ?
                                 (
                                     <>
                                         <Button className="details--actions__bottom--btn" disabled type='primary'>MUA NGAY</Button>

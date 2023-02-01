@@ -328,7 +328,7 @@ const ProductDetail = () => {
                                             isDiscount ?
                                                 (
                                                     <div style={{ width: '100%', display: 'flex', alignItems: 'center' }}>
-                                                        <Price>{formatter.format(product.export_price - product.export_price * (product?.promotions[0]?.promition?.by_persent / 100))}</Price>
+                                                        <Price>{formatter.format(product.exportprice - product.exportprice * (product?.promotions[0]?.promition?.bypersent / 100))}</Price>
                                                         <Price style={{ marginLeft: 20, textDecoration: 'line-through' }}>{formatter.format(product?.export_price)}</Price>
                                                     </div>
                                                 )

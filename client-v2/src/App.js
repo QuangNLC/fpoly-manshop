@@ -28,6 +28,8 @@ import WebMyOrders from './pages/webs/WebMyOrders';
 import WebMyOrderDetail from './pages/webs/WebMyOrderDetail';
 import AdmPromotionsList from './pages/admins/AdmPromotionsList';
 import AdmNewPromotion from './pages/admins/AdmNewPromotion';
+import AdmPromotionDetail from './pages/admins/AdmPromotionDetail';
+import WebAdmLogin from './pages/webs/WebAdmLogin';
 
 function App() {
   return (
@@ -44,13 +46,13 @@ function App() {
           <Route path="change-password" element={<WebChangePassword />} />
           <Route path="my-orders" element={<WebMyOrders />} />
           <Route path="my-order/:id" element={<WebMyOrderDetail />} />
+          <Route path="adm-login" element={<WebAdmLogin />} />
 
 
           {/* <Route path="products/search=:searchText" element={<WebProductList />} />
           <Route path="about-us" element={<WebAboutUs />} />
           <Route path="contact" element={<WebContact />} />
           <Route path="forgot-password" element={<WebForgotPassword />} />
-          <Route path="adm-login" element={<WebAdmLogin />} />
           <Route path="message" element={<WebMessage />} /> */}
           <Route path="*" element={<div>Trang khong ton tai</div>} />
         </Route>
@@ -71,11 +73,11 @@ function App() {
           <Route path="user/detail/:username" element={<AdmUserDetail />} />
           <Route path="promotion-list" element={<AdmPromotionsList />} />
           <Route path="promotion/new" element={<AdmNewPromotion />} />
+          <Route path="promotion/detail/:id" element={<AdmPromotionDetail />} />
 
 
           {/*
           <Route path="message" element={<AdmMessage />} />
-          <Route path="promotion/detail/:id" element={<AdmUpdatePromotion />} />
           <Route path="my-account" element={<AdmMyAccount />} />
           <Route path="change-password" element={<AdmChangePassword />} /> */}
           <Route path="*" element={<div>Trang khong ton tai</div>} />

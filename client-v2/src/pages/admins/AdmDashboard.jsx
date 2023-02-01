@@ -1,4 +1,4 @@
-import { Button, Table, Typography } from 'antd'
+import { Button, Select, Spin, Table, Typography } from 'antd'
 import React, { useEffect, useState } from 'react'
 import Helmet from '../../components/Helmet'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
@@ -7,6 +7,7 @@ import { productAPI } from '../../apis/productAPI';
 import { userAPI } from '../../apis/userAPI';
 import { useNavigate } from 'react-router-dom';
 import moment from 'moment';
+import reportAPI from '../../apis/reportAPI';
 
 const COLORS = ['#FFBB28', '#00C49F', '#FF8042', '#0088FE', '#fa0505'];
 const RADIAN = Math.PI / 180;
@@ -36,6 +37,16 @@ const AdmDashboard = () => {
 
     const [prData, setPrData] = useState([]);
     const [userData, setUserData] = useState([]);
+
+    const [barchartYear, setBarchartYear] = useState(2022);
+    const [barchartLoading, setBarchartLoading] = useState(true);
+    const [barchartData, setBarchartData] = useState([]);
+
+    const [orderToday, set0rderToday] = useState(0);
+    const [orderTodayLoading, set0rderTodayLoading] = useState(true);
+
+    const [totalSellThisMonth, setTotalSellThisMonth] = useState(0);
+    const [totalSellThisMonthLoading, setTotalSellThisMonthLoading] = useState(true);
 
     const [pieChartData, setPieChartData] = useState([]);
 
@@ -121,6 +132,30 @@ const AdmDashboard = () => {
         }
     ]
 
+    const onChangeBarchartYear = (value) => {
+        setBarchartYear(value);
+    };
+
+    useEffect(() => {
+        setBarchartLoading(true);
+        reportAPI.getBarChartData(barchartYear)
+            .then((res) => {
+                if (!res.status) {
+                    setBarchartData(res.map((item, index) => {
+                        return ({
+                            month: `Tháng ${item.month}`,
+                            turnover: item.turnover
+                        })
+                    }))
+                    setBarchartLoading(false);
+                    console.log(res)
+                } else {
+                    console.log(res)
+                }
+            })
+            .catch(err => console.log(err))
+    }, [barchartYear])
+
     useEffect(() => {
         productAPI.getAllPr()
             .then(res => {
@@ -132,6 +167,54 @@ const AdmDashboard = () => {
                 setUserData(res.slice(0, 5))
             })
             .catch(err => console.log(err))
+        setBarchartLoading(true);
+        reportAPI.getBarChartData(2022)
+            .then((res) => {
+                if (!res.status) {
+                    setBarchartData(res.map((item, index) => {
+                        return ({
+                            month: `Tháng ${item.month}`,
+                            turnover: item.turnover
+                        })
+                    }))
+                    setBarchartLoading(false);
+                    console.log(res)
+                } else {
+                    console.log(res)
+                }
+            })
+            .catch(err => console.log(err))
+        reportAPI.getTodayOrderCount()
+            .then(res => {
+                if (!res.status) {
+                    console.log(res)
+                    set0rderToday(res);
+                    set0rderTodayLoading(false);
+                } else {
+                    if (res.status === 200) {
+                        set0rderToday(res.data);
+                        set0rderTodayLoading(false);
+                    }
+                    console.log(res)
+                }
+            })
+            .catch(err => console.log(err))
+        reportAPI.getProductSellThisMonth()
+            .then(res => {
+                if (!res.status) {
+                    setTotalSellThisMonth(res)
+                    setTotalSellThisMonthLoading(false)
+                } else {
+                    if (res.status === 200) {
+                        console.log(res)
+                        setTotalSellThisMonth(0)
+                        setTotalSellThisMonthLoading(false)
+                    }
+                    console.log(res)
+                }
+            }
+            )
+            .catch(err => console.log(err))
     }, [])
 
     return (
@@ -141,12 +224,32 @@ const AdmDashboard = () => {
             <div className="adm--dashboard">
                 <div className="adm--dashboard__widgets">
                     <div className="adm--dashboard__widgets--item">
+
                         <div className="adm--dashboard__widgets--item__label">Đơn Hôm Nay</div>
-                        <div className="adm--dashboard__widgets--item__content">3 Đơn Hàng</div>
+                        {
+                            !orderTodayLoading ?
+                                (
+                                    <div className="adm--dashboard__widgets--item__content">{orderToday}</div>
+                                )
+                                :
+                                (
+                                    <Spin />
+                                )
+                        }
+
                     </div>
                     <div className="adm--dashboard__widgets--item">
                         <div className="adm--dashboard__widgets--item__label">Sản Phẩm Bán Tháng Này</div>
-                        <div className="adm--dashboard__widgets--item__content">15 Sản Phẩm</div>
+                        {
+                            !totalSellThisMonthLoading ?
+                                (
+                                    <div className="adm--dashboard__widgets--item__content">{totalSellThisMonth}</div>
+                                )
+                                :
+                                (
+                                    <Spin />
+                                )
+                        }
                     </div>
                     <div className="adm--dashboard__widgets--item">
                         <div className="adm--dashboard__widgets--item__label">Doanh Thu Hôm Nay</div>
@@ -162,26 +265,47 @@ const AdmDashboard = () => {
                     <div className="adm--dashboard__barchart--title">
                         <Typography.Title level={5}>Biểu đồ thống kê doanh thu</Typography.Title>
                         <div className="adm--dashboard__barchart--title__actions">
-
+                            <Typography.Title level={5}>Năm</Typography.Title>
+                            <Select
+                                style={{ width: '120px' }}
+                                value={barchartYear}
+                                onChange={onChangeBarchartYear}
+                            >
+                                <Select.Option value={2020}>2020</Select.Option>
+                                <Select.Option value={2021}>2021</Select.Option>
+                                <Select.Option value={2022}>2022</Select.Option>
+                                <Select.Option value={2023}>2023</Select.Option>
+                            </Select>
                         </div>
                     </div>
                     <div className="adm--dashboard__barchart--chart">
-                        <ResponsiveContainer width="100%" height="100%" aspect={4 / 1}>
-                            <BarChart
-                                data={userStatsData}
-                                margin={{
-                                    top: 5,
-                                    right: 30,
-                                    left: 20,
-                                    bottom: 5,
-                                }}
-                            >
-                                <XAxis dataKey="name" stroke='#5550bd' />
-                                <YAxis dataKey="activeUser" />
-                                <Bar dataKey="activeUser" fill="#8884d8" />
-                                <Tooltip />
-                            </BarChart>
-                        </ResponsiveContainer>
+                        {
+                            !barchartLoading ?
+                                (
+                                    <ResponsiveContainer width="100%" height="100%" aspect={4 / 1}>
+                                        <BarChart
+                                            data={barchartData}
+                                            margin={{
+                                                top: 5,
+                                                right: 30,
+                                                left: 20,
+                                                bottom: 5,
+                                            }}
+                                        >
+                                            <XAxis dataKey="month" stroke='#5550bd' />
+                                            <YAxis dataKey="turnover" />
+                                            <Bar dataKey="turnover" fill="#8884d8" />
+                                            <Tooltip />
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                )
+                                :
+                                (
+                                    <Spin />
+
+                                )
+                        }
+
                     </div>
                 </div>
                 <div className="adm--dashboard__tables">

@@ -309,7 +309,7 @@ const AdmProductList = () => {
                 <div className="adm--prlist__body">
                     <div className="adm--prlist__body--filters">
                         <div className="adm--prlist__body--filters__search">
-                            <Input value={searchInputValue} onChange={e => { setSearchInputValue(e.target.value) }} />
+                            <Input value={searchInputValue} onChange={e => { setSearchInputValue(e.target.value) }} placeholder={'Nhập tên sản phẩm'}/>
                             <Button icon={<SearchOutlined />} type='primary' onClick={onSearchText}>Tìm Kiếm</Button>
                             <Button icon={<ReloadOutlined />} danger onClick={() => { onClearFiler() }}>Làm Mới</Button>
                         </div>

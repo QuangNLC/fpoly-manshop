@@ -1017,7 +1017,7 @@ const AdmWaitingOrderDetail = () => {
     useEffect(() => {
         const newDataList = filterProductData(productData, filterInfo)
         setProductTableData(newDataList)
-    }, [filterInfo])
+    }, [filterInfo, productData])
 
 
 

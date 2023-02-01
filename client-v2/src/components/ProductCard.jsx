@@ -1,9 +1,9 @@
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import img from '../assets/imgs/product-img-1.jpg'
 import { WalletOutlined, ShoppingCartOutlined, SearchOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { notification } from 'antd';
+import { notification, Tag } from 'antd';
 import { useDispatch } from 'react-redux';
 import { addToCartAction } from '../redux/actions/CartReducerAction';
 
@@ -31,10 +31,19 @@ const openNotificationWithIcon = (type, title, des) => {
         description: des,
     });
 };
+
+const checkPrDiscount = (prm) => {
+    let result = false;
+    let now = new Date();
+    if (prm.isactive) {
+        result = (now >= new Date(prm.dateafter) && now <= new Date(prm.datebefor))
+    }
+    return result
+}
 const ProductCard = ({ product }) => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-
+    const [isDiscount, setIsDiscount] = useState(false);
 
     const onAddToCart = () => {
         const index = findFirstValidSizeIndex(product);
@@ -63,11 +72,35 @@ const ProductCard = ({ product }) => {
         }
     }
 
+    useEffect(() => {
+        if (product && product.promotions) {
+            if (product.promotions.length > 0) {
+                if (checkPrDiscount(product.promotions[0].promition)) {
+                    console.log(product.promotions[0])
+                    setIsDiscount(
+                        true
+                    )
+                }
+
+            } else {
+                setIsDiscount(false)
+            }
+        }
+    }, [product])
+
 
     return (
         product &&
         (
             <div className="product--card">
+                {
+                    isDiscount &&
+                    (
+                        <div className="product--card__discountbage">
+                            <Tag color="orange">{`Khuyến Mại: ${product?.promotions[0]?.promition?.title}`}</Tag>
+                        </div>
+                    )
+                }
                 <div className="product--card__modal">
                     <div className="product--card__modal--item" onClick={() => { onAddToCart() }}>
                         <ShoppingCartOutlined />
@@ -86,13 +119,42 @@ const ProductCard = ({ product }) => {
                     <img src={`http://localhost:8080/api/file/images/${product?.images[0]?.photo}`} alt="" />
                 </div>
                 <div className="product--card__title">
-                    {product?.name}
+                    <p>
+                        {product?.name}
+                    </p>
                 </div>
                 <div className="product--card__price">
-                    {new Intl.NumberFormat("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                    }).format(product?.price)}
+                    {
+                        isDiscount ?
+                            (
+                                <>
+                                    <div className="product--card__price--new">
+                                        {new Intl.NumberFormat("vi-VN", {
+                                            style: "currency",
+                                            currency: "VND",
+                                        }).format(product.price - product.price * (product?.promotions[0]?.promition?.bypersent / 100))}
+                                    </div>
+                                    <div className="product--card__price--old">
+                                        {new Intl.NumberFormat("vi-VN", {
+                                            style: "currency",
+                                            currency: "VND",
+                                        }).format(product?.price)}
+                                    </div>
+                                </>
+
+                            )
+                            :
+                            (
+                                <>
+                                    <div className="product--card__price--new">
+                                        {new Intl.NumberFormat("vi-VN", {
+                                            style: "currency",
+                                            currency: "VND",
+                                        }).format(product?.price)}
+                                    </div>
+                                </>
+                            )
+                    }
                 </div>
             </div>
         )

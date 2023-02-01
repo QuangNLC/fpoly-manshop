@@ -396,8 +396,8 @@ const AdmUpdatePromotion = () => {
                         setFormInitValue({
                             name: res?.title,
                             discount: res?.by_persent,
-                            date_after: moment(res?.date_after),
-                            date_before: moment(res?.date_befor),
+                            date_after: moment(res?.dateafter),
+                            date_before: moment(res?.datebefor),
                             isactive: res?.isactive
                         })
                     } else {

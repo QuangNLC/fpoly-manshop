@@ -296,7 +296,7 @@ const AdmCategoryList = () => {
                 <div className="adm--catelist__body">
                     <div className="adm--catelist__body--filters">
                         <div className="adm--catelist__body--filters__search">
-                            <Input value={inputValue} onChange={e => setInputValue(e.target.value)} />
+                            <Input value={inputValue} onChange={e => setInputValue(e.target.value)}  placeholder={'Nhập tên thể loại'}/>
                             <Button type='primary' icon={<SearchOutlined />} style={{ marginLeft: 20 }} onClick={onSearchText}>Tìm Kiếm</Button>
                             <Button type='dashed' icon={<RedoOutlined />} style={{ marginLeft: 20 }} onClick={onClearFilter}>Làm Mới</Button>
                         </div>

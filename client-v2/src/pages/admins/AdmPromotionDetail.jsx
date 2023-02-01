@@ -1,12 +1,14 @@
 import { ReloadOutlined, SearchOutlined } from '@ant-design/icons';
-import { Button, Checkbox, DatePicker, Form, Input, InputNumber, Modal, notification, Select, Slider, Table, Tooltip, Typography } from 'antd'
+import { Button, Checkbox, DatePicker, Form, Input, InputNumber, Modal, notification, Select, Slider, Switch, Table, Tooltip, Typography } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { productAPI } from '../../apis/productAPI';
 import promotionAPI from '../../apis/promotionAPI';
-import Helmet from '../../components/Helmet'
-
+import Helmet from '../../components/Helmet';
+import { useForm } from 'antd/es/form/Form';
+import moment from 'moment'
+import dayjs from 'dayjs';
 
 const openNotificationWithIcon = (type, title, des) => {
     notification[type]({
@@ -24,11 +26,17 @@ const checkProductExistSize = (product, sizeId) => {
 
     return index;
 }
-const AdmNewPromotion = () => {
+
+
+const AdmPromotionDetail = () => {
     const auth = useSelector(state => state.auth.auth);
+    const { id } = useParams();
     const navigate = useNavigate();
     const [listPr, setListPr] = useState([]);
     const [selectedListPr, setSelectedListPr] = useState([]);
+    const [formInitValue, setFormInitValue] = useState(undefined)
+    const [isActive, setIsActive] = useState(false);
+    const [form] = useForm();
     const listPrColumn = [
         {
             title: 'STT',
@@ -400,40 +408,65 @@ const AdmNewPromotion = () => {
 
     const handleClickSubmitForm = (value) => {
         console.log(value)
-        let payload = {
-            title: value?.name,
-            dateafter: new Date(value?.date_after),
-            datebefor: new Date(value?.date_before),
-            users: {
-                username: auth?.info?.username
-            },
-            bypersent: value?.discount,
-            listpr: [...listPr.map(item => item.id)]
-        }
-        promotionAPI.createPromotion(payload)
-            .then(res => {
-                if (!res.status) {
-                    Modal.success({ title: 'Hộp Thoại Thông Báo', content: 'Tạo khuyến mại thành công', okText: 'Xác Nhận' });
-                    navigate('/admin/promotion-list')
-                } else {
-                    console.log(res)
+        Modal.confirm({
+            title: 'Hộp Thoại Xác Nhận',
+            content: 'Bạn có muốn sửa thông tin khuyến mại không.',
+            okText: 'Xác Nhận',
+            cancelText: 'Hủy Bỏ',
+            onOk: () => {
+                let payload = {
+                    id,
+                    title: value?.name,
+                    dateafter: new Date(value?.date_after),
+                    datebefor: new Date(value?.date_before),
+                    users: {
+                        username: auth?.info?.username
+                    },
+                    bypersent: value?.discount,
+                    check: 0,
+                    listpr: [...listPr.map(item => item.id)],
+                    isActive: value?.isactive ? 1 : 0
                 }
-            })
-            .catch(err => console.log(err))
+                console.log(payload)
+                promotionAPI.updatePromotion(payload)
+                    .then(res => {
+                        console.log(res)
+                        setIsActive(res.isactive)
+                        if (res.promotionProductDTOList && res.promotionProductDTOList.length > 0) {
+                            setListPr([...res.promotionProductDTOList.map((item, index) => ({
+                                index: index + 1,
+                                key: item?.product?.id,
+                                ...item?.product
+                            }))])
+                        }
+                        setFormInitValue({
+                            name: res?.title,
+                            discount: res?.by_persent,
+                            date_after: dayjs(res?.dateafter),
+                            date_before: dayjs(res?.datebefor),
+                            isactive: res?.isactive
+                        })
+                        if (!res.status) {
+                            Modal.success({ title: 'Hộp Thoại Thông Báo', content: 'Cập nhật thông tin khuyến mại thành công', okText: 'Xác Nhận' });
+                        } else {
+                            console.log(res)
+                        }
+                    })
+                    .catch(err => console.log(err))
+            }
+        })
+
     }
 
     useEffect(() => {
-        console.log(selectedListPr)
     }, [selectedListPr])
 
     useEffect(() => {
-        console.log(selectedProducts)
     }, [selectedProducts])
 
 
     useEffect(() => {
         const newDataList = filterProductData(products, filterProductsInfo);
-        console.log(newDataList)
         setProductsTable(newDataList);
     }, [filterProductsInfo, products])
 
@@ -459,7 +492,6 @@ const AdmNewPromotion = () => {
                         key: item.id,
                         ...item
                     })))
-                    console.log(res)
                 } else {
                     console.log(res)
                 }
@@ -467,13 +499,48 @@ const AdmNewPromotion = () => {
             .catch(err => console.log(err))
     }, [])
 
+    useEffect(() => {
+        if (formInitValue) {
+            form.resetFields();
+        }
+    }, [formInitValue])
+
+    useEffect(() => {
+        if (id) {
+            promotionAPI.getPromotionDetail(id)
+                .then(res => {
+                    if (!res.status) {
+                        console.log(res)
+                        setIsActive(res.isactive)
+                        if (res.promotionProductDTOList && res.promotionProductDTOList.length > 0) {
+                            setListPr([...res.promotionProductDTOList.map((item, index) => ({
+                                index: index + 1,
+                                key: item?.product?.id,
+                                ...item?.product
+                            }))])
+                        }
+                        console.log(dayjs(res?.dateafter))
+                        setFormInitValue({
+                            name: res?.title,
+                            discount: res?.bypersent,
+                            date_after: dayjs(res?.dateafter),
+                            date_before: dayjs(res?.datebefor),
+                            isactive: res?.isactive
+                        })
+                    } else {
+                        console.log(res)
+                    }
+                })
+                .catch(err => console.log(err))
+        }
+    }, [id])
+
     return (
         <Helmet
-            title={"Thêm Mới Khuyến Mại"}
+            title={"Thông Tin Khuyến Mại"}
         >
             <div className="adm--newpromotion">
                 <div className="adm--newpromotion__title">
-                    <Typography.Title level={4}>Tạo Khuyến Mại</Typography.Title>
                     <Button type='primary' onClick={() => { navigate('/admin/promotion-list') }}>Danh Sách</Button>
                 </div>
                 <div className="adm--newpromotion__body">
@@ -484,6 +551,8 @@ const AdmNewPromotion = () => {
                             wrapperCol={{ span: 24 }}
                             labelCol={{ span: 24 }}
                             onFinish={handleClickSubmitForm}
+                            form={form}
+                            initialValues={formInitValue}
                         >
                             <Form.Item
                                 label="Tên Khuyến Mại"
@@ -545,18 +614,25 @@ const AdmNewPromotion = () => {
                             >
                                 <DatePicker style={{ width: '100%' }} />
                             </Form.Item>
+                            <Form.Item
+                                label="Trạng Thái"
+                                name="isactive"
+                                valuePropName='checked'
+                            >
+                                <Switch />
+                            </Form.Item>
                             <Form.Item>
                                 {
                                     listPr && listPr.length > 0 ?
                                         (
-                                            <Button type='primary' htmlType='submit'>Tạo Khuyến Mại</Button>
+                                            <Button danger htmlType='submit'>Cập Nhật</Button>
                                         )
                                         :
                                         (
                                             <Tooltip
                                                 title="Vui lòng chọn sản phẩm khuyến mại."
                                             >
-                                                <Button type='primary' htmlType='submit' disabled>Tạo Khuyến Mại</Button>
+                                                <Button danger htmlType='submit' disabled>Cập Nhật</Button>
                                             </Tooltip>
                                         )
                                 }
@@ -782,4 +858,4 @@ const AdmNewPromotion = () => {
     )
 }
 
-export default AdmNewPromotion
+export default AdmPromotionDetail

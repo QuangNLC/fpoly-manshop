@@ -315,7 +315,7 @@ const AdmMaterialList = () => {
                 <div className="adm--matelist__body">
                     <div className="adm--matelist__body--filters">
                         <div className="adm--matelist__body--filters__search">
-                            <Input value={inputValue} onChange={e => setInputValue(e.target.value)} />
+                            <Input value={inputValue} onChange={e => setInputValue(e.target.value)} placeholder={'Nhập tên chất liệu'} />
                             <Button type='primary' icon={<SearchOutlined />} style={{ marginLeft: 20 }} onClick={onSearchText}>Tìm Kiếm</Button>
                             <Button type='dashed' icon={<RedoOutlined />} style={{ marginLeft: 20 }} onClick={onClearFilter}>Làm Mới</Button>
                         </div>

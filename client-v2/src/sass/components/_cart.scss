@@ -16,6 +16,14 @@
                 color: rgb(207, 43, 43);
                 font-weight: 400;
                 margin-top: 10px;
+
+                &__old{
+                    font-size: 16px;
+                    color: rgb(124, 104, 104);
+                    font-weight: 400;
+                    margin-bottom: 10px;
+                    text-decoration: line-through;
+                }
             }
 
             &--size {
