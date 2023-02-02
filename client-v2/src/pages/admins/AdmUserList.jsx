@@ -72,6 +72,7 @@ const AdmUserList = () => {
         },
         {
             title: 'Trạng Thái',
+            width: 120,
             render: (record) => {
                 return (
                     record?.activated ?
@@ -224,7 +225,7 @@ const AdmUserList = () => {
                     <div className="adm--userlist__body--filters">
                         <div className="adm--userlist__body--filters__search">
                             <div className="adm--userlist__body--filters__search--input">
-                                <Input value={userFilterInputValue} onChange={e => setUserFilterInputValue(e.target.value)} />
+                                <Input value={userFilterInputValue} onChange={e => setUserFilterInputValue(e.target.value)} placeholder={'Họ và tên, tên đăng nhập, số điện thoại, gmail'}/>
                             </div>
                             <div className="adm--userlist__body--filters__search--actions">
                                 <Button icon={<SearchOutlined />} type='primary' onClick={onClickSearchUser}>Tìm Kiếm</Button>

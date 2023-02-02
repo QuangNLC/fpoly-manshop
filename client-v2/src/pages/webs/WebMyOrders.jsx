@@ -146,13 +146,11 @@ const WebMyOrders = () => {
         },
         {
             title: 'Tổng Số Tiền',
-            dataIndex: 'totalPrice',
-            key: 'totalPrice',
-            render: (text) => (
+            render: (record) => (
                 new Intl.NumberFormat("vi-VN", {
                     style: "currency",
                     currency: "VND",
-                }).format(text)
+                }).format(record?.orderDetail.reduce(((total, item) => (total + (item.price - item?.prDiscount) * item.quantity)), 0) + record?.shipfee)
             )
 
         },

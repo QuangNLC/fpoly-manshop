@@ -194,10 +194,36 @@ const Cart = ({ cart, order, onEditItem }) => {
                             <Typography.Title level={5}>{record?.product?.name}</Typography.Title>
                         </div>
                         <div className="cart--item__pr--price">
-                            {new Intl.NumberFormat("vi-VN", {
-                                style: "currency",
-                                currency: "VND",
-                            }).format(record?.product?.price)}
+                            {
+                                record?.prDiscount !== 0 ?
+                                    (
+                                        <>
+                                            <div style={{fontSize: '16px', color: '#999', textDecoration: 'line-through'}}>
+                                                {new Intl.NumberFormat("vi-VN", {
+                                                    style: "currency",
+                                                    currency: "VND",
+                                                }).format(record?.price)}
+                                                <Tag style={{marginLeft: 10}}>{`- ${record?.prDiscount*100/record?.price} %`}</Tag>
+                                            </div>
+                                            <div>
+                                                {new Intl.NumberFormat("vi-VN", {
+                                                    style: "currency",
+                                                    currency: "VND",
+                                                }).format(record?.price - record?.prDiscount)}
+                                                
+                                            </div>
+                                        </>
+                                    )
+                                    :
+                                    (
+                                        <>
+                                            {new Intl.NumberFormat("vi-VN", {
+                                                style: "currency",
+                                                currency: "VND",
+                                            }).format(record?.price)}
+                                        </>
+                                    )
+                            }
                         </div>
                         <div className="cart--item__pr--size">
                             Size: <b>{record?.size}</b>
@@ -231,7 +257,7 @@ const Cart = ({ cart, order, onEditItem }) => {
                         {new Intl.NumberFormat("vi-VN", {
                             style: "currency",
                             currency: "VND",
-                        }).format(record?.product?.price * record?.quantity)}
+                        }).format((record?.price - record?.prDiscount) * record?.quantity)}
                     </div>
                 )
             },
@@ -283,7 +309,7 @@ const Cart = ({ cart, order, onEditItem }) => {
                             new Intl.NumberFormat("vi-VN", {
                                 style: "currency",
                                 currency: "VND",
-                            }).format(cart.reduce(((total, item) => total + item.product.price * item.quantity), 0))
+                            }).format(cart.reduce(((total, item) => (total + (item.price) * item.quantity)), 0))
                         }
                     </div>
                 </div>
@@ -305,7 +331,7 @@ const Cart = ({ cart, order, onEditItem }) => {
                             new Intl.NumberFormat("vi-VN", {
                                 style: "currency",
                                 currency: "VND",
-                            }).format(order?.discount)
+                            }).format(cart.reduce(((total, item) => (total + (item?.prDiscount) * item.quantity)), 0))
                         }
                     </div>
                 </div>
@@ -316,7 +342,7 @@ const Cart = ({ cart, order, onEditItem }) => {
                             new Intl.NumberFormat("vi-VN", {
                                 style: "currency",
                                 currency: "VND",
-                            }).format(cart.reduce(((total, item) => total + item.product.price * item.quantity), 0) + order?.shipfee - order?.discount)
+                            }).format(cart.reduce(((total, item) => (total + (item.price - item?.prDiscount) * item.quantity)), 0) + order?.shipfee)
                         }
                     </div>
                 </div>
@@ -1024,7 +1050,7 @@ const AdmOrderDetail = () => {
     const onAddToCart = (payload) => {
         console.log(payload)
         let index = data?.orderDetail.findIndex(o => (o?.product?.id === payload?.product?.id && o?.size === payload?.selectedSize?.size?.title))
-        if(index === -1){
+        if (index === -1) {
             let newPayload = {
                 price: payload?.product?.price,
                 discount: 0,
@@ -1036,17 +1062,17 @@ const AdmOrderDetail = () => {
                 id: data?.id
             }
             orderAPI.createCartItem(newPayload)
-            .then(res => {
-                if(!res.status){
-                    setData({...res})
-                    openNotificationWithIcon('info','Thông Báo','Thêm sản phẩm vào đơn hàng.')
-                    setSelectedProduct(undefined)
-                    onCloseProductModal()
-                }else{
-                    console.log(res)
-                }
-            })
-            .catch(err => console.log(err))
+                .then(res => {
+                    if (!res.status) {
+                        setData({ ...res })
+                        openNotificationWithIcon('info', 'Thông Báo', 'Thêm sản phẩm vào đơn hàng.')
+                        setSelectedProduct(undefined)
+                        onCloseProductModal()
+                    } else {
+                        console.log(res)
+                    }
+                })
+                .catch(err => console.log(err))
         }
     }
 

@@ -160,20 +160,23 @@ const AdmOrderList = () => {
         },
         {
             title: 'Tổng Sản Phẩm',
-            dataIndex: 'totalQuantity',
-            key: 'totalQuantity',
-            sorter: (a, b) => a.totalQuantity - b.totalQuantity
+            render: (record) => {
+                return(
+                    <>
+                        {record?.orderDetail.reduce(((total, curr) => (total+curr?.quantity)), 0)}
+                    </>
+                )
+            }
         },
         {
             title: 'Tổng Số Tiền',
-            dataIndex: 'totalPrice',
             key: 'totalPrice',
             sorter: (a, b) => a.totalPrice - b.totalPrice,
-            render: (text) => (
+            render: (record) => (
                 new Intl.NumberFormat("vi-VN", {
                     style: "currency",
                     currency: "VND",
-                }).format(text)
+                }).format(record?.orderDetail.reduce(((total, curr) => (total + curr?.quantity*(curr?.price - curr?.prDiscount))), 0) + record?.shipfee)
             )
 
         },

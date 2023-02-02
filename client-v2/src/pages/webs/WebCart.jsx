@@ -57,7 +57,7 @@ const checkPr = (product) => {
     if (product && product.promotions) {
         if (product.promotions.length > 0) {
             if (product.promotions[0]?.promition.isactive) {
-                result = (now >= new Date(product.promotions[0]?.promition.date_after) && now <= new Date(product.promotions[0]?.promition.date_befor))
+                result = (now >= new Date(product.promotions[0]?.promition.dateafter) && now <= new Date(product.promotions[0]?.promition.datebefor))
             }
         }
     }

@@ -12,7 +12,7 @@ import shipLogoImg from '../../assets/imgs/ship-logo.png'
 import moment from 'moment';
 import { useForm } from 'antd/es/form/Form';
 import ghnFeeAPI from '../../apis/ghnFeeAPI';
-import {orderAPI} from '../../apis/orderAPI';
+import { orderAPI } from '../../apis/orderAPI';
 
 const openNotificationWithIcon = (type, title, des) => {
     notification[type]({
@@ -32,12 +32,41 @@ const checkItemByProductIdAndSizeId = (arr, id, sizeId) => {
 
     return result;
 }
+const checkPrDiscount = (product) => {
+    let result = false;
+    let now = new Date();
+    if (product && product.promotions) {
+        if (product.promotions.length > 0) {
+            if (product.promotions[0]?.promition.isactive) {
+                result = (now >= new Date(product.promotions[0]?.promition.dateafter) && now <= new Date(product.promotions[0]?.promition.datebefor))
+            }
+        }
+    }
+
+    return result
+}
+
+const checkPrActive = (pr) => {
+    let result = true;
+
+    if (!pr?.category?.isActive) {
+        return false;
+    } else if (!pr?.material?.isActive) {
+        return false;
+    } else if (!pr?.color?.isActive) {
+        return false;
+    } else if (!pr?.isActive) {
+        return false;
+    }
+
+    return result;
+}
 
 const ProductDetail = ({ product, onAddToCart }) => {
     const [previewImg, setPreviewImg] = useState(null)
     const [selectedSize, setSelectedSize] = useState(undefined)
     const [quantityInfo, setQuantityInfo] = useState(1)
-
+    const [isDiscount, setIsDiscount] = useState(false);
     const dispatch = useDispatch();
 
     const onSelectSize = (size) => {
@@ -77,6 +106,19 @@ const ProductDetail = ({ product, onAddToCart }) => {
 
     useEffect(() => {
         setPreviewImg(`http://localhost:8080/api/file/images/${product?.images[0]?.photo}`)
+        if (product && product.promotions) {
+            if (product.promotions.length > 0) {
+                if (checkPrDiscount(product)) {
+                    console.log(product.promotions[0])
+                    setIsDiscount(
+                        true
+                    )
+                }
+
+            } else {
+                setIsDiscount(false)
+            }
+        }
     }, [product])
 
     return (
@@ -118,17 +160,84 @@ const ProductDetail = ({ product, onAddToCart }) => {
                 </div>
                 <div className="details--gr">
                     <div className="details--gr__title">
+                        <Typography.Text>Trạng Thái</Typography.Text>
+                    </div>
+                    <div className="details--gr__content">
+                        {
+                            product?.isActive ?
+                                (
+                                    <Tag color='green'>Kinh Doanh</Tag>
+
+                                )
+                                :
+                                (
+                                    <Tag color='red'>Ngừng Kinh Doanh</Tag>
+                                )
+                        }
+                    </div>
+                </div>
+                <div className="details--gr">
+                    <div className="details--gr__title">
+                        <Typography.Text>Màu Sắc</Typography.Text>
+                    </div>
+                    <div className="details--gr__content">
+                        <div style={{ width: 30, height: 30, backgroundColor: `${product?.color?.colorCode}` }}></div>
+                    </div>
+                </div>
+                <div className="details--gr">
+                    <div className="details--gr__title">
                         <Typography.Text>Mô Tả</Typography.Text>
                     </div>
                     <div className="details--gr__content">
                         {product?.descTitle}
                     </div>
                 </div>
+                {
+                    isDiscount &&
+                    (
+                        <div className="details--gr">
+                            <div className="details--gr__title">
+                                <Typography.Text>Khuyến Mại</Typography.Text>
+                            </div>
+                            <div className="details--gr__content">
+                                {isDiscount && <Tag color="orange">{`Khuyến Mại: ${product?.promotions[0]?.promition?.title}`}</Tag>}
+                                {isDiscount && <Tag color="magenta">{`- ${product?.promotions[0]?.promition?.bypersent}  %`}</Tag>}
+                            </div>
+                        </div>
+                    )
+                }
                 <div className="details--price">
-                    {new Intl.NumberFormat("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                    }).format(product?.price)}
+                    {
+                        isDiscount ?
+                            (
+                                <>
+                                    <div className="details--price__new">
+                                        {new Intl.NumberFormat("vi-VN", {
+                                            style: "currency",
+                                            currency: "VND",
+                                        }).format(product.price - product.price * (product?.promotions[0]?.promition?.bypersent / 100))}
+                                    </div>
+                                    <div className="details--price__old">
+                                        {new Intl.NumberFormat("vi-VN", {
+                                            style: "currency",
+                                            currency: "VND",
+                                        }).format(product?.price)}
+                                    </div>
+                                </>
+
+                            )
+                            :
+                            (
+                                <>
+                                    <div className="details--price__new">
+                                        {new Intl.NumberFormat("vi-VN", {
+                                            style: "currency",
+                                            currency: "VND",
+                                        }).format(product?.price)}
+                                    </div>
+                                </>
+                            )
+                    }
                 </div>
                 <div className="details--sizes">
                     <div className="details--gr__title">
@@ -149,6 +258,23 @@ const ProductDetail = ({ product, onAddToCart }) => {
                         {`${selectedSize.quantity} sản phẩm có sẵn.`}
                     </div>
                 }
+                {
+                    (!selectedSize || !quantityInfo || !checkPrActive(product)) ?
+                        (
+                            <>
+                                <Typography.Text level={5}>Vui lòng chọn size để mua sắm</Typography.Text>
+
+                                {!product?.material?.isActive && <><br /><Tag>Chất liệu {product?.material?.title} hiện ngừng kinh doanh</Tag></>}
+                                {!product?.color?.isActive && <><br /><Tag>Màu {product?.color?.description} hiện ngừng kinh doanh</Tag></>}
+                                {!product?.category?.isActive && <><br /><Tag>Thể loại {product?.category?.title} hiện ngừng kinh doanh</Tag></>}
+                            </>
+                        )
+
+                        :
+                        (
+                            <></>
+                        )
+                }
                 <div className="details--actions">
                     <div className="details--actions__top">
                         <div className="details--actions__quantity">
@@ -164,7 +290,7 @@ const ProductDetail = ({ product, onAddToCart }) => {
                         </div>
                         <div className="details--actions__add">
                             {
-                                (!selectedSize || !quantityInfo) ?
+                                (!selectedSize || !quantityInfo || !checkPrActive(product)) ?
                                     (
                                         <Button className="details--actions__add--btn" disabled>THÊM VÀO GIỎ HÀNG</Button>
                                     )
@@ -281,10 +407,39 @@ const Cart = ({ cart, onDeleteItem, onUpdateItemQuantity }) => {
                             <Typography.Title level={5}>{record?.product?.name}</Typography.Title>
                         </div>
                         <div className="cart--item__pr--price">
-                            {new Intl.NumberFormat("vi-VN", {
-                                style: "currency",
-                                currency: "VND",
-                            }).format(record?.product?.price)}
+                            {
+                                checkPrDiscount(record?.product) ?
+                                    (
+                                        <>
+                                            <div className="cart--item__pr--price__old">
+                                                {new Intl.NumberFormat("vi-VN", {
+                                                    style: "currency",
+                                                    currency: "VND",
+                                                }).format(record?.product?.price)}
+                                                <Tag style={{ marginLeft: 10 }}>{`- ${(record?.product?.promotions[0]?.promition?.bypersent)} %`}</Tag>
+                                            </div>
+                                            <div className="cart--item__pr--price__new">
+                                                {new Intl.NumberFormat("vi-VN", {
+                                                    style: "currency",
+                                                    currency: "VND",
+                                                }).format(record?.product.price - record?.product.price * (record?.product?.promotions[0]?.promition?.bypersent / 100))}
+
+                                            </div>
+
+                                        </>
+                                    )
+                                    :
+                                    (
+                                        <>
+                                            <div className="cart--item__pr--price--new">
+                                                {new Intl.NumberFormat("vi-VN", {
+                                                    style: "currency",
+                                                    currency: "VND",
+                                                }).format(record?.product?.price)}
+                                            </div>
+                                        </>
+                                    )
+                            }
                         </div>
                         <div className="cart--item__pr--size">
                             Size: <b>{record?.selectedSize?.size?.title}</b>
@@ -325,7 +480,7 @@ const Cart = ({ cart, onDeleteItem, onUpdateItemQuantity }) => {
                         {new Intl.NumberFormat("vi-VN", {
                             style: "currency",
                             currency: "VND",
-                        }).format(record?.product?.price * record?.quantity)}
+                        }).format((record?.product.price - ((record?.product.price * (checkPrDiscount(record?.product) ? record?.product?.promotions[0]?.promition?.bypersent / 100 : 0)))) * record?.quantity)}
                     </div>
                 )
             },
@@ -554,7 +709,7 @@ const AdmWaitingOrderDetail = () => {
                     product: { id: item?.product?.id },
                     size: item?.selectedSize?.size?.title,
                     price: item?.product?.price,
-                    prDiscount: 0,
+                    prDiscount: checkPrDiscount(item?.product) ? item?.product?.price * (item?.product?.promotions[0]?.promition?.bypersent / 100) : 0,
                     quantity: item?.quantity,
                     status: 1
                 })
@@ -562,14 +717,14 @@ const AdmWaitingOrderDetail = () => {
         ]
         let payloadCheckout = {
             username: data?.users ? data?.users?.username : "khachle",
-            orderType: isOrderShip ? "Giao Hàng" : "Tại Quầy" ,
+            orderType: isOrderShip ? "Giao Hàng" : "Tại Quầy",
             note: '',
             orderDetail,
             totalPrice: orderDetail.reduce(((total, curr) => (total + curr?.price * curr?.quantity)), 0),
             discount: 0,
             surcharge: 0,
             refund: 0,
-            shipFee: shipFeeInfo?.total ? shipFeeInfo?.total : 0 ,
+            shipFee: shipFeeInfo?.total ? shipFeeInfo?.total : 0,
             fullname: checkoutAddress?.name,
             phone: checkoutAddress?.phone,
             cityName: checkoutAddress?.cityName,
@@ -583,15 +738,15 @@ const AdmWaitingOrderDetail = () => {
         console.log(payloadCheckout)
 
         orderAPI.checkOut(payloadCheckout)
-        .then(res => {
-            if(!res.status){
-                console.log(res)
-                openNotificationWithIcon('success','Thông Báo','Tạo đơn hàng')
-                navigate(`/admin/order/${res}`)
-                dispatch(deleteWaitingOrderAction({ id: data.id }))
-            }
-        })
-        .catch(err => console.log(err))
+            .then(res => {
+                if (!res.status) {
+                    console.log(res)
+                    openNotificationWithIcon('success', 'Thông Báo', 'Tạo đơn hàng')
+                    navigate(`/admin/order/${res}`)
+                    dispatch(deleteWaitingOrderAction({ id: data.id }))
+                }
+            })
+            .catch(err => console.log(err))
     }
 
     //modal product table
@@ -644,11 +799,44 @@ const AdmWaitingOrderDetail = () => {
         {
             title: "Giá",
             render: (record) => {
+                console.log(record)
                 return (
-                    <>{new Intl.NumberFormat("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                    }).format(record?.price)}</>
+                    checkPrDiscount(record) ?
+                        (
+                            <>
+                                <div style={{ color: '#999', textDecoration: 'line-through' }}>
+                                    {new Intl.NumberFormat("vi-VN", {
+                                        style: "currency",
+                                        currency: "VND",
+                                    }).format(record?.price)
+                                    }
+                                    <Tag style={{ marginLeft: 10 }}>{`- ${record?.promotions[0]?.promition?.bypersent} %`}</Tag>
+                                </div>
+                                <div>
+                                    {new Intl.NumberFormat("vi-VN", {
+                                        style: "currency",
+                                        currency: "VND",
+                                    }).format(record?.price - record?.price * record?.promotions[0]?.promition?.bypersent / 100)
+                                    }
+
+                                </div>
+                                <div>
+                                    <Tag color='orange'>{record?.promotions[0]?.promition?.title}</Tag>
+                                </div>
+                            </>
+                        )
+                        :
+                        (
+
+                            <>
+                                {new Intl.NumberFormat("vi-VN", {
+                                    style: "currency",
+                                    currency: "VND",
+                                }).format(record?.price)
+                                }
+                            </>
+                        )
+
                 )
             }
         },
@@ -656,10 +844,18 @@ const AdmWaitingOrderDetail = () => {
             title: "Thao Tác",
             render: (record) => {
                 return (
-                    <Button danger onClick={() => {
-                        // setIsProductModal(false)
-                        setSelectedProduct(record)
-                    }}>Chọn</Button>
+                    <div>
+                        <Button danger onClick={() => {
+                            setSelectedProduct(record)
+                        }} disabled={!checkPrActive(record)}>Chọn</Button>
+                        <div>
+                            {!record?.isActive && <><br /><Tag>Sản phẩm hiện ngừng kinh doanh</Tag></>}
+                            {!record?.material?.isActive && <><br /><Tag>Chất liệu {record?.material?.title} hiện ngừng kinh doanh</Tag></>}
+                            {!record?.color?.isActive && <><br /><Tag>Màu {record?.color?.description} hiện ngừng kinh doanh</Tag></>}
+                            {!record?.category?.isActive && <><br /><Tag>Thể loại {record?.category?.title} hiện ngừng kinh doanh</Tag></>}
+                        </div>
+                    </div>
+
                 )
             }
         }
@@ -930,16 +1126,16 @@ const AdmWaitingOrderDetail = () => {
     }
 
     const onClickSearchUser = () => {
-        if(userFilterInputValue.trim() !== ''){
+        if (userFilterInputValue.trim() !== '') {
             let newData = usersData.filter((u) => {
-                if(
+                if (
                     u.username.toLowerCase().includes(userFilterInputValue.trim().toLocaleLowerCase()) ||
                     u.fullname.toLowerCase().includes(userFilterInputValue.trim().toLocaleLowerCase()) ||
                     u.phone.toLowerCase().includes(userFilterInputValue.trim().toLocaleLowerCase()) ||
                     u.email.toLowerCase().includes(userFilterInputValue.trim().toLocaleLowerCase())
-                ){
+                ) {
                     return true;
-                }else{
+                } else {
                     return false;
                 }
             })
@@ -955,7 +1151,7 @@ const AdmWaitingOrderDetail = () => {
     //end modal usertable
 
 
-    
+
 
 
     useEffect(() => {
@@ -1262,6 +1458,19 @@ const AdmWaitingOrderDetail = () => {
                                                     }
                                                 </div>
                                             </div>
+                                            <div className="web--cart__payinfo--price__item">
+                                                <div className="web--cart__payinfo--price__item--title">
+                                                    Giảm Giá
+                                                </div>
+                                                <div className="web--cart__payinfo--price__item--content">
+                                                    {
+                                                        new Intl.NumberFormat("vi-VN", {
+                                                            style: "currency",
+                                                            currency: "VND",
+                                                        }).format(data.orderDetail.reduce(((total, item) => (total + (checkPrDiscount(item?.product) ? item?.product?.price * (item?.product?.promotions[0]?.promition?.bypersent / 100) * item?.quantity : 0))), 0))
+                                                    }
+                                                </div>
+                                            </div>
                                             {
                                                 shipFeeInfo &&
                                                 <div className="adm--wtorder--detail__pay--price__item">
@@ -1273,7 +1482,7 @@ const AdmWaitingOrderDetail = () => {
                                                             new Intl.NumberFormat("vi-VN", {
                                                                 style: "currency",
                                                                 currency: "VND",
-                                                            }).format(shipFeeInfo.total)
+                                                            }).format(shipFeeInfo?.total)
                                                         }
                                                     </div>
                                                 </div>
@@ -1287,7 +1496,7 @@ const AdmWaitingOrderDetail = () => {
                                                         new Intl.NumberFormat("vi-VN", {
                                                             style: "currency",
                                                             currency: "VND",
-                                                        }).format(data.orderDetail.reduce(((total, item) => total + item.product.price * item.quantity), 0) + (shipFeeInfo?.total ? shipFeeInfo?.total : 0))
+                                                        }).format(data.orderDetail.reduce(((total, item) => (total + (checkPrDiscount(item?.product) ? (item?.product?.price - item?.product?.price * (item?.product?.promotions[0]?.promition?.bypersent / 100)) * item?.quantity : item?.product?.price * item?.quantity))), 0))
                                                     }
                                                 </div>
                                             </div>
@@ -1474,7 +1683,7 @@ const AdmWaitingOrderDetail = () => {
                             >
                                 <div className="usersmodal--filters">
                                     <div className="usersmodal--filters__search">
-                                        <Input value={userFilterInputValue} onChange={e => setUserFilterInputValue(e.target.value)}/>
+                                        <Input value={userFilterInputValue} placeholder={'Họ và tên, tên đăng nhập, số điện thoại, gmail'} onChange={e => setUserFilterInputValue(e.target.value)} />
                                         <Button icon={<SearchOutlined />} type='primary' onClick={onClickSearchUser}>Tìm Kiếm</Button>
                                         <Button icon={<ReloadOutlined />} danger onClick={onClearUserSearch}>Làm Mới</Button>
                                         <Button icon={<PlusOutlined />} type="primary" danger>Thêm Mới</Button>

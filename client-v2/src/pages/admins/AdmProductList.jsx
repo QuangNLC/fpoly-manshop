@@ -116,7 +116,8 @@ const AdmProductList = () => {
                         </Tooltip>
                     </>
                 )
-            }
+            },
+            width: 120
         }
     ]
 
