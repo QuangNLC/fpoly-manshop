@@ -32,6 +32,34 @@ const pieChartDataBase = [
 ];
 
 
+const getPieColor = (name) => {
+    let color = '#FFBB28'
+
+    switch (name) {
+        case ('Chờ Xác Nhận'): {
+            color = '#FFBB28';
+            break;
+        }
+        case ('Đã Xác Nhận'): {
+            color = '#00C49F';
+            break;
+        }
+        case ('Đang Giao'): {
+            color = '#FF8042';
+            break;
+        }
+        case ('Hoàn Tất'): {
+            color = '#0088FE';
+            break;
+        }
+        case ('Đang Chờ'): {
+            color = '#fa0505';
+            break;
+        }
+    }
+    return color;
+}
+
 
 const AdmDashboard = () => {
 
@@ -48,7 +76,11 @@ const AdmDashboard = () => {
     const [totalSellThisMonth, setTotalSellThisMonth] = useState(0);
     const [totalSellThisMonthLoading, setTotalSellThisMonthLoading] = useState(true);
 
+    const [totalSellThisDay, setTotalSellThisDay] = useState(0);
+    const [totalSellThisDayLoading, setTotalSellThisDayLoading] = useState(true);
+
     const [pieChartData, setPieChartData] = useState([]);
+    const [pieChartLoading, setPieChartLoading] = useState(true);
 
     const navigate = useNavigate();
 
@@ -215,6 +247,38 @@ const AdmDashboard = () => {
             }
             )
             .catch(err => console.log(err))
+        setTotalSellThisDayLoading(true);
+        reportAPI.getTodaySell()
+            .then(res => {
+                if (!res.status) {
+                    setTotalSellThisDay(res)
+                    setTotalSellThisDayLoading(false)
+                } else {
+                    if (res.status === 200) {
+                        console.log(res)
+                        setTotalSellThisDay(0)
+                        setTotalSellThisDayLoading(false)
+                    }
+                    console.log(res)
+                }
+            }
+            )
+            .catch(err => console.log(err))
+
+        reportAPI.getOrderStat()
+            .then(res => {
+                if (!res.status) {
+                    console.log(res)
+                    setPieChartData(res.map((item, index) => ({
+                        ...item,
+                        color: getPieColor(item.name)
+                    })))
+                    setPieChartLoading(false)
+                } else {
+                    console.log(res)
+                }
+            })
+            .catch(err => console.log(err))
     }, [])
 
     return (
@@ -253,12 +317,18 @@ const AdmDashboard = () => {
                     </div>
                     <div className="adm--dashboard__widgets--item">
                         <div className="adm--dashboard__widgets--item__label">Doanh Thu Hôm Nay</div>
-                        <div className="adm--dashboard__widgets--item__content">{
-                            new Intl.NumberFormat("vi-VN", {
-                                style: "currency",
-                                currency: "VND",
-                            }).format(123000)
-                        }</div>
+                        <div className="adm--dashboard__widgets--item__content">
+                            {
+                                !totalSellThisDayLoading ?
+                                    (
+                                        <div className="adm--dashboard__widgets--item__content">{totalSellThisDay}</div>
+                                    )
+                                    :
+                                    (
+                                        <Spin />
+                                    )
+                            }
+                        </div>
                     </div>
                 </div>
                 <div className="adm--dashboard__barchart">
@@ -308,7 +378,7 @@ const AdmDashboard = () => {
 
                     </div>
                 </div>
-                <div className="adm--dashboard__tables">
+                {/* <div className="adm--dashboard__tables">
                     <div className="adm--dashboard__tables--item">
                         <div className="adm--dashboard__tables--item__label">
                             <Typography.Title level={5}>Sản Phẩm Bán Chạy Trong Tháng</Typography.Title>
@@ -331,7 +401,7 @@ const AdmDashboard = () => {
                             <Button type='primary' onClick={() => { navigate("/admin/user-list") }}>Xem Tất Cả</Button>
                         </div>
                     </div>
-                </div>
+                </div> */}
                 <div className="adm--dashboard__piechart">
                     <div className="adm--dashboard__piechart--title">
                         <Typography.Title level={5}>Trạng Thái Đơn Hàng</Typography.Title>
@@ -340,24 +410,52 @@ const AdmDashboard = () => {
                         </div>
                     </div>
                     <div className="adm--dashboard__piechart--chart">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <PieChart width={400} height={400}>
-                                <Pie
-                                    data={pieChartDataBase}
-                                    cx="50%"
-                                    cy="50%"
-                                    labelLine={false}
-                                    label={renderCustomizedLabel}
-                                    outerRadius={80}
-                                    fill="#8884d8"
-                                    dataKey="value"
-                                >
-                                    {pieChartDataBase.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                    ))}
-                                </Pie>
-                            </PieChart>
-                        </ResponsiveContainer>
+                        {
+                            pieChartLoading ?
+                                (
+                                    <Spin />
+                                )
+                                :
+                                (
+                                    <div className="adm--dashboard__piechart--chart__content">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <PieChart width={400} height={400}>
+                                                <Pie
+                                                    data={pieChartData}
+                                                    cx="50%"
+                                                    cy="50%"
+                                                    labelLine={false}
+                                                    label={renderCustomizedLabel}
+                                                    outerRadius={80}
+                                                    fill="#8884d8"
+                                                    dataKey="value"
+                                                >
+                                                    {pieChartDataBase.map((entry, index) => (
+                                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                                    ))}
+                                                </Pie>
+                                            </PieChart>
+                                        </ResponsiveContainer>
+                                    </div>
+
+                                )
+                        }
+                        {
+                            !pieChartLoading &&
+                            (
+
+                                <div className="adm--dashboard__piechart--chart__note">
+                                    {
+                                        pieChartData.map((item, index) => (
+                                            <div className="adm--dashboard__piechart--chart__note--item" key={index}>
+                                                <div style={{width: 20, height: 20, borderRadius:'50%', backgroundColor: `${item.color}`, marginRight: 10}}></div>
+                                                <div>{item.name}</div>
+                                            </div>
+                                        ))
+                                    }
+                                </div>
+                            )
+                        }
                     </div>
                 </div>
             </div>

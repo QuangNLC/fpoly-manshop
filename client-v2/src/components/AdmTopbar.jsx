@@ -55,6 +55,9 @@ const AdmTopbar = () => {
         {
             label: 'Tài Khoản Của Tôi',
             key: '1',
+            onClick: () => {
+                navigate('/my-account');
+            }
         },
         {
             type: 'divider',

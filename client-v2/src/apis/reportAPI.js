@@ -16,6 +16,10 @@ const reportAPI = {
     getProductSellThisMonth: () => {
         const url = 'report/product-Month';
         return axiosClient.get(url);
+    },
+    getTodaySell: () => {
+        const url = 'report/totalprice-today';
+        return axiosClient.get(url);
     }
 };
 

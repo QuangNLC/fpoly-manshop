@@ -321,7 +321,7 @@ const WebCart = () => {
                     product: { id: item?.product?.id },
                     size: item?.selectedSize?.size?.title,
                     price: item?.product?.price,
-                    prDiscount: !checkPr(item?.product) ? item?.product?.price*(item?.product?.promotions[0]?.promition?.bypersent / 100): 0,
+                    prDiscount: checkPr(item?.product) ? item?.product?.price * (item?.product?.promotions[0]?.promition?.bypersent / 100) : 0,
                     quantity: item?.quantity,
                     status: 1
                 })
@@ -572,7 +572,7 @@ const WebCart = () => {
                                                 new Intl.NumberFormat("vi-VN", {
                                                     style: "currency",
                                                     currency: "VND",
-                                                }).format(cart.cart.reduce(((total, item) => (total + (!checkPr(item?.product) ? item?.product?.price*(item?.product?.promotions[0]?.promition?.bypersent / 100)*item?.quantity : 0))), 0))
+                                                }).format(cart.cart.reduce(((total, item) => (total + (checkPr(item?.product) ? item?.product?.price * (item?.product?.promotions[0]?.promition?.bypersent / 100) * item?.quantity : 0))), 0))
                                             }
                                         </div>
                                     </div>
@@ -601,7 +601,7 @@ const WebCart = () => {
                                                 new Intl.NumberFormat("vi-VN", {
                                                     style: "currency",
                                                     currency: "VND",
-                                                }).format(cart.cart.reduce(((total, item) => (total + (item?.product.price - item?.product.price * (item?.product?.promotions[0]?.promition?.bypersent / 100)) * item?.quantity)), 0) + (shipFeeInfo?.total ? shipFeeInfo?.total : 0))
+                                                }).format(cart.cart.reduce(((total, item) => (total + (checkPr(item?.product) ? (item?.product?.price - item?.product?.price * (item?.product?.promotions[0]?.promition?.bypersent / 100)) * item?.quantity : item?.product?.price * item?.quantity))), 0) + (shipFeeInfo ? shipFeeInfo?.total : 0))
                                             }
                                         </div>
                                     </div>

@@ -20,7 +20,7 @@ const checkPr = (product) => {
     if (product && product.promotions) {
         if (product.promotions.length > 0) {
             if (product.promotions[0]?.promition.isactive) {
-                result = (now >= new Date(product.promotions[0]?.promition.date_after) && now <= new Date(product.promotions[0]?.promition.date_befor))
+                result = (now >= new Date(product.promotions[0]?.promition.dateafter) && now <= new Date(product.promotions[0]?.promition.datebefor))
             }
         }
     }
@@ -143,7 +143,7 @@ const Cart = ({ cart }) => {
                         </div>
                         <div className="cart--item__pr--price">
                             {
-                                !checkPr(record?.product) ?
+                                checkPr(record?.product) ?
                                     (
                                         <>
                                             <div className="cart--item__pr--price__old">
@@ -151,14 +151,14 @@ const Cart = ({ cart }) => {
                                                     style: "currency",
                                                     currency: "VND",
                                                 }).format(record?.product?.price)}
-                                                <Tag style={{marginLeft: 10}}>{`- ${(record?.product?.promotions[0]?.promition?.bypersent)} %`}</Tag>
+                                                <Tag style={{ marginLeft: 10 }}>{`- ${(record?.product?.promotions[0]?.promition?.bypersent)} %`}</Tag>
                                             </div>
                                             <div className="cart--item__pr--price__new">
                                                 {new Intl.NumberFormat("vi-VN", {
                                                     style: "currency",
                                                     currency: "VND",
                                                 }).format(record?.product.price - record?.product.price * (record?.product?.promotions[0]?.promition?.bypersent / 100))}
-                                                
+
                                             </div>
 
                                         </>
@@ -170,7 +170,7 @@ const Cart = ({ cart }) => {
                                                 {new Intl.NumberFormat("vi-VN", {
                                                     style: "currency",
                                                     currency: "VND",
-                                                }).format((record?.product.price - record?.product.price * (record?.product?.promotions[0]?.promition?.bypersent / 100)))}
+                                                }).format(record?.product?.price)}
                                             </div>
                                         </>
                                     )
@@ -216,7 +216,7 @@ const Cart = ({ cart }) => {
                         {new Intl.NumberFormat("vi-VN", {
                             style: "currency",
                             currency: "VND",
-                        }).format((record?.product.price - record?.product.price * (record?.product?.promotions[0]?.promition?.bypersent / 100)) * record?.quantity)}
+                        }).format((record?.product.price - ((record?.product.price * (checkPr(record?.product) ? record?.product?.promotions[0]?.promition?.bypersent / 100 : 0)))) * record?.quantity)}
                     </div>
                 )
             },
